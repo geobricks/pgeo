@@ -47,48 +47,20 @@
         "root": "/list/MODIS",
         "services": [
             {
-                "path": null,
-                "parameters": [
-
-                ],
-                "description": {
-                    "en": "List all available MODIS products.",
-                    "fr": "",
-                    "es": ""
-                }
+                "id": "product",
+                "path": "http://127.0.0.1:5001/list/MODIS"
             },
             {
-                "path": null,
-                "parameters": [
-                    "product"
-                ],
-                "description": {
-                    "en": "List all available years for the given product.",
-                    "fr": "",
-                    "es": ""
-                }
+                "id": "year",
+                "path": "http://127.0.0.1:5001/list/MODIS/{product}"
             },
             {
-                "path": null,
-                "parameters": [
-                    "product", "year"
-                ],
-                "description": {
-                    "en": "List all available months for the given product.",
-                    "fr": "",
-                    "es": ""
-                }
+                "id": "month",
+                "path": "http://127.0.0.1:5001/list/MODIS/{product}/{year}"
             },
             {
-                "path": null,
-                "parameters": [
-                    "product", "year", "day"
-                ],
-                "description": {
-                    "en": "List all available days for the given product.",
-                    "fr": "",
-                    "es": ""
-                }
+                "id": "day",
+                "path": "http://127.0.0.1:5001/list/MODIS/{product}/{year}/{month}"
             }
         ]
     }
