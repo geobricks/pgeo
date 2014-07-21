@@ -1,9 +1,34 @@
 {
-    "ftp": {
-        "base_url": "ladsweb.nascom.nasa.gov",
-        "data_dir": "/allData/5/"
+    "source": {
+        "type": "FTP",
+        "ftp": {
+            "base_url": "ladsweb.nascom.nasa.gov",
+            "data_dir": "/allData/5/"
+        }
     },
-    "target_dir": "/home/kalimaha/Development/GIS/MODIS/",
+    "target": {
+        "target_dir": "/home/kalimaha/Development/GIS/MODIS/",
+        "filesystem": {
+            "folder_name": "{product}",
+            "sub_folders": [
+                {
+                    "folder_name": "{year}",
+                    "sub_folders": [
+                        {
+                            "folder_name": "{month}",
+                            "sub_folders": [
+                                {
+                                    "folder_name": "{day}",
+                                    "sub_folders": [
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
     "bands": {
         "0": "NDVI",
         "1": "EVI"
@@ -12,26 +37,6 @@
         "original": "original",
         "output": "output",
         "tmp": "tmp"
-    },
-    "filesystem": {
-        "folder_name": "{product}",
-        "sub_folders": [
-            {
-                "folder_name": "{year}",
-                "sub_folders": [
-                    {
-                        "folder_name": "{month}",
-                        "sub_folders": [
-                            {
-                                "folder_name": "{day}",
-                                "sub_folders": [
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
     },
     "analysis": {
         "create_avg": true,
