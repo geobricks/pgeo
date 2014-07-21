@@ -1,0 +1,90 @@
+{
+    "ftp": {
+        "base_url": "ladsweb.nascom.nasa.gov",
+        "data_dir": "/allData/5/"
+    },
+    "target_dir": "/home/kalimaha/Development/GIS/MODIS/",
+    "bands": {
+        "0": "NDVI",
+        "1": "EVI"
+    },
+    "subfolders": {
+        "original": "original",
+        "output": "output",
+        "tmp": "tmp"
+    },
+    "filesystem": {
+        "folder_name": "{product}",
+        "sub_folders": [
+            {
+                "folder_name": "{year}",
+                "sub_folders": [
+                    {
+                        "folder_name": "{month}",
+                        "sub_folders": [
+                            {
+                                "folder_name": "{day}",
+                                "sub_folders": [
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "analysis": {
+        "create_avg": true,
+        "create_da": true
+    },
+    "rest": {
+        "base_url": "http://127.0.0.1:5001",
+        "root": "/list/MODIS",
+        "services": [
+            {
+                "path": null,
+                "parameters": [
+
+                ],
+                "description": {
+                    "en": "List all available MODIS products.",
+                    "fr": "",
+                    "es": ""
+                }
+            },
+            {
+                "path": null,
+                "parameters": [
+                    "product"
+                ],
+                "description": {
+                    "en": "List all available years for the given product.",
+                    "fr": "",
+                    "es": ""
+                }
+            },
+            {
+                "path": null,
+                "parameters": [
+                    "product", "year"
+                ],
+                "description": {
+                    "en": "List all available months for the given product.",
+                    "fr": "",
+                    "es": ""
+                }
+            },
+            {
+                "path": null,
+                "parameters": [
+                    "product", "year", "day"
+                ],
+                "description": {
+                    "en": "List all available days for the given product.",
+                    "fr": "",
+                    "es": ""
+                }
+            }
+        ]
+    }
+}
