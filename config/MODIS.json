@@ -48,15 +48,22 @@
         "services": [
             {
                 "id": "product",
-                "path": "http://127.0.0.1:5001/list/MODIS"
+                "path": "http://127.0.0.1:5001/list/MODIS",
+                "parameters": []
             },
             {
                 "id": "year",
-                "path": "http://127.0.0.1:5001/list/MODIS/{product}"
+                "path": "http://127.0.0.1:5001/list/MODIS",
+                "parameters": [
+                    "{product}"
+                ]
             },
             {
                 "id": "month",
-                "path": "http://127.0.0.1:5001/list/MODIS/{product}/{year}"
+                "path": "http://127.0.0.1:5001/list/MODIS",
+                "parameters": [
+                    "{product}", "{year}"
+                ]
             },
             {
                 "id": "day",
