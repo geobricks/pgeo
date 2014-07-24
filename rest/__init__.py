@@ -4,7 +4,7 @@ from download import download
 from config import settings
 
 app = Flask(__name__)
-app.register_blueprint(browse)
-app.register_blueprint(download)
+app.register_blueprint(browse, url_prefix='/browse')
+app.register_blueprint(download, url_prefix='/download')
 
 config = settings
