@@ -12,7 +12,7 @@ class Config:
         """
 
         self.filename = filename
-        path = os.path.join('../config/')
+        path = os.path.join('../config/datasources/')
 
         json_data = open(path + self.filename + '.json').read()
         self.config = json.loads(json_data)
