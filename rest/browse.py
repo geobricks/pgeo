@@ -25,12 +25,15 @@ def list_products(source_name):
             ftp.login()
             ftp.cwd(config.json['source']['ftp']['data_dir'])
             l = ftp.nlst()
+            out = []
+            for s in l:
+                out.append({'code': s, 'label': s})
             ftp.quit()
-            return Response(json.dumps(l), content_type = 'application/json; charset=utf-8')
+            return Response(json.dumps(out), content_type = 'application/json; charset=utf-8')
         else:
             m = 'Source type [' + config.json['source']['type'] + '] is not currently supported.'
             raise PGeoException(m, status_code=400)
-    except Exception:
+    except Exception, err:
         m = 'Source [' + source_name + '] is not currently supported.'
         raise PGeoException(m, status_code=400)
 

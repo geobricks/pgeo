@@ -1,4 +1,5 @@
 {
+    "version": "1.0",
     "source": {
         "type": "FTP",
         "ftp": {
@@ -42,33 +43,62 @@
         "create_avg": true,
         "create_da": true
     },
-    "rest": {
-        "base_url": "http://127.0.0.1:5001",
-        "root": "/list/MODIS",
-        "services": [
-            {
-                "id": "product",
-                "path": "http://127.0.0.1:5001/list/MODIS",
-                "parameters": []
+    "services_base_url": "http://127.0.0.1:5005/browse",
+    "services": [
+        {
+            "id": "list_products",
+            "path": "/modis",
+            "parameters": [],
+            "payload": {
+                "fields": ["code", "label"],
+                "id": "code",
+                "label": "label"
             },
-            {
-                "id": "year",
-                "path": "http://127.0.0.1:5001/list/MODIS",
-                "parameters": [
-                    "{product}"
-                ]
-            },
-            {
-                "id": "month",
-                "path": "http://127.0.0.1:5001/list/MODIS",
-                "parameters": [
-                    "{product}", "{year}"
-                ]
-            },
-            {
-                "id": "day",
-                "path": "http://127.0.0.1:5001/list/MODIS/{product}/{year}/{month}"
-            }
-        ]
-    }
+            "services": [
+                {
+                    "id": "list_years",
+                    "path": "/modis/{product}",
+                    "parameters": [
+                        {"parameter_name": "product", "parameter_value": "list_products"}
+                    ],
+                    "payload": {
+                        "fields": ["code", "label"],
+                        "id": "code",
+                        "label": "label"
+                    },
+                    "services": [
+                        {
+                            "id": "list_days",
+                            "path": "/modis/{product}/{year}",
+                            "parameters": [
+                                {"parameter_name": "product", "parameter_value": "list_products"},
+                                {"parameter_name": "year", "parameter_value": "list_years"}
+                            ],
+                            "payload": {
+                                "fields": ["code", "label"],
+                                "id": "code",
+                                "label": "label"
+                            },
+                            "services": [
+                                {
+                                    "id": "list_layers",
+                                    "path": "/modis/{product}/{year}/{day}",
+                                    "parameters": [
+                                        {"parameter_name": "product", "parameter_value": "list_products"},
+                                        {"parameter_name": "year", "parameter_value": "list_years"},
+                                        {"parameter_name": "day", "parameter_value": "list_days"}
+                                    ],
+                                    "payload": {
+                                        "fields": ["code", "label"],
+                                        "id": "code",
+                                        "label": "label"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
 }

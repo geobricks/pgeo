@@ -26,7 +26,7 @@ class Config:
         """
         dir = os.path.dirname(os.path.dirname(__file__))
         self.filename = filename
-        file_path = dir + '/config/' + path_to_file
+        file_path = dir + '/config/datasources/' + path_to_file
         json_data = open(file_path + "/" + self.filename + '.json').read()
         self.config = json.loads(json_data)
         self.json = json.loads(json_data)
