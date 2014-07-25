@@ -1,0 +1,104 @@
+{
+    "version": "1.0",
+    "source": {
+        "type": "FTP",
+        "ftp": {
+            "base_url": "ladsweb.nascom.nasa.gov",
+            "data_dir": "/allData/5/"
+        }
+    },
+    "target": {
+        "target_dir": "/home/kalimaha/Development/GIS/MODIS/",
+        "filesystem": {
+            "folder_name": "{product}",
+            "sub_folders": [
+                {
+                    "folder_name": "{year}",
+                    "sub_folders": [
+                        {
+                            "folder_name": "{month}",
+                            "sub_folders": [
+                                {
+                                    "folder_name": "{day}",
+                                    "sub_folders": [
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "bands": {
+        "0": "NDVI",
+        "1": "EVI"
+    },
+    "subfolders": {
+        "original": "original",
+        "output": "output",
+        "tmp": "tmp"
+    },
+    "analysis": {
+        "create_avg": true,
+        "create_da": true
+    },
+    "services_base_url": "http://127.0.0.1:5005/browse",
+    "services": [
+        {
+            "id": "list_products",
+            "path": "/modis",
+            "parameters": [],
+            "payload": {
+                "fields": ["code", "label"],
+                "id": "code",
+                "label": "label"
+            },
+            "services": [
+                {
+                    "id": "list_years",
+                    "path": "/modis/{product}",
+                    "parameters": [
+                        {"parameter_name": "product", "parameter_value": "list_products"}
+                    ],
+                    "payload": {
+                        "fields": ["code", "label"],
+                        "id": "code",
+                        "label": "label"
+                    },
+                    "services": [
+                        {
+                            "id": "list_days",
+                            "path": "/modis/{product}/{year}",
+                            "parameters": [
+                                {"parameter_name": "product", "parameter_value": "list_products"},
+                                {"parameter_name": "year", "parameter_value": "list_years"}
+                            ],
+                            "payload": {
+                                "fields": ["code", "label"],
+                                "id": "code",
+                                "label": "label"
+                            },
+                            "services": [
+                                {
+                                    "id": "list_layers",
+                                    "path": "/modis/{product}/{year}/{day}",
+                                    "parameters": [
+                                        {"parameter_name": "product", "parameter_value": "list_products"},
+                                        {"parameter_name": "year", "parameter_value": "list_years"},
+                                        {"parameter_name": "day", "parameter_value": "list_days"}
+                                    ],
+                                    "payload": {
+                                        "fields": ["code", "label", "size"],
+                                        "id": "code",
+                                        "label": "label"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
