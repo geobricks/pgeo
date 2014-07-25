@@ -89,7 +89,7 @@
                                         {"parameter_name": "day", "parameter_value": "list_days"}
                                     ],
                                     "payload": {
-                                        "fields": ["code", "label"],
+                                        "fields": ["code", "label", "size"],
                                         "id": "code",
                                         "label": "label"
                                     }
