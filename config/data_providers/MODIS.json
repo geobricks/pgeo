@@ -41,7 +41,18 @@
     },
     "analysis": {
         "create_avg": true,
-        "create_da": true
+        "create_da": true,
+        "stats": {
+            "enable": true,
+            "scripts": [
+                {
+                    "file": "sadc.json",
+                    "description": {
+                        "en": "SADC"
+                    }
+                }
+            ]
+        }
     },
     "services_base_url": "http://127.0.0.1:5005/browse",
     "services": [

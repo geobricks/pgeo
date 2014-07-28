@@ -1,0 +1,77 @@
+{
+    "source": {
+        "type": "FTP",
+        "ftp": {
+            "base_url": "ladsweb.nascom.nasa.gov",
+            "data_dir": "/allData/5/"
+        }
+    },
+    "target": {
+        "target_dir": "/home/kalimaha/Development/GIS/MODIS/",
+        "filesystem": {
+            "folder_name": "{product}",
+            "sub_folders": [
+                {
+                    "folder_name": "{year}",
+                    "sub_folders": [
+                        {
+                            "folder_name": "{month}",
+                            "sub_folders": [
+                                {
+                                    "folder_name": "{day}",
+                                    "sub_folders": [
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "bands": {
+        "0": "NDVI",
+        "1": "EVI"
+    },
+    "subfolders": {
+        "original": "original",
+        "output": "output",
+        "tmp": "tmp"
+    },
+    "analysis": {
+        "create_avg": true,
+        "create_da": true
+    },
+    "rest": {
+        "base_url": "http://127.0.0.1:5001",
+        "root": "/list/MODIS",
+        "services": [
+            {
+                "id": "product",
+                "path": "/list/MODIS",
+                "parameters": []
+            },
+            {
+                "id": "day",
+                "path": "/list/MODIS",
+                "parameters": [
+                    "{product}"
+                ]
+            },
+            {
+                "id": "layer",
+                "path": "/list/MODIS",
+                "parameters": [
+                    "{product}", "{year}"
+                ]
+            },
+            {
+                "id": "day",
+                "path": "http://127.0.0.1:5001/list/MODIS/{product}/{year}/{month}"
+            }
+        ]
+    },
+    "scheduling": {
+
+    }
+}

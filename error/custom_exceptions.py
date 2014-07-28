@@ -14,3 +14,9 @@ class PGeoException(Exception):
         rv['message'] = self.message
         rv['status_code'] = self.status_code
         return rv
+
+errors = {
+    510:  'Error fetching available data providers.',
+    511:  'Data provider is not currently supported.',
+    512:  'Source type is not currently supported.'
+}

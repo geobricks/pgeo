@@ -4,6 +4,7 @@ from flask.ext.cors import cross_origin
 from utils import config as c
 from ftplib import FTP
 from error.custom_exceptions import PGeoException
+from error.custom_exceptions import errors
 import json
 
 browse = Blueprint('browse', __name__)
@@ -32,11 +33,9 @@ def list_products(source_name):
             ftp.quit()
             return Response(json.dumps(out), content_type='application/json; charset=utf-8')
         else:
-            m = 'Source type [' + config.json['source']['type'] + '] is not currently supported.'
-            raise PGeoException(m, status_code=400)
+            raise PGeoException(errors[512], status_code=512)
     except:
-        m = 'Source [' + source_name + '] is not currently supported.'
-        raise PGeoException(m, status_code=400)
+        raise PGeoException(errors[511], status_code=511)
 
 
 @browse.route('/<source_name>/<product_name>')
@@ -57,11 +56,9 @@ def list_years(source_name, product_name):
             ftp.quit()
             return Response(json.dumps(out), content_type='application/json; charset=utf-8')
         else:
-            m = 'Source type [' + config.json['source']['type'] + '] is not currently supported.'
-            raise PGeoException(m, status_code=400)
+            raise PGeoException(errors[512], status_code=512)
     except:
-        m = 'Source [' + source_name + '] is not currently supported.'
-        raise PGeoException(m, status_code=400)
+        raise PGeoException(errors[511], status_code=511)
 
 
 @browse.route('/<source_name>/<product_name>/<year>')
@@ -83,11 +80,9 @@ def list_days(source_name, product_name, year):
             ftp.quit()
             return Response(json.dumps(out), content_type='application/json; charset=utf-8')
         else:
-            m = 'Source type [' + config.json['source']['type'] + '] is not currently supported.'
-            raise PGeoException(m, status_code=400)
+            raise PGeoException(errors[512], status_code=512)
     except:
-        m = 'Source [' + source_name + '] is not currently supported.'
-        raise PGeoException(m, status_code=400)
+        raise PGeoException(errors[511], status_code=511)
 
 
 @browse.route('/<source_name>/<product_name>/<year>/<day>')
@@ -119,8 +114,6 @@ def list_layers(source_name, product_name, year, day):
                     pass
             return Response(json.dumps(out), content_type='application/json; charset=utf-8')
         else:
-            m = 'Source type [' + config.json['source']['type'] + '] is not currently supported.'
-            raise PGeoException(m, status_code=400)
+            raise PGeoException(errors[512], status_code=512)
     except:
-        m = 'Source [' + source_name + '] is not currently supported.'
-        raise PGeoException(m, status_code=400)
+        raise PGeoException(errors[511], status_code=511)
