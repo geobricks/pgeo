@@ -69,6 +69,7 @@
                 "en": "Available Products",
                 "it": "Prodotti Disponibili"
             },
+            "selection_type": "single",
             "services": [
                 {
                     "id": "list_years",
@@ -86,6 +87,7 @@
                         "en": "Available Years",
                         "it": "Anni Disponibili"
                     },
+                    "selection_type": "single",
                     "services": [
                         {
                             "id": "list_days",
@@ -103,6 +105,7 @@
                                 "en": "Available Layers",
                                 "it": "Layers Disponibili"
                             },
+                            "selection_type": "single",
                             "services": [
                                 {
                                     "id": "list_layers",
@@ -116,7 +119,8 @@
                                         "fields": ["code", "label", "size"],
                                         "id": "code",
                                         "label": "label"
-                                    }
+                                    },
+                                    "selection_type": "multiple"
                                 }
                             ]
                         }
