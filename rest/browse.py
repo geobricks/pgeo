@@ -109,7 +109,10 @@ def list_layers(source_name, product_name, year, day):
                     size = line[start + len('Size='):end]
                     start = line.index(product_name.upper())
                     code = line[start:]
-                    out.append({'code': code, 'label': code, 'size': size})
+                    h = code[2 + code.index('.h'):4 + code.index('.h')]
+                    v = code[1 + code.index('v'):3 + code.index('v')]
+                    label = 'H ' + h + ', V ' + v + ' (' + str(float(size) / 1000000) + ' MB)'
+                    out.append({'code': code, 'label': label, 'size': size})
                 except:
                     pass
             return Response(json.dumps(out), content_type='application/json; charset=utf-8')
