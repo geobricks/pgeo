@@ -89,7 +89,7 @@
                     "services": [
                         {
                             "id": "list_days",
-                            "path": "/modis/{product}/{year}",
+                            "path": "modis/{product}/{year}",
                             "parameters": [
                                 {"parameter_name": "product", "parameter_value": "list_products"},
                                 {"parameter_name": "year", "parameter_value": "list_years"}
@@ -98,6 +98,10 @@
                                 "fields": ["code", "label"],
                                 "id": "code",
                                 "label": "label"
+                            },
+                            "description": {
+                                "en": "Available Layers",
+                                "it": "Layers Disponibili"
                             },
                             "services": [
                                 {
