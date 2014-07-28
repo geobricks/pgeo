@@ -54,21 +54,26 @@
             ]
         }
     },
-    "services_base_url": "http://127.0.0.1:5005/browse",
+    "services_base_url": "http://127.0.0.1:5005/browse/",
     "services": [
         {
             "id": "list_products",
-            "path": "/modis",
+            "path": "modis",
             "parameters": [],
             "payload": {
                 "fields": ["code", "label"],
                 "id": "code",
                 "label": "label"
             },
+            "description": {
+                "en": "Available Products",
+                "it": "Prodotti Disponibili"
+            },
             "services": [
                 {
                     "id": "list_years",
-                    "path": "/modis/{product}",
+                    "base_url": "http://127.0.0.1:5005/browse/",
+                    "path": "modis/{product}",
                     "parameters": [
                         {"parameter_name": "product", "parameter_value": "list_products"}
                     ],
@@ -76,6 +81,10 @@
                         "fields": ["code", "label"],
                         "id": "code",
                         "label": "label"
+                    },
+                    "description": {
+                        "en": "Available Years",
+                        "it": "Anni Disponibili"
                     },
                     "services": [
                         {

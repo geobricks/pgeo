@@ -5,29 +5,16 @@ import os
 class Config:
 
     def __init__(self, filename):
-
         """
         Initialize the class with the filename of a JSON stored in the config directory.
         @param filename: Name of the JSON file stored in the config lib to be read
         """
-
-        self.filename = filename
+        if '.JSON' in filename.upper():
+            self.filename = filename.replace('.JSON', '.json')
+        else:
+            self.filename = filename + '.json'
         path = os.path.join('../config/data_providers/')
-
-        json_data = open(path + self.filename + '.json').read()
-        self.config = json.loads(json_data)
-        self.json = json.loads(json_data)
-
-    def __init__(self, filename, path_to_file=""):
-
-        """
-        Initialize the class with the filename of a JSON stored in the config directory.
-        @param filename: Name of the JSON file stored in the config lib to be read
-        """
-        dir = os.path.dirname(os.path.dirname(__file__))
-        self.filename = filename
-        file_path = dir + '/config/data_providers/' + path_to_file
-        json_data = open(file_path + "/" + self.filename + '.json').read()
+        json_data = open(path + self.filename).read()
         self.config = json.loads(json_data)
         self.json = json.loads(json_data)
 
