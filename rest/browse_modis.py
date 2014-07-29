@@ -7,21 +7,14 @@ from error.custom_exceptions import PGeoException
 from error.custom_exceptions import errors
 import json
 
-browse = Blueprint('browse', __name__)
+browse_modis = Blueprint('browse_modis', __name__)
+config = c.Config('MODIS')
 
 
-@browse.route('/')
+@browse_modis.route('/')
 @cross_origin(origins='*')
-def index():
-    return 'Welcome to the Browse module!'
-
-
-@browse.route('/<source_name>')
-@browse.route('/<source_name>/')
-@cross_origin(origins='*')
-def list_products(source_name):
+def list_products():
     try:
-        config = c.Config(source_name.upper())
         if config.json['source']['type'] == 'FTP':
             ftp = FTP(config.json['source']['ftp']['base_url'])
             ftp.login()
@@ -39,12 +32,11 @@ def list_products(source_name):
         raise PGeoException(errors[511], status_code=511)
 
 
-@browse.route('/<source_name>/<product_name>')
-@browse.route('/<source_name>/<product_name>/')
+@browse_modis.route('/<product_name>')
+@browse_modis.route('/<product_name>/')
 @cross_origin(origins='*')
-def list_years(source_name, product_name):
+def list_years(product_name):
     try:
-        config = c.Config(source_name.upper())
         if config.json['source']['type'] == 'FTP':
             ftp = FTP(config.json['source']['ftp']['base_url'])
             ftp.login()
@@ -54,7 +46,11 @@ def list_years(source_name, product_name):
             l.sort(reverse=True)
             out = []
             for s in l:
-                out.append({'code': s, 'label': s})
+                try:
+                    float(s)
+                    out.append({'code': s, 'label': s})
+                except ValueError:
+                    pass
             ftp.quit()
             return Response(json.dumps(out), content_type='application/json; charset=utf-8')
         else:
@@ -63,12 +59,11 @@ def list_years(source_name, product_name):
         raise PGeoException(errors[511], status_code=511)
 
 
-@browse.route('/<source_name>/<product_name>/<year>')
-@browse.route('/<source_name>/<product_name>/<year>/')
+@browse_modis.route('/<product_name>/<year>')
+@browse_modis.route('/<product_name>/<year>/')
 @cross_origin(origins='*')
-def list_days(source_name, product_name, year):
+def list_days(product_name, year):
     try:
-        config = c.Config(source_name.upper())
         if config.json['source']['type'] == 'FTP':
             ftp = FTP(config.json['source']['ftp']['base_url'])
             ftp.login()
@@ -88,12 +83,11 @@ def list_days(source_name, product_name, year):
         raise PGeoException(errors[511], status_code=511)
 
 
-@browse.route('/<source_name>/<product_name>/<year>/<day>')
-@browse.route('/<source_name>/<product_name>/<year>/<day>/')
+@browse_modis.route('/<product_name>/<year>/<day>')
+@browse_modis.route('/<product_name>/<year>/<day>/')
 @cross_origin(origins='*')
-def list_layers(source_name, product_name, year, day):
+def list_layers(product_name, year, day):
     try:
-        config = c.Config(source_name.upper())
         if config.json['source']['type'] == 'FTP':
             ftp = FTP(config.json['source']['ftp']['base_url'])
             ftp.login()
@@ -114,7 +108,7 @@ def list_layers(source_name, product_name, year, day):
                     code = line[start:]
                     h = code[2 + code.index('.h'):4 + code.index('.h')]
                     v = code[1 + code.index('v'):3 + code.index('v')]
-                    label = 'H ' + h + ', V ' + v + ' (' + str(float(size) / 1000000) + ' MB)'
+                    label = 'H ' + h + ', V ' + v + ' (' + str(round((float(size) / 1000000), 2)) + ' MB)'
                     out.append({'code': code, 'label': label, 'size': size})
                 except:
                     pass
