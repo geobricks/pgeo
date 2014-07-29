@@ -27,6 +27,7 @@ def list_products(source_name):
             ftp.login()
             ftp.cwd(config.json['source']['ftp']['data_dir'])
             l = ftp.nlst()
+            l.sort()
             out = []
             for s in l:
                 out.append({'code': s, 'label': s})
@@ -50,6 +51,7 @@ def list_years(source_name, product_name):
             ftp.cwd(config.json['source']['ftp']['data_dir'])
             ftp.cwd(product_name.upper())
             l = ftp.nlst()
+            l.sort(reverse=True)
             out = []
             for s in l:
                 out.append({'code': s, 'label': s})
@@ -74,6 +76,7 @@ def list_days(source_name, product_name, year):
             ftp.cwd(product_name.upper())
             ftp.cwd(year)
             l = ftp.nlst()
+            l.sort()
             out = []
             for s in l:
                 out.append({'code': s, 'label': s})

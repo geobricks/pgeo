@@ -23,9 +23,10 @@ def list_sources():
     try:
         path = os.path.join('../config/data_providers/')
         out = []
-        for filename in os.listdir(path):
+        files = os.listdir(path)
+        files.sort()
+        for filename in files:
             out.append({'code': filename, 'label': filename[:filename.index('.json')]})
-
         return Response(json.dumps(out), content_type='application/json; charset=utf-8')
     except Exception, err:
         print err
