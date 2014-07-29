@@ -57,8 +57,8 @@
     "services_base_url": "http://127.0.0.1:5005/browse/",
     "services": [
         {
-            "id": "list_products",
-            "path": "modis",
+            "id": "list_years_from",
+            "path": "trmm",
             "parameters": [],
             "payload": {
                 "fields": ["code", "label"],
@@ -66,17 +66,17 @@
                 "label": "label"
             },
             "description": {
-                "en": "Available Products",
-                "it": "Prodotti Disponibili"
+                "en": "Available Years - From",
+                "it": "Anni Disponibili - Da"
             },
             "selection_type": "single",
             "services": [
                 {
-                    "id": "list_years_from",
+                    "id": "list_months_from",
                     "base_url": "http://127.0.0.1:5005/browse/",
-                    "path": "modis/{product}",
+                    "path": "trmm/{year}",
                     "parameters": [
-                        {"parameter_name": "product", "parameter_value": "list_products"}
+                        {"parameter_name": "year", "parameter_value": "list_years_from"}
                     ],
                     "payload": {
                         "fields": ["code", "label"],
@@ -84,68 +84,10 @@
                         "label": "label"
                     },
                     "description": {
-                        "en": "Available Years - From",
-                        "it": "Anni Disponibili - Da"
+                        "en": "Available Months - From",
+                        "it": "Mesi Disponibili - Da"
                     },
-                    "selection_type": "single",
-                    "services": [
-                        {
-                            "id": "list_days_from",
-                            "path": "modis/{product}/{year}",
-                            "parameters": [
-                                {"parameter_name": "product", "parameter_value": "list_products"},
-                                {"parameter_name": "year", "parameter_value": "list_years_from"}
-                            ],
-                            "payload": {
-                                "fields": ["code", "label"],
-                                "id": "code",
-                                "label": "label"
-                            },
-                            "description": {
-                                "en": "Available Days - From",
-                                "it": "Giorni Disponibili - Da"
-                            },
-                            "selection_type": "single"
-                        }
-                    ]
-                },
-                {
-                    "id": "list_years_to",
-                    "base_url": "http://127.0.0.1:5005/browse/",
-                    "path": "modis/{product}",
-                    "parameters": [
-                        {"parameter_name": "product", "parameter_value": "list_products"}
-                    ],
-                    "payload": {
-                        "fields": ["code", "label"],
-                        "id": "code",
-                        "label": "label"
-                    },
-                    "description": {
-                        "en": "Available Years - To",
-                        "it": "Anni Disponibili - A"
-                    },
-                    "selection_type": "single",
-                    "services": [
-                        {
-                            "id": "list_days_to",
-                            "path": "modis/{product}/{year}",
-                            "parameters": [
-                                {"parameter_name": "product", "parameter_value": "list_products"},
-                                {"parameter_name": "year", "parameter_value": "list_years_to"}
-                            ],
-                            "payload": {
-                                "fields": ["code", "label"],
-                                "id": "code",
-                                "label": "label"
-                            },
-                            "description": {
-                                "en": "Available Days - To",
-                                "it": "Giorni Disponibili - A"
-                            },
-                            "selection_type": "single"
-                        }
-                    ]
+                    "selection_type": "single"
                 }
             ]
         }
