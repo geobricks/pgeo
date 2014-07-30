@@ -34,9 +34,11 @@
             },
 
             "coverageGeographic" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "world"}]
+                "coverageGeographic" : {
+                    "codeList" : "GAUL?",
+                    "version" : "1.0",
+                    "codes" : [{"code" : "0"}]
+                }
             },
 
             "coverageSector" : {

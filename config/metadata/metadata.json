@@ -38,8 +38,8 @@
             },
 
             "coverageSector" : {
-                "codeList" : "MODIS",
-                "version" : "1.0",
+                "codeList" : null,
+                "version" : null,
                 "codes" : []
             }
         }
