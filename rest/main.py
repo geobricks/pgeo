@@ -10,9 +10,11 @@ def handle_invalid_usage(error):
     response.status_code = error.status_code
     return response
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
 
 @app.route('/')
 def root():
@@ -20,3 +22,5 @@ def root():
 
 if __name__ == '__main__':
     app.run(port=settings.port, debug=settings.debug)
+
+

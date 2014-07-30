@@ -26,7 +26,4 @@ def read_config_file_json(filename, folder=""):
     dir = os.path.dirname(os.path.dirname(__file__))
     filename = filename.lower()
     path = dir + "/" + folders['config'] + folders[folder]
-    print dir
-    print path
-
     return json.loads(open(path + filename + '.json').read())

@@ -1,8 +1,8 @@
 {
-    "uid" : "workspace:layername",
+    "uid" : "modis:MOD13A1.",
 
     "title" : {
-        "EN" : ""
+        "EN" : null
     },
     "creationDate" : null,
     "parentIdentifiers" : null,
@@ -10,22 +10,11 @@
     "metadataStandardVersion" : "0.1",
     "noDataValue" : null,
 
-    "language" : {
-        "codeList" : "Languages",
-        "version" : "1.0",
-        "codes" : [{"code" : "EN"}]
-    },
-    "characterSet" : {
-        "codeList" : "...",
-        "version" : "...",
-        "codes" : [{"code" : "UTF8"}]
-    },
-
     "meContent" : {
         "resourceRepresentationType" : "geographic",
-        "keywords" : ["MODIS", "NDVI"],
+        "keywords" : null,
         "description" : {
-            "EN" : "description of the layer"
+            "EN" : null
         },
 
         "seReferencePopulation" : {
@@ -38,8 +27,8 @@
 
         "seCoverage" : {
             "coverageTime" : {
-                "from" : 1328405808080, //milliseconds
-                "to": 1328405808080 //milliseconds
+                "from" : null,
+                "to": null
             },
 
             "coverageGeographic" : {
@@ -51,7 +40,7 @@
             "coverageSector" : {
                 "codeList" : "...",
                 "version" : "...",
-                "codes" : [{"code" : "..."}]
+                "codes" : [{"code" : "MODIS1Q13"}]
             }
         }
 
@@ -80,13 +69,11 @@
         }
     },
 
-
     "meMaintenance" : {
         "seUpdate" : {
-            "updateDate" : 1328405808080
+            "updateDate" : null
         }
     },
-
 
     "meSpatialRepresentation" :{
         "layerType" : "raster",
@@ -104,26 +91,22 @@
             "cellGeometry" : null,
             "cellOfOrigin" : null,
             "XYposition" : null
-        },
-
-        "seVectorSpatialRepresentation" : {
-            "geometricObjects" : "point"
         }
     },
 
     "meReferenceSystem" : {
         "referenceSystemIdentifier": "EPSG",
         "referenceSystemName": {
-            "EN":"European Petroleum Survey Group"
+            "EN": "European Petroleum Survey Group"
         },
         "referenceSystemAuthority": null,
         "seProjection" : {
             "projection" : {
                 "codeList" : "...",
                 "version" : "...",
-                "codes" : [{"code" : "..."}]
+                "codes" : [{"code" : "4326"}]
             },
-            "projectionName" : { "EN" : "..." }
+            "projectionName" : { "EN" : "EPSG:4326" }
         },
         "seDatum" : {
             "datum" :  {

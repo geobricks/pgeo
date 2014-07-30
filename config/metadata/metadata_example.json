@@ -1,19 +1,21 @@
 {
-    "uid" : "workspace:layername",
+    "uid" : "workspace:layername", //layername
 
     "title" : {
-        "EN" : ""
+        "EN" : "title of the layer",
+        "FR" : "title of the layer"
     },
-    "creationDate" : null,
+    "creationDate" : 1328405808080, //milliseconds
     "parentIdentifiers" : null,
     "metadataStandardName" : "FENIX",
     "metadataStandardVersion" : "0.1",
-    "noDataValue" : null,
+    "noDataValue" : "-5000",
 
+    // vettoriali
     "language" : {
         "codeList" : "Languages",
         "version" : "1.0",
-        "codes" : [{"code" : "EN"}]
+        "codes" : [{"code" : "0101"}]
     },
     "characterSet" : {
         "codeList" : "...",
@@ -28,6 +30,7 @@
             "EN" : "description of the layer"
         },
 
+        // dobbiamo personalizzare la codelist decadale (ivano)
         "seReferencePopulation" : {
             "referencePeriod" : {
                 "codeList" : "...",
@@ -61,7 +64,7 @@
         "seDatasource" : {
             "sePrimaryDataCollection" : {
                 "dataCollector" : {
-                    "organisation" : "NASA"
+                    "organisation" : "NASA" //Meco
                 },
                 "typeOfCollection" : {
                     "codeList" : "...",
@@ -75,7 +78,7 @@
                 }
             },
             "seDataCompilation" : {
-                "aggregationProcessing" : "avg"
+                "aggregationProcessing" : "avg" // none/avg/da
             }
         }
     },
@@ -83,7 +86,7 @@
 
     "meMaintenance" : {
         "seUpdate" : {
-            "updateDate" : 1328405808080
+            "updateDate" : 1328405808080 //milliseconds
         }
     },
 
@@ -107,16 +110,14 @@
         },
 
         "seVectorSpatialRepresentation" : {
-            "geometricObjects" : "point"
+            "geometricObjects" : "point" //point, line, multiline etc
         }
     },
 
     "meReferenceSystem" : {
         "referenceSystemIdentifier": "EPSG",
-        "referenceSystemName": {
-            "EN":"European Petroleum Survey Group"
-        },
-        "referenceSystemAuthority": null,
+        "referenceSystemName": {"EN":"European Petroleum Survey Group"},
+        "referenceSystemAuthority": null,//ERROR
         "seProjection" : {
             "projection" : {
                 "codeList" : "...",

@@ -1,9 +1,9 @@
 from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
-from utils import config as c
 from error.custom_exceptions import PGeoException
 from error.custom_exceptions import errors
+from config import settings
 import json
 import os
 
@@ -38,10 +38,10 @@ def list_sources():
 @cross_origin(origins='*')
 def list_services(source_name):
     try:
-        config = c.Config(source_name.upper())
+        config = settings.read_config_file_json(source_name, 'data_providers')
         out = {
-            'base_url': config.json['services_base_url'],
-            'services': config.json['services']
+            'base_url': config['services_base_url'],
+            'services': config['services']
         }
         return Response(json.dumps(out), content_type='application/json; charset=utf-8')
     except Exception, err:
