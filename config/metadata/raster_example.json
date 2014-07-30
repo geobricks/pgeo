@@ -1,5 +1,6 @@
 {
-    "uid" : "modis:MOD13A1.",
+    //"uid" : "wokspace:layername",
+    "uid" : null,
 
     "title" : {
         "EN" : null
@@ -19,9 +20,10 @@
 
         "seReferencePopulation" : {
             "referencePeriod" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "01-1"}]
+                "codeList" : "dekads",
+                "version" : "1.0",
+                //"codes" : [{"code" : "01-1"}]
+                "codes" : []
             }
         },
 
@@ -38,12 +40,12 @@
             },
 
             "coverageSector" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "MODIS1Q13"}]
+                "codeList" : "MODIS",
+                "version" : "1.0",
+                //"codes" : [{"code" : "MODIS1Q13"}]
+                "codes" : []
             }
         }
-
     },
 
     "meStatisticalProcessing" : {
@@ -53,18 +55,20 @@
                     "organisation" : "NASA"
                 },
                 "typeOfCollection" : {
-                    "codeList" : "...",
-                    "version" : "...",
-                    "codes" : [{"code" : "MODIS"}]
+                    "codeList" : "layer_source",
+                    "version" : "1.0",
+                    //"codes" : [{"code" : "MODIS"}]
+                    "codes" : []
                 },
                 "collectionPeriodicity" : {
-                    "codeList" : "...",
+                    "codeList" : "periodicity",
                     "version" : "...",
                     "codes" : [{"code" : "dekad"}]
                 }
             },
             "seDataCompilation" : {
-                "aggregationProcessing" : "avg"
+                "aggregationProcessing" : null,
+                "aggregationProcessingDetail" : null
             }
         }
     },
@@ -91,6 +95,10 @@
             "cellGeometry" : null,
             "cellOfOrigin" : null,
             "XYposition" : null
+        },
+
+        "seVectorSpatialRepresentation" : {
+            "geometricObjects" : null
         }
     },
 
@@ -102,25 +110,32 @@
         "referenceSystemAuthority": null,
         "seProjection" : {
             "projection" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "4326"}]
+                "codeList" : "projections",
+                "version" : "1.0",
+                //"codes" : [{"code" : "4326"}]
+                "codes" : []
             },
-            "projectionName" : { "EN" : "EPSG:4326" }
+            "projectionName" : {
+                //"EN" : "EPSG:4326"
+                "EN" : null
+            }
         },
         "seDatum" : {
             "datum" :  {
-                "codeList" : "...",
-                "version" : "...",
+                "codeList" : "datum",
+                "version" : "1.0",
                 "codes" : [{"code" : "WGS84"}]
             },
-            "datumName" : {"EN":"WGS84"}
+            "datumName" : {
+                "EN":"WGS84"
+            }
         }
     },
 
     "meAccessibility" : {
         "seDistribution" : {
-            "onlineResource" : "/2012/10/017/EPSG/4326/STD/layer.geotiff"
+            "onlineResource" : null
+            //"onlineResource" : "/2012/10/017/EPSG/4326/STD/layer.geotiff"
         }
     }
 }

@@ -1,8 +1,8 @@
 {
-    "uid" : "workspace:layername",
+    "uid" : null,
 
     "title" : {
-        "EN" : ""
+        "EN" : null
     },
     "creationDate" : null,
     "parentIdentifiers" : null,
@@ -10,51 +10,39 @@
     "metadataStandardVersion" : "0.1",
     "noDataValue" : null,
 
-    "language" : {
-        "codeList" : "Languages",
-        "version" : "1.0",
-        "codes" : [{"code" : "EN"}]
-    },
-    "characterSet" : {
-        "codeList" : "...",
-        "version" : "...",
-        "codes" : [{"code" : "UTF8"}]
-    },
-
     "meContent" : {
         "resourceRepresentationType" : "geographic",
-        "keywords" : ["MODIS", "NDVI"],
+        "keywords" : null,
         "description" : {
-            "EN" : "description of the layer"
+            "EN" : null
         },
 
         "seReferencePopulation" : {
             "referencePeriod" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "01-1"}]
+                "codeList" : "dekads",
+                "version" : "1.0",
+                "codes" : []
             }
         },
 
         "seCoverage" : {
             "coverageTime" : {
-                "from" : 1328405808080, //milliseconds
-                "to": 1328405808080 //milliseconds
+                "from" : null,
+                "to": null
             },
 
             "coverageGeographic" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "world"}]
+                "codeList" : "GAUL?",
+                "version" : "1.0",
+                "codes" : [{"code" : "0"}]
             },
 
             "coverageSector" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "..."}]
+                "codeList" : "MODIS",
+                "version" : "1.0",
+                "codes" : []
             }
         }
-
     },
 
     "meStatisticalProcessing" : {
@@ -64,32 +52,31 @@
                     "organisation" : "NASA"
                 },
                 "typeOfCollection" : {
-                    "codeList" : "...",
-                    "version" : "...",
-                    "codes" : [{"code" : "MODIS"}]
+                    "codeList" : "layer_source",
+                    "version" : "1.0",
+                    "codes" : []
                 },
                 "collectionPeriodicity" : {
-                    "codeList" : "...",
+                    "codeList" : "periodicity",
                     "version" : "...",
                     "codes" : [{"code" : "dekad"}]
                 }
             },
             "seDataCompilation" : {
-                "aggregationProcessing" : "avg"
+                "aggregationProcessing" : null,
+                "aggregationProcessingDetail" : null
             }
         }
     },
 
-
     "meMaintenance" : {
         "seUpdate" : {
-            "updateDate" : 1328405808080
+            "updateDate" : null
         }
     },
 
-
     "meSpatialRepresentation" :{
-        "layerType" : "raster",
+        "layerType" : null,
         "seBoundingBox": {
             "Xmin": null,
             "Xmax": null,
@@ -107,37 +94,41 @@
         },
 
         "seVectorSpatialRepresentation" : {
-            "geometricObjects" : "point"
+            "geometricObjects" : null
         }
     },
 
     "meReferenceSystem" : {
         "referenceSystemIdentifier": "EPSG",
         "referenceSystemName": {
-            "EN":"European Petroleum Survey Group"
+            "EN": "European Petroleum Survey Group"
         },
         "referenceSystemAuthority": null,
         "seProjection" : {
             "projection" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "..."}]
+                "codeList" : "projections",
+                "version" : "1.0",
+                "codes" : []
             },
-            "projectionName" : { "EN" : "..." }
+            "projectionName" : {
+                "EN" : null
+            }
         },
         "seDatum" : {
             "datum" :  {
-                "codeList" : "...",
-                "version" : "...",
+                "codeList" : "datum",
+                "version" : "1.0",
                 "codes" : [{"code" : "WGS84"}]
             },
-            "datumName" : {"EN":"WGS84"}
+            "datumName" : {
+                "EN":"WGS84"
+            }
         }
     },
 
     "meAccessibility" : {
         "seDistribution" : {
-            "onlineResource" : "/2012/10/017/EPSG/4326/STD/layer.geotiff"
+            "onlineResource" : null
         }
     }
 }
