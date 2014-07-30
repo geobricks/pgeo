@@ -1,5 +1,5 @@
 from rest import app
-from rest import config
+from config import settings
 from flask import jsonify
 from flask import render_template
 from error.custom_exceptions import PGeoException
@@ -19,4 +19,4 @@ def root():
     return 'Welcome to p-geo!'
 
 if __name__ == '__main__':
-    app.run(port=config.PORT, debug=config.DEBUG)
+    app.run(port=settings.port, debug=settings.debug)

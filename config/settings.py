@@ -1,11 +1,31 @@
+import json
+import os
+
 # To be used by Flask: DEVELOPMENT ONLY
-DEBUG = True
+debug = True
 
 # Flask port: DEVELOPMENT ONLY
-PORT = 5005
+port = 5005
 
 # Default folder root to store layers. Each data provider configuration file specifies the path AFTER this folder.
-TARGET_ROOT = '/home/Desktop/GIS'
+target_root = '/home/Desktop/GIS'
 
 # Each folder cntains one layer only. This is the default file name for such layers.
-DEFAULT_LAYER_NAME = 'layer.geotiff'
+default_layer_name = 'layer.geotiff'
+
+# Folders
+folders = {
+    'config': 'config/',
+    'data_providers': 'data_providers/',
+    'metadata': 'metadata/'
+}
+
+
+def read_config_file_json(filename, folder=""):
+    dir = os.path.dirname(os.path.dirname(__file__))
+    filename = filename.lower()
+    path = dir + "/" + folders['config'] + folders[folder]
+    print dir
+    print path
+
+    return json.loads(open(path + filename + '.json').read())

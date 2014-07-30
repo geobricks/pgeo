@@ -1,24 +1,24 @@
 from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
-from utils import config as c
+from config import settings
 from ftplib import FTP
 from error.custom_exceptions import PGeoException
 from error.custom_exceptions import errors
 import json
 
 browse_modis = Blueprint('browse_modis', __name__)
-config = c.Config('MODIS')
+conf = settings.read_config_file_json('modis', 'data_providers')
 
 
 @browse_modis.route('/')
 @cross_origin(origins='*')
 def list_products():
     try:
-        if config.json['source']['type'] == 'FTP':
-            ftp = FTP(config.json['source']['ftp']['base_url'])
+        if conf['source']['type'] == 'FTP':
+            ftp = FTP(conf['source']['ftp']['base_url'])
             ftp.login()
-            ftp.cwd(config.json['source']['ftp']['data_dir'])
+            ftp.cwd(conf['source']['ftp']['data_dir'])
             l = ftp.nlst()
             l.sort()
             out = []
@@ -37,10 +37,10 @@ def list_products():
 @cross_origin(origins='*')
 def list_years(product_name):
     try:
-        if config.json['source']['type'] == 'FTP':
-            ftp = FTP(config.json['source']['ftp']['base_url'])
+        if conf['source']['type'] == 'FTP':
+            ftp = FTP(conf['source']['ftp']['base_url'])
             ftp.login()
-            ftp.cwd(config.json['source']['ftp']['data_dir'])
+            ftp.cwd(conf['source']['ftp']['data_dir'])
             ftp.cwd(product_name.upper())
             l = ftp.nlst()
             l.sort(reverse=True)
@@ -64,10 +64,10 @@ def list_years(product_name):
 @cross_origin(origins='*')
 def list_days(product_name, year):
     try:
-        if config.json['source']['type'] == 'FTP':
-            ftp = FTP(config.json['source']['ftp']['base_url'])
+        if conf['source']['type'] == 'FTP':
+            ftp = FTP(conf['source']['ftp']['base_url'])
             ftp.login()
-            ftp.cwd(config.json['source']['ftp']['data_dir'])
+            ftp.cwd(conf['source']['ftp']['data_dir'])
             ftp.cwd(product_name.upper())
             ftp.cwd(year)
             l = ftp.nlst()
@@ -88,10 +88,10 @@ def list_days(product_name, year):
 @cross_origin(origins='*')
 def list_layers(product_name, year, day):
     try:
-        if config.json['source']['type'] == 'FTP':
-            ftp = FTP(config.json['source']['ftp']['base_url'])
+        if conf['source']['type'] == 'FTP':
+            ftp = FTP(conf['source']['ftp']['base_url'])
             ftp.login()
-            ftp.cwd(config.json['source']['ftp']['data_dir'])
+            ftp.cwd(conf['source']['ftp']['data_dir'])
             ftp.cwd(product_name.upper())
             ftp.cwd(year)
             ftp.cwd(day)

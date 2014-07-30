@@ -1,24 +1,24 @@
 from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
-from utils import config as c
+from config import settings
 from ftplib import FTP
 from error.custom_exceptions import PGeoException
 from error.custom_exceptions import errors
 import json
 
 browse_trmm = Blueprint('browse_trmm', __name__)
-config = c.Config('TRMM')
+conf = settings.read_config_file_json('trmm', 'data_providers')
 
 
 @browse_trmm.route('/')
 @cross_origin(origins='*')
 def list_years():
     try:
-        if config.json['source']['type'] == 'FTP':
-            ftp = FTP(config.json['source']['ftp']['base_url'])
+        if conf['source']['type'] == 'FTP':
+            ftp = FTP(conf['source']['ftp']['base_url'])
             ftp.login()
-            ftp.cwd(config.json['source']['ftp']['data_dir'])
+            ftp.cwd(conf['source']['ftp']['data_dir'])
             l = ftp.nlst()
             l.sort()
             out = []
@@ -47,10 +47,10 @@ def list_years():
 @cross_origin(origins='*')
 def list_months(year):
     try:
-        if config.json['source']['type'] == 'FTP':
-            ftp = FTP(config.json['source']['ftp']['base_url'])
+        if conf['source']['type'] == 'FTP':
+            ftp = FTP(conf['source']['ftp']['base_url'])
             ftp.login()
-            ftp.cwd(config.json['source']['ftp']['data_dir'])
+            ftp.cwd(conf['source']['ftp']['data_dir'])
             l = ftp.nlst()
             l.sort()
             out = []
@@ -80,10 +80,10 @@ def list_months(year):
 @cross_origin(origins='*')
 def list_layers(year, month):
     try:
-        if config.json['source']['type'] == 'FTP':
-            ftp = FTP(config.json['source']['ftp']['base_url'])
+        if conf['source']['type'] == 'FTP':
+            ftp = FTP(conf['source']['ftp']['base_url'])
             ftp.login()
-            ftp.cwd(config.json['source']['ftp']['data_dir'])
+            ftp.cwd(conf['source']['ftp']['data_dir'])
             data_dir = year + month
             ftp.cwd(year + month)
             l = ftp.nlst()
