@@ -16,6 +16,7 @@ default_layer_name = 'layer.geotiff'
 # Folders
 folders = {
     'config': 'config/',
+    'tmp' : '/tmp/',
     'data_providers': 'data_providers/',
     'metadata': 'metadata/'
 }
