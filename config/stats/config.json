@@ -1,0 +1,6 @@
+{
+    "db" : {
+        "spatial_default_database": "fenix",
+        "stats_default_database": "fenix"
+    }
+}
