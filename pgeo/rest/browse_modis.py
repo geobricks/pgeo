@@ -26,7 +26,7 @@ def list_products():
             l.sort()
             out = []
             for s in l:
-                out.append({'code': s, 'label': s})
+                out.append({'code': s, 'label': s, 'hello': 'world'})
             ftp.quit()
             return Response(json.dumps(out), content_type='application/json; charset=utf-8')
         else:
