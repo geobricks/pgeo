@@ -1,4 +1,4 @@
-from rest import app
+from pgeo_rest import app
 from config import settings
 from flask import jsonify
 from flask import render_template

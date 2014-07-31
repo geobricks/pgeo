@@ -2,10 +2,10 @@ import sys
 from bson import json_util
 
 try:
-    from utils import log, config
+    from pgeo_utils import log, config
 except Exception, e:
     sys.path.append('../')
-    from utils import log, config
+    from pgeo_utils import log, config
 
 """
 Insert json data to the mongo db
