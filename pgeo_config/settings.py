@@ -17,7 +17,7 @@ settings = {
 
     # Folders
     "folders" : {
-        "config": "config/",
+        "config": "pgeo_config/",
         "tmp" : "/tmp/",
         "data_providers": "data_providers/",
         "metadata": "metadata/",
@@ -80,11 +80,11 @@ settings = {
     "metadata" : {
 
     }
-
 }
+
 
 def read_config_file_json(filename, folder=""):
     dir = os.path.dirname(os.path.dirname(__file__))
     filename = filename.lower()
-    path = dir + "/" + folders['config'] + folders[folder]
+    path = dir + "/" + settings['folders']['config'] + settings['folders'][folder]
     return json.loads(open(path + filename + '.json').read())

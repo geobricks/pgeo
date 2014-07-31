@@ -7,17 +7,18 @@ except Exception, e:
     sys.path.append('../')
     from pgeo_utils import log, config
 
-"""
-Insert json data to the mongo db
-@param client client used to connect to mongo
-@param database
-@param collection
-@param data json to be inserted
-@return: id
-"""
+
 def insert(client, database, collection, data):
+    """
+    Insert json data to the mongo db
+    @param client client used to connect to mongo
+    @param database
+    @param collection
+    @param data json to be inserted
+    @return: id
+    """
     try:
-        id =  client[database][collection].insert(data)
+        id = client[database][collection].insert(data)
         return id
     except Exception, e:
         print "Insert ERROR ", e

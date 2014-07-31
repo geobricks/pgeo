@@ -1,8 +1,9 @@
 from pgeo_rest import app
-from pgeo_config import settings
+from pgeo_config.settings import settings
 from flask import jsonify
 from flask import render_template
 from pgeo_error.custom_exceptions import PGeoException
+
 
 @app.errorhandler(PGeoException)
 def handle_invalid_usage(error):
@@ -21,6 +22,6 @@ def root():
     return 'Welcome to p-geo!'
 
 if __name__ == '__main__':
-    app.run(port=settings.port, debug=settings.debug)
+    app.run(port=settings['port'], debug=settings['debug'])
 
 

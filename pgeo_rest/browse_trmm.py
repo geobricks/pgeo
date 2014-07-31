@@ -1,14 +1,14 @@
 from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
-from pgeo_config import settings
+from pgeo_config.settings import read_config_file_json
 from ftplib import FTP
 from pgeo_error.custom_exceptions import PGeoException
 from pgeo_error.custom_exceptions import errors
 import json
 
 browse_trmm = Blueprint('browse_trmm', __name__)
-conf = settings.read_config_file_json('trmm', 'data_providers')
+conf = read_config_file_json('trmm', 'data_providers')
 
 
 @browse_trmm.route('/')

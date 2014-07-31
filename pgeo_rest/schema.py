@@ -3,7 +3,8 @@ from flask import Response
 from flask.ext.cors import cross_origin
 from pgeo_error.custom_exceptions import PGeoException
 from pgeo_error.custom_exceptions import errors
-from pgeo_config import settings
+from pgeo_config.settings import read_config_file_json
+
 import json
 import os
 
@@ -38,7 +39,7 @@ def list_sources():
 @cross_origin(origins='*')
 def list_services(source_name):
     try:
-        config = settings.read_config_file_json(source_name, 'data_providers')
+        config = read_config_file_json(source_name, 'data_providers')
         out = {
             'base_url': config['services_base_url'],
             'services': config['services']
