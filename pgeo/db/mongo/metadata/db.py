@@ -1,4 +1,5 @@
 import sys
+
 import pymongo
 
 
@@ -9,10 +10,10 @@ except Exception, e:
     from utils import log, config
 
 try:
-    from db.mongo import mongo_commons
+    from pgeo.pgeo.db.mongo.metadata.db.mongo import mongo_commons
 except Exception, e:
     sys.path.append('../')
-    from db.mongo import mongo_commons
+    from pgeo.pgeo.db.mongo.metadata.db.mongo import mongo_commons
 
 
 config = config.Config('geometadata')

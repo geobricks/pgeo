@@ -1,11 +1,14 @@
+from ftplib import FTP
+import json
+
 from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
-from pgeo.config.settings import read_config_file_json
-from ftplib import FTP
+
+from pgeo.pgeo.config.settings import read_config_file_json
 from pgeo.error.custom_exceptions import PGeoException
 from pgeo.error.custom_exceptions import errors
-import json
+
 
 browse_modis = Blueprint('browse_modis', __name__)
 conf = read_config_file_json('modis', 'data_providers')
