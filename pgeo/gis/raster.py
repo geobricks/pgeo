@@ -6,7 +6,27 @@ from pgeo.utils import filesystem
 
 log = log.logger(__name__)
 
+# example of statistics
+stats_config = {
+    "descriptive_statistics": {
+        "force": True
+    },
+    "histogram": {
+        "buckets": 256,
+        "include_out_of_range": 0,
+        "force": True
+    }
+}
+
+
 def crop_by_vector_database(input_file, query=None, db_connection_string=None, dstnodata='nodata'):
+    """
+    :param input_file: file to be cropped
+    :param query: query that has to be passed to the db
+    :param db_connection_string: connection string to the db
+    :param dstnodata: set nodata on the nodata value
+    :return: the output file path that has been processed, or None if there is any problem on the processing
+    """
     output_file =  filesystem.create_tmp_filename('output_', '.geotiff')
     args = [
         'gdalwarp',
@@ -35,21 +55,34 @@ def crop_by_vector_database(input_file, query=None, db_connection_string=None, d
     return None
 
 
-def get_statistics(input_file, histogram=True, force=True):
+def get_statistics(input_file, config=stats_config):
+    """
+    :param input_file: file to be processed
+    :param config: json config file to be passed
+    :return: computed statistics
+    """
+
+    # datasource
     ds = gdal.Open(input_file)
+
     stats = []
-    stats.append(_get_statistics(ds, force))
-    if histogram:
-        stats.append(_get_histogram(ds, force))
+    if "descriptive_statistics" in config:
+        stats.append(_get_statistics(ds, config["descriptive_statistics"]))
+    if "histogram" in config:
+        stats.append(_get_histogram(ds, config["histogram"]))
     return stats
 
 
-def get_histogram( input_file, force=False, buckets=256, include_out_of_range=0 ):
+def get_histogram( input_file, config ):
     ds = gdal.Open( input_file )
-    return _get_histogram(ds, force, buckets, include_out_of_range)
+    return _get_histogram(ds, config)
 
 
-def _get_statistics(ds, force=True):
+def _get_statistics(ds, config):
+    # variables
+    force = True if "force" not in config else config["force"]
+
+    # stats
     stats = []
     for band in range(ds.RasterCount):
         band += 1
@@ -68,7 +101,13 @@ def _get_statistics(ds, force=True):
     return stats
 
 
-def _get_histogram( ds, force=False, buckets=256, include_out_of_range=0):
+def _get_histogram(ds, config):
+    # variables
+    force = True if "force" not in config else config["force"]
+    buckets = 256 if "buckets" not in config else config["buckets"]
+    include_out_of_range = 0  if "include_out_of_range" not in config else config["include_out_of_range"]
+
+    # stats
     stats = []
     for band in range(ds.RasterCount):
         band += 1
