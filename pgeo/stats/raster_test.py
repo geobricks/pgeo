@@ -1,4 +1,4 @@
-from pgeo.stats.stats import Stats
+from pgeo.stats.raster import Stats
 from pgeo.config.settings import settings
 
 
