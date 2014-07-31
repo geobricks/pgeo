@@ -4,10 +4,10 @@ import pymongo
 
 
 try:
-    from pgeo_utils import log, config
+    from utils import log, config
 except Exception, e:
     sys.path.append('../')
-    from pgeo_utils import log, config
+    from utils import log, config
 
 try:
     from db.mongo import mongo_commons

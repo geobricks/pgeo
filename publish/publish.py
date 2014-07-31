@@ -1,7 +1,7 @@
 from config import settings
 from geoserver.geoserver import Geoserver
 from metadata.metadata import Metadata
-from pgeo_stats import stats
+from stats import stats
 
 class Publish():
 
