@@ -1,6 +1,15 @@
 Apache Flask Configuration
 ====
 Source: [article](https://beagle.whoi.edu/redmine/projects/ibt/wiki/Deploying_Flask_Apps_with_Apache_and_Mod_WSGI)
+
+Project Structure
+========
+* pgeo
+    * docs
+    * examples
+    * pgeo
+    * test
+
 Apache Configuration
 ========
 Edit file /etc/apache2/ports.conf 
@@ -24,6 +33,7 @@ Edit file /etc/apache2/ports.conf
 	</Directory>
 </VirtualHost>
 ```
+
 WSGI Configuration
 ========
 Create file *demo_pgeo.wsgi* in the */var/www/public_html/wsgi* folder
