@@ -17,7 +17,7 @@ settings = {
 
     # Folders
     "folders" : {
-        "config": "pgeo_config/",
+        "config": "config/",
         "tmp" : "/tmp/",
         "data_providers": "data_providers/",
         "metadata": "metadata/",
