@@ -1,8 +1,8 @@
 from pgeo_rest import app
-from config import settings
+from pgeo_config import settings
 from flask import jsonify
 from flask import render_template
-from error.custom_exceptions import PGeoException
+from pgeo_error.custom_exceptions import PGeoException
 
 @app.errorhandler(PGeoException)
 def handle_invalid_usage(error):

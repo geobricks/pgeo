@@ -1,10 +1,10 @@
 from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
-from config import settings
+from pgeo_config import settings
 from ftplib import FTP
-from error.custom_exceptions import PGeoException
-from error.custom_exceptions import errors
+from pgeo_error.custom_exceptions import PGeoException
+from pgeo_error.custom_exceptions import errors
 import json
 
 browse_modis = Blueprint('browse_modis', __name__)

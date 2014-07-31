@@ -1,4 +1,4 @@
-from pgeo_db.postgresql.common import DBConnection
+from pgeo_db.pgeo_postgresql.common import DBConnection
 
 class DBStats:
 

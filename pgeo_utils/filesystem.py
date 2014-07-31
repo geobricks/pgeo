@@ -1,7 +1,7 @@
 import os
 import uuid
 import zipfile
-from config import settings
+from pgeo_config import settings
 
 # temporary folder
 folder_tmp = settings.folders['tmp']
