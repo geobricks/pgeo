@@ -70,9 +70,12 @@ settings = {
 
     # Stats
     "stats" : {
+        # used on runtime statistics (for Published layers this is the Geoservers Cluster "datadir")
+        "datadir" : "/home/vortex/programs/SERVERS/tomcat_geoservers/data/",
+
         "db": {
-            "spatial_default_db": "fenix",
-            "stats_default_db": "fenix"
+            "spatial": "spatial",
+            "stats": "stats"
         }
     },
 
