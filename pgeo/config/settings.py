@@ -2,7 +2,6 @@ import json
 import os
 import logging
 
-
 settings = {
 
     # To be used by Flask: DEVELOPMENT ONLY
