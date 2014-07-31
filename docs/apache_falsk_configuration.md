@@ -4,7 +4,7 @@ Source: [article](https://beagle.whoi.edu/redmine/projects/ibt/wiki/Deploying_Fl
 Apache Configuration
 ========
 Edit file /etc/apache2/ports.conf 
-```javascript
+```script
 <VirtualHost *:80>
     ServerName localhost
     WSGIDaemonProcess flaskapp user=kalimaha group=kalimaha threads=5
