@@ -95,9 +95,9 @@ settings = {
 }
 
 
-
 def read_config_file_json(filename, folder=''):
-    dir = os.path.dirname(os.path.dirname(__file__))
+    directory = os.path.dirname(os.path.dirname(__file__))
     filename = filename.lower()
-    path = dir + '/' + settings['folders']['config'] + settings['folders'][folder]
-    return json.loads(open(path + filename).read()) if '.json' in filename else json.loads(open(path + filename + '.json').read())
+    path = directory + '/' + settings['folders']['config'] + settings['folders'][folder]
+    extension = '' if '.json' in filename else '.json'
+    return json.loads(open(path + filename + extension).read())
