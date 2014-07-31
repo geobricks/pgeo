@@ -4,6 +4,7 @@ import logging
 
 
 settings = {
+
     # To be used by Flask: DEVELOPMENT ONLY
     "debug" : True,
 
@@ -90,7 +91,9 @@ settings = {
     "metadata" : {
 
     }
+
 }
+
 
 
 def read_config_file_json(filename, folder=''):
