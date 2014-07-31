@@ -1,8 +1,8 @@
-from pgeo_rest import app
-from pgeo_config.settings import settings
+from rest import app
+from config.settings import settings
 from flask import jsonify
 from flask import render_template
-from pgeo_error.custom_exceptions import PGeoException
+from error.custom_exceptions import PGeoException
 
 
 @app.errorhandler(PGeoException)

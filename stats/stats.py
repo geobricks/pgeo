@@ -1,4 +1,4 @@
-from pgeo_config import settings
+from config import settings
 from db_stats import DBStats
 
 

@@ -1,6 +1,6 @@
-from pgeo_config import settings
-from pgeo_geoserver.geoserver import Geoserver
-from pgeo_metadata.metadata import Metadata
+from config import settings
+from geoserver.geoserver import Geoserver
+from metadata.metadata import Metadata
 from pgeo_stats import stats
 
 class Publish():

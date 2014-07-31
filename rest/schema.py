@@ -1,9 +1,9 @@
 from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
-from pgeo_error.custom_exceptions import PGeoException
-from pgeo_error.custom_exceptions import errors
-from pgeo_config.settings import read_config_file_json
+from error.custom_exceptions import PGeoException
+from error.custom_exceptions import errors
+from config.settings import read_config_file_json
 
 import json
 import os
@@ -22,7 +22,7 @@ def index():
 @cross_origin(origins='*')
 def list_sources():
     try:
-        path = os.path.join('../pgeo_config/data_providers/')
+        path = os.path.join('../config/data_providers/')
         out = []
         files = os.listdir(path)
         files.sort()
