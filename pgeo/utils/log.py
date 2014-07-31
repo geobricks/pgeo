@@ -1,10 +1,9 @@
 import logging
+from pgeo.config.settings import settings
 
-
-level = logging.INFO
-
-
+level = settings["logging"]["level"]
 logging.basicConfig(level=level, format='%(asctime)s | %(levelname)-8s | %(name)-20s | Line: %(lineno)-5d | %(message)s', datefmt='%d-%m-%Y | %H:%M:%s')
+
 
 def logger(loggerName=None):
     logger = logging.getLogger(loggerName)

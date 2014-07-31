@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 
 
 settings = {
@@ -14,6 +15,11 @@ settings = {
 
     # Each folder cntains one layer only. This is the default file name for such layers.
     "default_layer_name" :  "layer.geotiff",
+
+    # Logging configurations
+    "logging": {
+        "level": logging.INFO
+    },
 
     # Folders
     "folders" : {
@@ -78,6 +84,7 @@ settings = {
             "stats": "stats"
         }
     },
+
 
     # Metadata
     "metadata" : {
