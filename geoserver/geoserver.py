@@ -1,9 +1,9 @@
 import sys, os
 import httplib2
 from urlparse import urlparse
-from gsutils import url, prepare_upload_bundle
-from utils import log
-from db_stats.postgresql.postgis_utils import shapefile
+from pgeo.geoserver.gsutils import url, prepare_upload_bundle
+from pgeo.utils import log
+from pgeo.db.postgresql.postgis_utils import shapefile
 
 
 class Geoserver():

@@ -4,7 +4,7 @@ from flask.ext.cors import cross_origin
 from pgeo.config.settings import read_config_file_json
 from ftplib import FTP
 from pgeo.error.custom_exceptions import PGeoException
-from error.custom_exceptions import errors
+from pgeo.error.custom_exceptions import errors
 import json
 
 browse_modis = Blueprint('browse_modis', __name__)

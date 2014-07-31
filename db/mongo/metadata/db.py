@@ -1,5 +1,4 @@
 import sys
-
 import pymongo
 
 
@@ -37,16 +36,6 @@ Delete Layer Metadata in mongodb
 def removeMetadata(json):
     return mongo_commons.remove(client, database, document_layer, json)
 
-
-"""
-Insert Layer Statistics in tmongodb
-@param json: json data
-@return: id
-"""
-def insert_stats(json):
-    id = mongo_commons.insert(client, database, document_stats, json)
-    if ( id is not None ): print "Data Inserted ", id
-    return id
 
 
 """

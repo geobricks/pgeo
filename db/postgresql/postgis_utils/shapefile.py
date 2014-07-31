@@ -7,7 +7,7 @@ from urllib import urlencode
 from urllib2 import urlopen
 import json
 
-from db_stats.postgresql.postgis_utils import util
+from pgeo.db.postgresql.postgis_utils import util
 
 
 """
