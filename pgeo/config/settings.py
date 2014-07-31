@@ -19,7 +19,8 @@ settings = {
     # Logging configurations
     "logging": {
         "level": logging.INFO,
-        "format": "%(asctime)s | %(levelname)-8s | %(name)-20s | Line: %(lineno)-5d | %(message)s', datefmt='%d-%m-%Y | %H:%M:%s"
+        "format": "%(asctime)s | %(levelname)-8s | %(name)-20s | Line: %(lineno)-5d | %(message)s",
+        "datefmt": "%d-%m-%Y | %H:%M:%s"
     },
 
     # Folders
@@ -29,7 +30,10 @@ settings = {
         "data_providers": "data_providers/",
         "metadata": "metadata/",
         "stats": "stats/",
-        "geoserver": "geoserver/"
+        "geoserver": "geoserver/",
+
+        # used on runtime statistics (for Published layers this is the Geoservers Cluster "datadir")
+        "geoserver_datadir": "/home/vortex/Desktop/LAYERS/TRMM",
     },
 
     # Databases
@@ -48,8 +52,8 @@ settings = {
             "dbname": "fenix",
             "host": "localhost",
             "port": "5432",
-            "username": "user",
-            "password": "password",
+            "username": "fenix",
+            "password": "Qwaszx",
             "schema": "spatial"
         },
 
@@ -77,9 +81,6 @@ settings = {
 
     # Stats
     "stats": {
-        # used on runtime statistics (for Published layers this is the Geoservers Cluster "datadir")
-        "datadir": "/home/vortex/programs/SERVERS/tomcat_geoservers/data/",
-
         "db": {
             "spatial": "spatial",
             "stats": "stats"

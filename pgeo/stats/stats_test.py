@@ -66,33 +66,33 @@ geostats = {
 
 
 #New Geometadata Processing
-stats = {
+json_stats = {
     "raster" : {
         "name" : "MODISQ13",
 
         # the stored UID in the GeoMetadata database (uses Geoserver Path (?) )
-        "uid" : "modis:test_bella_guide3",
+        "uid" : "trmm:3B42RT.2014010100.7.03hr",
 
         # OR instead of the uid directly gives the path of the source layer without using the Default Path
         "path" : "/hove/Desktop/GIS/layer.geojson",
         },
 
     "vector" : {
-        "name" : "gaul1",
+        "name" : "gaul0",
 
         # Database
         "type" : "database",
         "options" : {
             "query_condition" : {
                 "column_filter" : "adm1_code",
-                "select": "adm1_code, adm1_name",
-                "from": "gaul1_3857",
-                "where": "adm0_code IN ('68') GROUP BY adm1_code, adm1_name "
+                "select": "adm0_code, adm0_name",
+                "from": "{{SCHEMA}}g2008_0",
+                "where": "adm0_code IN ('68') GROUP BY adm0_code, adm0_name "
             },
-            "stats" : {
+            "stats_columns" : {
                 "polygon_id" : "adm1_code",
                 "label_en" : "adm1_name",
-                }
+            }
         },
 
         # TODO: GeoJson (Problem how to save the geojson fields? Just gives back the result without saving them)
@@ -142,5 +142,5 @@ stats = {
 #     "save_stats" : False
 # }
 
-gs = Stats(settings)
-print "here"
+geostats = Stats(settings)
+geostats.zonalstats(json_stats)
