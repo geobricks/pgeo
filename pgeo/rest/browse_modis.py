@@ -5,9 +5,9 @@ from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
 
-from pgeo.pgeo.config.settings import read_config_file_json
-from pgeo.error.custom_exceptions import PGeoException
-from pgeo.error.custom_exceptions import errors
+from pgeo.config.settings import read_config_file_json
+from error.custom_exceptions import PGeoException
+from error.custom_exceptions import errors
 
 
 browse_modis = Blueprint('browse_modis', __name__)

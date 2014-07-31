@@ -1,13 +1,11 @@
 import json
 import os
-
 from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
-
 from pgeo.error.custom_exceptions import PGeoException
 from pgeo.error.custom_exceptions import errors
-from pgeo.pgeo.config.settings import read_config_file_json
+from pgeo.config.settings import read_config_file_json
 
 
 schema = Blueprint('schema', __name__)

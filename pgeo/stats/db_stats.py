@@ -1,4 +1,4 @@
-from pgeo.pgeo.db.mongo.metadata.db.postgresql.common import DBConnection
+from pgeo.db.mongo.metadata.db.postgresql.common import DBConnection
 
 class DBStats:
 

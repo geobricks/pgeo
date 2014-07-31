@@ -2,7 +2,7 @@ from flask import Flask
 
 from browse_modis import browse_modis
 from download import download
-from pgeo.pgeo.rest import browse_trmm
+from pgeo.rest import browse_trmm
 from schema import schema
 
 

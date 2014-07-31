@@ -2,10 +2,10 @@ import sys
 from bson import json_util
 
 try:
-    from utils import log, config
+    from pgeo.utils import log, config
 except Exception, e:
     sys.path.append('../')
-    from utils import log, config
+    from pgeo.utils import log, config
 
 
 def insert(client, database, collection, data):

@@ -1,5 +1,5 @@
-from config import settings
-from pgeo.pgeo.stats.db_stats import DBStats
+from pgeo.config import settings
+from pgeo.stats.db_stats import DBStats
 
 
 class Stats():
