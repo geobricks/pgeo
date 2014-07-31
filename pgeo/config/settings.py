@@ -6,16 +6,16 @@ import logging
 settings = {
 
     # To be used by Flask: DEVELOPMENT ONLY
-    "debug" : True,
+    "debug": True,
 
     # Flask port: DEVELOPMENT ONLY
-    "port" : 5005,
+    "port": 5005,
 
     # Default folder root to store layers. Each data provider configuration file specifies the path AFTER this folder.
-    "target_root" : "/home/Desktop/GIS",
+    "target_root": "/home/Desktop/GIS",
 
     # Each folder cntains one layer only. This is the default file name for such layers.
-    "default_layer_name" :  "layer.geotiff",
+    "default_layer_name":  "layer.geotiff",
 
     # Logging configurations
     "logging": {
@@ -23,9 +23,9 @@ settings = {
     },
 
     # Folders
-    "folders" : {
+    "folders": {
         "config": "config/",
-        "tmp" : "/tmp/",
+        "tmp": "/tmp/",
         "data_providers": "data_providers/",
         "metadata": "metadata/",
         "stats": "stats/",
@@ -33,7 +33,7 @@ settings = {
     },
 
     # Databases
-    "db" : {
+    "db": {
         "metadata": {
             "connection": "mongodb://exldvsdmxreg1.ext.fao.org:27017/",
             "database": "metadata",
@@ -43,7 +43,7 @@ settings = {
         },
 
         # Spatial Database
-        "spatial" : {
+        "spatial": {
             # default_db will search in the dbs["database"] as default option
             "dbname": "fenix",
             "host": "localhost",
@@ -53,7 +53,7 @@ settings = {
             "schema": "spatial"
         },
 
-        "stats" : {
+        "stats": {
             "dbname": "fenix",
             "host": "localhost",
             "port": "5432",
@@ -64,7 +64,7 @@ settings = {
     },
 
     # Geoserver
-    "geoserver" : {
+    "geoserver": {
         "geoserver_master": "http://168.202.28.214:9090/geoserver/rest",
         "geoserver_slaves": [],
         "username": "admin",
@@ -76,9 +76,9 @@ settings = {
     },
 
     # Stats
-    "stats" : {
+    "stats": {
         # used on runtime statistics (for Published layers this is the Geoservers Cluster "datadir")
-        "datadir" : "/home/vortex/programs/SERVERS/tomcat_geoservers/data/",
+        "datadir": "/home/vortex/programs/SERVERS/tomcat_geoservers/data/",
 
         "db": {
             "spatial": "spatial",
@@ -88,7 +88,7 @@ settings = {
 
 
     # Metadata
-    "metadata" : {
+    "metadata": {
 
     }
 
