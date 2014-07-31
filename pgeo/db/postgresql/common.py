@@ -1,4 +1,8 @@
 import psycopg2
+from pgeo.utils import log
+
+# Logger
+log = log.logger(__name__)
 
 # TODO: use exceptions?
 
@@ -7,11 +11,15 @@ class DBConnection:
     con = None
     datasource = None
     autocommit = True
+    schema= None
+
 
     def __init__(self, datasource):
         if DBConnection.con is None:
             try:
                 self.datasource = datasource
+                if self.datasource["schema"]:
+                    self.schema = self.datasource["schema"]
                 db_connect_string = self.get_connection_string(False)
                 self.con = psycopg2.connect(db_connect_string)
                 print('Database %s connection opened. ' % self.datasource['dbname'] )
@@ -57,7 +65,7 @@ class DBConnection:
                 return False
         except Exception, e:
             self.con.rollback()
-            print "use raise Exception?"
+            log.warn("Query error: use raise Exception? " + str(e))
 
     def __del__(self):
         self.close_connection()

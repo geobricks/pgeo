@@ -26,7 +26,7 @@ settings = {
     # Folders
     "folders": {
         "config": "config/",
-        "tmp": "/tmp/",
+        "tmp": "/home/vortex/Desktop/LAYERS/tmp",
         "data_providers": "data_providers/",
         "metadata": "metadata/",
         "stats": "stats/",
@@ -49,7 +49,7 @@ settings = {
         # Spatial Database
         "spatial": {
             # default_db will search in the dbs["database"] as default option
-            "dbname": "fenix",
+            "dbname": "pgeo",
             "host": "localhost",
             "port": "5432",
             "username": "fenix",
@@ -58,7 +58,7 @@ settings = {
         },
 
         "stats": {
-            "dbname": "fenix",
+            "dbname": "pgeo",
             "host": "localhost",
             "port": "5432",
             "username": "fenix",

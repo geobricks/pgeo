@@ -74,8 +74,8 @@ json_stats = {
         "uid" : "trmm:3B42RT.2014010100.7.03hr",
 
         # OR instead of the uid directly gives the path of the source layer without using the Default Path
-        "path" : "/hove/Desktop/GIS/layer.geojson",
-        },
+        #"path" : "/hove/Desktop/GIS/layer.geojson",
+    },
 
     "vector" : {
         "name" : "gaul0",
@@ -83,21 +83,27 @@ json_stats = {
         # Database
         "type" : "database",
         "options" : {
+
+            # used to query the db and retrieve the right codes
             "query_condition" : {
-                "column_filter" : "adm1_code",
                 "select": "adm0_code, adm0_name",
-                "from": "{{SCHEMA}}g2008_0",
-                "where": "adm0_code IN ('68') GROUP BY adm0_code, adm0_name "
+                "from": "{{SCHEMA}}.g2008_0",
+                "where": "adm0_code IN ('68', '69') GROUP BY adm0_code, adm0_name ",
             },
+
+            # used to subquery the db to get the geometry and process the raster
+            "column_filter": "adm0_code",
+
+            # used to fill stats table (raster["name"].vector["name"])
             "stats_columns" : {
-                "polygon_id" : "adm1_code",
-                "label_en" : "adm1_name",
+                "polygon_id" : "adm0_code",
+                "label_en" : "adm0_name",
             }
         },
 
         # TODO: GeoJson (Problem how to save the geojson fields? Just gives back the result without saving them)
-        "type" : "geojson",
-        "path" : "/hove/Desktop/GIS/layer.geojson",
+        # "type" : "geojson",
+        # "path" : "/hove/Desktop/GIS/layer.geojson",
         },
 
     "stats" : {
