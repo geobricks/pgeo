@@ -18,7 +18,6 @@ layer_to_publish = {
 }
 
 
-
 try:
     if g.publish_coveragestore(layer_to_publish, True):
         log.info("upload done")

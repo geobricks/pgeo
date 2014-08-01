@@ -144,7 +144,8 @@ class Geoserver():
             "Accept": "application/xml"
         }
         cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name, "file." + ext])
-        # self._publish_coveragestore(cs_url, "PUT", message, headers)
+        self._publish_coveragestore(cs_url, "PUT", message, headers)
+
 
 
     # # CREATE COVERAGESTORE
