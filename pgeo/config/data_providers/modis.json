@@ -11,13 +11,13 @@
         "target_dir": "/home/kalimaha/Development/GIS/MODIS/",
         "folders": [
             {
-                "folder_name": "{product}",
+                "folder_name": "{{product}}",
                 "folders": [
                     {
-                        "folder_name": "{year}",
+                        "folder_name": "{{year}}",
                         "folders": [
                             {
-                                "folder_name": "{day}"
+                                "folder_name": "{{day}}"
                             }
                         ]
                     }

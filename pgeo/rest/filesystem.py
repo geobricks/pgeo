@@ -24,5 +24,5 @@ def index():
 @cross_origin(origins='*')
 def create_filesystem_service(source):
     conf = read_config_file_json(source, 'data_providers')['target']
-    create_filesystem(source, {'product': 'PRODOTTO', 'year': 'ANNO', 'day': 'GIORNO'})
+    create_filesystem(source, {'product': 'Simone', 'year': '2014', 'day': '1'})
     return Response(json.dumps(conf), content_type='application/json; charset=utf-8')
