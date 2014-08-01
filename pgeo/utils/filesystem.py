@@ -3,34 +3,73 @@ import uuid
 import zipfile
 from pgeo.config.settings import settings
 from pgeo.config.settings import read_config_file_json
+from pgeo.utils import log
+
+log = log.logger("pgeo.utils.filesystem")
 
 # temporary folder
 folder_tmp = settings['folders']['tmp']
 
 
-def create_tmp_filename(prefix='', extension=''):
-    # the utf-8 encoding it's used to create a new .tif
-    # TODO change it
-    return (folder_tmp + '/' + prefix + str(uuid.uuid4()) + extension).encode('utf-8')
+def create_tmp_filename(path='', extension=''):
+    """
+        Create the path for a tmp file and filename
+
+        @type path: string
+        @param path: path from the tmp folder
+        @type extension: extension
+        @param extension: i.e. .geotiff
+    """
+    if extension != '' and "." not in extension: extension = "." + extension
+    return (os.path.join(folder_tmp, path) + str(uuid.uuid4()) + extension).encode('utf-8')
 
 
-def create_tmp_file(string_value, prefix='', extension=''):
-    filename = create_tmp_filename(prefix, extension)
+def create_tmp_file(string_value, path='', extension=''):
+    """
+        Create a tmp file with the passed string
+
+        @type string_value: string
+        @param string_value: string to fill the tmp file
+        @type path: string
+        @param path: path from the tmp folder
+        @type extension: extension
+        @param extension: i.e. .geotiff
+    """
+    filename = create_tmp_filename(path, extension)
     text_file = open(filename, "w")
     text_file.write(str(string_value))
     text_file.close()
     return filename
 
 
-def unzip(filezip, prefix='', extension=''):
-    path = folder_tmp
+def unzip(filezip, path=''):
+    """
+        Unizip a file in the tmp folder
+
+        @type filezip: string
+        @param filezip: path to the zip file
+        @type path: string
+        @param path: path from the tmp folder
+    """
+    path = os.path.join(folder_tmp, path)
     with zipfile.ZipFile(filezip, "r") as z:
         z.extractall(path)
     return path
 
 
-def remove(file):
-    os.remove(file)
+def remove(filepath):
+    """
+        Remove a file
+
+        @type filepath: string
+        @param filepath: path to the file
+        @type path: string
+        @param path: path from the tmp folder
+    """
+    try:
+        os.remove(file)
+    except:
+        log.warn("file doesn't exists: " + str(file))
 
 
 def create_filesystem(source, parameters):
