@@ -19,4 +19,6 @@ errors = {
     511:  'Data provider is not currently supported.',
     512:  'Source type is not currently supported.',
 
+    #geoserver
+    520: 'There is already a store named'
 }

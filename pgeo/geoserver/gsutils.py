@@ -2,7 +2,6 @@
 thanks to https://github.com/boundlessgeo/gsconfig/tree/master/src/geoserver for the inspiration
 '''
 
-import urllib
 import urlparse
 from tempfile import mkstemp
 import urllib
@@ -11,7 +10,6 @@ import os
 
 # TODO: remove the tmp directory to use a default filesystem path
 # and clean it
-
 def url(base, seg, query=None):
     """
     Create a URL from a list of path segments and an optional dict of query

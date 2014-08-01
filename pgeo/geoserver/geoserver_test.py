@@ -11,7 +11,8 @@ g = Geoserver(settings["geoserver"])
 
 
 layer_to_publish = {
-    "name" : "test3",
+    "name" : "newone342222",
+    "title" : "MODIS iuhadiuh",
     "workspace" : "fenix",
     "path" : "/home/vortex/Desktop/LAYERS/MODIS/AB_NDVI_4326.tif"
 }
@@ -19,6 +20,9 @@ layer_to_publish = {
 
 
 try:
-    layer = g.publish_coveragestore(layer_to_publish, False)
+    if g.publish_coveragestore(layer_to_publish, True):
+        log.info("upload done")
+    else:
+        log.error("not uploaded")
 except PGeoException, e:
     log.error(e)
