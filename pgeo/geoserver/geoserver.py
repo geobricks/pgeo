@@ -45,6 +45,8 @@ class Geoserver():
         self._version = None
         return None
 
+
+
     '''def publish_raster(self, input_raster, name, layertype='GEOTIFF', workspace='fenix', metadata=''):
         self.logger.info('raster: ' + input_raster)
         #cmd = "curl -u '"+ self.config['username') +":" + self.config['password') + "' -XPUT -H 'Content-type:image/tiff' -T "+ input_raster + " " + self.config['geoserver_master') +"/workspaces/"+ workspace +"/coveragestores/"+ name +"/file.geotiff"

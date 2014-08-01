@@ -17,6 +17,7 @@ layer_to_publish = {
 }
 
 
+
 try:
     layer = g.publish_coveragestore(layer_to_publish, False)
 except PGeoException, e:
