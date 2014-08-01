@@ -3,7 +3,7 @@ class PGeoException(Exception):
     status_code = 400
 
     def __init__(self, message, status_code=None, payload=None):
-        Exception.__init__(self)
+        Exception.__init__(self, message)
         self.message = message
         if status_code is not None:
             self.status_code = status_code
@@ -18,5 +18,6 @@ class PGeoException(Exception):
 errors = {
     510:  'Error fetching available data providers.',
     511:  'Data provider is not currently supported.',
-    512:  'Source type is not currently supported.'
+    512:  'Source type is not currently supported.',
+
 }

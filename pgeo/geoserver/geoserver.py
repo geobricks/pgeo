@@ -3,43 +3,39 @@ from urlparse import urlparse
 from pgeo.geoserver.gsutils import url, prepare_upload_bundle
 from pgeo.db.postgresql.postgis_utils import shapefile
 from pgeo.utils import log
+from pgeo.error.custom_exceptions import PGeoException
 
 log = log.logger(__name__)
 
 class Geoserver():
 
-    logger = None
     config = None
 
     # TODO: as converntion all the layers/styles should be in lowercase?
 
     def __init__(self, config, disable_ssl_certificate_validation=False):
         """
-        Initialize and configure the GeoSeerver.
-        The GeoServer properties are set in conf="geoserver" (config/geoserver.json) by default
+        Initialize and configure the GeoServer.
+        The GeoServer properties are passed in the config file
         """
         self.config = config
-        self.logger = log.logger
 
         # use as parameters
-        service_url = self.config['geoserver_master']
-        username = self.config['username']
-        password = self.config['password']
+        self.service_url = self.config['geoserver_master']
+        self.username = self.config['username']
+        self.password = self.config['password']
 
-        self.service_url = service_url
         if self.service_url.endswith("/"):
             self.service_url = self.service_url.strip("/")
         self.http = httplib2.Http(
             disable_ssl_certificate_validation=disable_ssl_certificate_validation)
-        self.username = username
-        self.password = password
         self.http.add_credentials(self.username, self.password)
-        netloc = urlparse(service_url).netloc
+        netloc = urlparse(self.service_url).netloc
         self.http.authorizations.append(
             httplib2.BasicAuthentication(
-                (username, password),
+                (self.username, self.password),
                 netloc,
-                service_url,
+                self.service_url,
                 {},
                 None,
                 None,
@@ -47,7 +43,7 @@ class Geoserver():
             ))
         self._cache = dict()
         self._version = None
-
+        return None
 
     '''def publish_raster(self, input_raster, name, layertype='GEOTIFF', workspace='fenix', metadata=''):
         self.logger.info('raster: ' + input_raster)
@@ -55,62 +51,59 @@ class Geoserver():
         return "published"
     '''
     #  TODO: check if the world image works!
-    def publish_coveragestore(self, name, data, workspace=None, overwrite=False ):
+    def publish_coveragestore(self, data, overwrite=False):
+
+        name = data["name"]
+        workspace = self.get_default_workspace() if "workspace" not in data else data["workspace"]
+        path = data["path"]
+
         if not overwrite:
-            try:
-                is_used = self.check_if_coverage_exist(name, workspace)
-                if ( is_used == True ):
-                        self.logger.warn("There is already a store named " + name)
-                        return "There is already a store named " + name
-                        #raise ConflictingDataError(msg)
-            except Exception, e:
-                # we don't really expect that every layer name will be taken
-                pass
+            if self.check_if_coverage_exist(name, workspace):
+                raise PGeoException("There is already a store named: %s" % name)
 
-        if workspace is None:
-            workspace = self.get_default_workspace()
 
+        # default geotiff headers and extension
         headers = {
             "Content-type": "image/tiff",
             "Accept": "application/xml"
         }
-
         archive = None
         ext = "geotiff"
 
-        print data
-        print dict
-        if isinstance(data, dict):
+        # check if the layer is a tfw (a zipfile)
+        if isinstance(path, dict):
             # handle 'tfw' (worldimage)
-            archive = prepare_upload_bundle(name, data)
+            archive = prepare_upload_bundle(name, path)
             print archive
             message = open(archive, 'rb')
-            if "tfw" in data:
+            if "tfw" in path:
                 headers['Content-type'] = 'application/archive'
                 ext = "worldimage"
-        elif isinstance(data, basestring):
-            message = open(data, 'rb')
+        elif isinstance(path, basestring):
+            message = open(path, 'rb')
         else:
             message = data
 
         cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name, "file." + ext])
-        self.logger.info(cs_url)
         try:
             headers, response = self.http.request(cs_url, "PUT", message, headers)
+            log.info(headers)
+            log.info(response)
             self._cache.clear()
             if headers.status != 201:
                 #raise UploadError(response)
-                self.logger.error('error 201: ' + response)
-                return False
+                raise PGeoException("Upload Error", 201)
         finally:
+            log.info("Layer uploaded")
             if hasattr(message, "close"):
                 # reload geoserver cluster
                 self.reload_configuration_geoserver_slaves()
                 message.close()
                 return True
             if archive is not None:
-                 self.logger.error('call nlink(archive) : ' + archive)
+                log.warn('call nlink(archive) : ' + archive)
                 #nlink(archive)
+        return None
 
     def delete_coveragestore(self, layername, workspace=None,purge=True, recurse=True):
         if workspace is None:
@@ -119,7 +112,7 @@ class Geoserver():
         # TODO: it makes two, calls, so probably it's better just handle the delete code
         if self.check_if_coverage_exist(layername, workspace):
             cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", layername])
-            self.logger.info(cs_url);
+            log.info(cs_url);
             #headers, response = self.http.request(cs_url, "DELETE")
 
             return self.delete(cs_url, purge, recurse)
@@ -152,7 +145,7 @@ class Geoserver():
         response, content = self.http.request(rest_url, "DELETE", headers=headers)
         self._cache.clear()
 
-        self.logger.info(response)
+        log.info(response)
 
         if response.status == 200:
             #return (response, content)
@@ -160,7 +153,7 @@ class Geoserver():
             self.reload_configuration_geoserver_slaves()
             return 'coverage uploaded'
         else:
-            self.logger.error("Tried to make a DELETE request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
+            log.error("Tried to make a DELETE request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
             #raise FailedRequestError("Tried to make a DELETE request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
             return ("Tried to make a DELETE request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
 
@@ -241,7 +234,7 @@ class Geoserver():
         xml = "<featureType><name>{0}</name></featureType>".format(unicode(name).lower())
         cs_url = url(self.service_url, ["workspaces", datasource['workspace'], "datasources", datasource['datasource'], 'featuretypes'])
         headers, response = self.http.request(cs_url, "POST", xml, headers)
-        self.logger.info(headers)
+        log.info(headers)
         if headers.status == 201:
             # reload geoserver cluster
             self.reload_configuration_geoserver_slaves()
@@ -270,7 +263,7 @@ class Geoserver():
         for geoserver in geoserver_cluster:
             cs_url =  url(geoserver, ["reload?recurse=true"])
             headers, response = self.http.request(cs_url, "POST")
-            self.logger.info(headers)
+            log.info(headers)
             if headers.status == 200:
                 return True
             else:
