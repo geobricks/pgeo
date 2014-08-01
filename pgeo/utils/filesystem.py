@@ -67,9 +67,9 @@ def remove(filepath):
         @param path: path from the tmp folder
     """
     try:
-        os.remove(file)
+        os.remove(filepath)
     except:
-        log.warn("file doesn't exists: " + str(file))
+        log.warn("file doesn't exists: " + str(filepath))
 
 
 def create_filesystem(source, parameters):
