@@ -9,26 +9,21 @@
     },
     "target": {
         "target_dir": "/home/kalimaha/Development/GIS/MODIS/",
-        "filesystem": {
-            "folder_name": "{product}",
-            "sub_folders": [
-                {
-                    "folder_name": "{year}",
-                    "sub_folders": [
-                        {
-                            "folder_name": "{month}",
-                            "sub_folders": [
-                                {
-                                    "folder_name": "{day}",
-                                    "sub_folders": [
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
+        "folders": [
+            {
+                "folder_name": "{product}",
+                "folders": [
+                    {
+                        "folder_name": "{year}",
+                        "folders": [
+                            {
+                                "folder_name": "{day}"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     },
     "bands": {
         "0": "NDVI",

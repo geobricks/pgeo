@@ -2,9 +2,11 @@ import os
 import uuid
 import zipfile
 from pgeo.config.settings import settings
+from pgeo.config.settings import read_config_file_json
 
 # temporary folder
 folder_tmp = settings['folders']['tmp']
+
 
 def create_tmp_filename(prefix='', extension=''):
     # the utf-8 encoding it's used to create a new .tif
@@ -27,4 +29,30 @@ def remove(file):
     os.remove(file)
 
 
+def create_filesystem(source, parameters):
+    """
+        :param source: e.g. 'modis'
+        :param parameters: This is a map of keys to be changed in the configuration file with actual values,
+         e.g. {'product': 'MOD13Q1', 'year': '2014', 'day': '033'}
+        :return: None
+    """
+    conf = read_config_file_json(source, 'data_providers')['target']
+    if not os.path.exists(conf['target_dir']):
+        os.makedirs(conf['target_dir'])
+    if len(conf['folders']) > 0:
+        for folder in conf['folders']:
+            create_folder(conf, parameters, folder)
 
+
+def create_folder(conf, parameters, folder):
+    folder_name = folder['folder_name']
+    if '{' in folder_name and '}' in folder_name:
+        for key in parameters:
+            if folder['folder_name'] == '{' + key + '}':
+                folder_name = folder['folder_name'].replace('{' + key + '}', parameters[key])
+    directory = os.path.join(conf['target_dir'], folder_name)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    if 'folders' in folder and len(folder['folders']) > 0:
+        for sub_folder in folder['folders']:
+            create_folder(conf, parameters, sub_folder)

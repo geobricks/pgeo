@@ -5,7 +5,7 @@ download = Blueprint('download', __name__)
 
 @download.route('/')
 def index():
-    return 'Welcome to the Browse module!'
+    return 'Welcome to the Download module!'
 
 
 @download.route('/<user_name>')
