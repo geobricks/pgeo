@@ -1,12 +1,8 @@
-from ftplib import FTP
 import json
-import os
 from flask import Blueprint
 from flask import Response
 from flask.ext.cors import cross_origin
-from pgeo.config.settings import read_config_file_json
 from pgeo.error.custom_exceptions import PGeoException
-from pgeo.error.custom_exceptions import errors
 from pgeo.utils.filesystem import create_filesystem
 
 
@@ -16,6 +12,10 @@ filesystem = Blueprint('filesystem', __name__)
 @filesystem.route('/')
 @cross_origin(origins='*')
 def index():
+    """
+        Welcome message
+        @return: welcome message
+    """
     return 'Welcome to the Filesystem module!'
 
 
@@ -23,6 +23,14 @@ def index():
 @filesystem.route('/<source>/')
 @cross_origin(origins='*')
 def create_filesystem_service(source):
-    conf = read_config_file_json(source, 'data_providers')['target']
-    create_filesystem(source, {'product': 'Simone', 'year': '2014', 'day': '1'})
-    return Response(json.dumps(conf), content_type='application/json; charset=utf-8')
+    """
+        This service create the filesystem structure as specified in the configuration file.
+        @param source: e.g. 'modis'
+        @return: Result of the operation
+    """
+    try:
+        create_filesystem(source, {'product': 'Simone', 'year': '2014', 'day': '1'})
+        response = {'status_code': 200, 'status_message': 'OK'}
+        return Response(json.dumps(response), content_type='application/json; charset=utf-8')
+    except:
+        raise PGeoException('Error', status_code=500)
