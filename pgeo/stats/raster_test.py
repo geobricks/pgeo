@@ -78,6 +78,8 @@ json_stats = {
     },
 
     "vector" : {
+
+        # It's the name of the gaul spatial table
         "name" : "gaul0",
 
         # Database
@@ -87,7 +89,7 @@ json_stats = {
             # used to query the db and retrieve the right codes
             "query_condition" : {
                 "select": "adm0_code, adm0_name",
-                "from": "{{SCHEMA}}.g2008_0",
+                "from": "{{SCHEMA}}.gaul0",
                 "where": "adm0_code IN ('68', '69') GROUP BY adm0_code, adm0_name ",
             },
 
@@ -104,7 +106,7 @@ json_stats = {
         # TODO: GeoJson (Problem how to save the geojson fields? Just gives back the result without saving them)
         # "type" : "geojson",
         # "path" : "/hove/Desktop/GIS/layer.geojson",
-        },
+    },
 
     "stats" : {
         # default is false (return just the json with the statistics)

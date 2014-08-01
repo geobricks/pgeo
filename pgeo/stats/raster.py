@@ -34,7 +34,7 @@ class Stats():
         # if the raster is a raster store in the datadir
         if json_stats["raster"]["uid"]:
             l = json_stats["raster"]["uid"].split(":")
-            json_stats["raster"]["path"] = os.path.join(self.settings["folders"]["geoserver_datadir"],"data",  l[0], l[1], l[1] + ".geotiff");
+            json_stats["raster"]["path"] = os.path.join(self.settings["folders"]["geoserver_datadir"], "data",  l[0], l[1], l[1] + ".geotiff");
 
         # Vector
         # TODO: make an ENUM somewhere (i.e. database, geojson, etc)
@@ -63,6 +63,8 @@ class Stats():
 
         # Change SCHEMA If exists
         opt = json.dumps(vector_opt)
+        # TODO: how to handle it more clearly
+        # TODO: the "." (dot) should be in the schema name?
         opt = opt.replace("{{SCHEMA}}", self.db_spatial.schema)
         vector_opt = json.loads(opt)
 
@@ -91,17 +93,18 @@ class Stats():
         # TODO: make it dynamic
         column_filter_index = 0
 
-        for r in codes:
-            # TODO: problems with query Strings and Integers (or whatever)
-            stats_query = "SELECT * FROM " + from_query + " WHERE " + column_filter + " IN (" + str(r[column_filter_index]) + ")"
+        if codes:
+            for r in codes:
+                # TODO: problems with query Strings and Integers (or whatever)
+                stats_query = "SELECT * FROM " + from_query + " WHERE " + column_filter + " IN (" + str(r[column_filter_index]) + ")"
 
-            #stats.append(self._get_stats_query(query, str(r[0]), str(r[1]), self.geostats['save_stats']))
-            db_connection_string = self.db_spatial.get_connection_string(True);
-            filepath = raster.crop_by_vector_database(raster_path, stats_query,db_connection_string)
+                #stats.append(self._get_stats_query(query, str(r[0]), str(r[1]), self.geostats['save_stats']))
+                db_connection_string = self.db_spatial.get_connection_string(True);
+                filepath = raster.crop_by_vector_database(raster_path, stats_query,db_connection_string)
 
-            log.info(filepath)
-            if filepath:
-                log.info(raster.get_statistics(filepath))
+                log.info(filepath)
+                if filepath:
+                    log.info(raster.get_statistics(filepath))
 
         return stats
 

@@ -10,6 +10,7 @@ folder_tmp = settings['folders']['tmp']
 
 def create_tmp_filename(prefix='', extension=''):
     # the utf-8 encoding it's used to create a new .tif
+    # TODO change it
     return (folder_tmp + '/' + prefix + str(uuid.uuid4()) + extension).encode('utf-8')
 
 

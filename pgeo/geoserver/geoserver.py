@@ -1,10 +1,10 @@
 import httplib2
 from urlparse import urlparse
-
 from pgeo.geoserver.gsutils import url, prepare_upload_bundle
 from pgeo.db.postgresql.postgis_utils import shapefile
 from pgeo.utils import log
 
+log = log.logger(__name__)
 
 class Geoserver():
 
