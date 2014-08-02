@@ -65,7 +65,6 @@ def get_stats(layer):
         raise PGeoException(e.get_message(), e.get_status_code())
 
 
-
 @app.route('/raster/<layer>/hist', methods=['GET'])
 @app.route('/raster/<layer>/hist/', methods=['GET'])
 @cross_origin(origins='*')
