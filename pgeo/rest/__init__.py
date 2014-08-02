@@ -5,6 +5,7 @@ from pgeo.rest.download import download
 from pgeo.rest.browse_trmm import browse_trmm
 from pgeo.rest.schema import schema
 from pgeo.rest.filesystem import filesystem
+from pgeo.rest import stats
 
 
 app = Flask(__name__)
@@ -13,3 +14,4 @@ app.register_blueprint(browse_trmm, url_prefix='/browse/trmm')
 app.register_blueprint(download, url_prefix='/download')
 app.register_blueprint(schema, url_prefix='/schema')
 app.register_blueprint(filesystem, url_prefix='/filesystem')
+app.register_blueprint(stats.app, url_prefix='/stats')

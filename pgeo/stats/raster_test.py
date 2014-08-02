@@ -109,6 +109,8 @@ json_stats = {
     },
 
     "stats" : {
+        "force": True,
+
         # default is false (return just the json with the statistics)
         "save_stats" : True,
 
@@ -151,4 +153,4 @@ json_stats = {
 # }
 
 geostats = Stats(settings)
-geostats.zonalstats(json_stats)
+geostats.zonal_stats(json_stats)

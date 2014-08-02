@@ -3,6 +3,7 @@ import os
 import subprocess
 from pgeo.utils import log
 from pgeo.utils import filesystem
+from pgeo.error.custom_exceptions import PGeoException, errors
 
 log = log.logger(__name__)
 
@@ -49,38 +50,71 @@ def crop_by_vector_database(input_file, query=None, db_connection_string=None, d
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
         stdout_value = proc.communicate()[0]
-        log.error(stdout_value)
+        raise PGeoException(stdout_value, 500)
+
     if os.path.isfile(output_file):
         return output_file
     return None
 
 
 def get_statistics(input_file, config=stats_config):
+    log.info("get_statistics: %s" % input_file)
     """
     :param input_file: file to be processed
     :param config: json config file to be passed
     :return: computed statistics
     """
 
-    # datasource
-    ds = gdal.Open(input_file)
-
-    stats = []
-    if "descriptive_statistics" in config:
-        stats.append(_get_statistics(ds, config["descriptive_statistics"]))
-    if "histogram" in config:
-        stats.append(_get_histogram(ds, config["histogram"]))
+    stats = {}
+    try:
+        if os.path.isfile(input_file):
+            ds = gdal.Open(input_file)
+            if "descriptive_statistics" in config:
+                stats["stats"] = _get_descriptive_statistics(ds, config["descriptive_statistics"])
+            if "histogram" in config:
+                stats["hist"] = _get_histogram(ds, config["histogram"])
+        else:
+            raise PGeoException(errors[522], 404)
+    except PGeoException, e:
+        raise PGeoException(e.get_message(), e.get_status_code())
     return stats
 
 
-def get_histogram( input_file, config ):
-    ds = gdal.Open( input_file )
-    return _get_histogram(ds, config)
+def get_descriptive_statistics(input_file, config):
+    """
+    :param input_file: file to be processed
+    :param config: json config file to be passed
+    :return: return and array with the min, max, mean, sd statistics per band i.e. [{"band": 1, "max": 549.0, "mean": 2.8398871527778, "sd": 17.103028971129, "min": 0.0}]
+    """
+    try:
+        if os.path.isfile(input_file):
+            ds = gdal.Open(input_file)
+            return _get_descriptive_statistics(ds, config)
+        else:
+            raise PGeoException(errors[522], 404)
+    except PGeoException, e:
+        raise PGeoException(e.get_message(), e.get_status_code())
 
 
-def _get_statistics(ds, config):
+def get_histogram(input_file, config):
+    """
+    :param input_file: file to be processed
+    :param config: json config file to be passed
+    :return: return and array with the min, max, mean, sd statistics per band i.e. [{"band": 1, "buckets": 256, "values": [43256, 357, ...], "max": 998.0, "min": 0.0}]
+    """
+    try:
+        if os.path.isfile(input_file):
+            ds = gdal.Open(input_file)
+            return _get_histogram(ds, config)
+        else:
+            raise PGeoException(errors[522], 404)
+    except PGeoException, e:
+        raise PGeoException(e.get_message(), e.get_status_code())
+
+
+def _get_descriptive_statistics(ds, config):
     # variables
-    force = True if "force" not in config else config["force"]
+    force = True if "force" not in config else bool(config["force"])
 
     # stats
     stats = []
@@ -97,26 +131,28 @@ def _get_statistics(ds, config):
         s = srcband.GetStatistics(False, force)
         if stats is None:
             continue
-        stats.append({"stats": {"min": s[0], "max": s[1], "mean": s[2], "sd": s[3]}})
+        stats.append({"band": band, "min": s[0], "max": s[1], "mean": s[2], "sd": s[3]})
     return stats
 
 
 def _get_histogram(ds, config):
+    log.info("config %s " % config)
     # variables
-    force = True if "force" not in config else config["force"]
-    buckets = 256 if "buckets" not in config else config["buckets"]
-    include_out_of_range = 0  if "include_out_of_range" not in config else config["include_out_of_range"]
+    # TODO boolean of config value
+    force = True if "force" not in config else bool(config["force"])
+    buckets = 256 if "buckets" not in config else int(config["buckets"])
+    include_out_of_range = 0 if "include_out_of_range" not in config else int(config["include_out_of_range"])
 
     # stats
     stats = []
     for band in range(ds.RasterCount):
         band += 1
-        if (force == True ):
-            (min, max)= ds.GetRasterBand(band).ComputeRasterMinMax(0)
+        if force:
+            (min, max) = ds.GetRasterBand(band).ComputeRasterMinMax(0)
         else:
             min = ds.GetRasterBand(band).GetMinimum()
             max = ds.GetRasterBand(band).GetMaximum()
 
-        hist = ds.GetRasterBand(band).GetHistogram( buckets=buckets, min=min, max=max, include_out_of_range = include_out_of_range )
-        stats.append({"hist": {"buckets": buckets, "min": min, "max": max, "values": hist}})
+        hist = ds.GetRasterBand(band).GetHistogram(buckets=buckets, min=min, max=max, include_out_of_range=include_out_of_range)
+        stats.append({"band": band, "buckets": buckets, "min": min, "max": max, "values": hist})
     return stats

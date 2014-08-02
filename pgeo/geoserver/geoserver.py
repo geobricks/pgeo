@@ -64,10 +64,7 @@ class Geoserver():
                 raise PGeoException(errors[520]+": %s" % name)
 
         # default geotiff headers and extension
-        headers = {
-            "Content-type": "image/tiff",
-            "Accept": "application/xml"
-        }
+        headers = get_headers("geotiff")
         archive = None
         ext = "geotiff"
 
@@ -78,7 +75,7 @@ class Geoserver():
             print archive
             message = open(archive, 'rb')
             if "tfw" in path:
-                headers['Content-type'] = 'application/archive'
+                headers = get_headers("archive")
                 ext = "worldimage"
         elif isinstance(path, basestring):
             message = open(path, 'rb')
@@ -87,91 +84,30 @@ class Geoserver():
 
         log.info(message)
 
+        try:
+            # Add layer to coveragestore
+            headers = get_headers("tiff")
+            cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name, "file." + ext])
+            self._publish_coveragestore(cs_url, "PUT", message, headers)
 
-
-        # # ADDING THE LAYER
-        # cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name, "file." + ext])
-        #
-        # self._publish_coveragestore(cs_url, "PUT", message, headers)
-        #
-        #
-        #
-        # log.info("----------")
-        # # ADDING THE METADATA
-        # headers = {
-        #     "Content-type": "application/xml",
-        #     "Accept": "application/xml"
-        # }
-        #
-        # cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name])
-        # xml = "<coverageStore>" \
-        #             "<name>"+ str(name) +"</name>" \
-        #             "<workspace>"+ str(workspace) +"</workspace>" \
-        #             "<enabled>true</enabled>" \
-        #             "<type>GeoTIFF</type>" \
-        #             "<title>oiajsdoijaosdijoisdaj</title>" \
-        #             "<abstract>oiajsdoijaosdijoisdaj</abstract>" \
-        #             "</coverageStore>"
-        #
-        # log.info(headers)
-        # log.info(name)
-        # self._publish_coveragestore(cs_url, "PUT", xml, headers)
-
-
-        #  CREATE COVERAGESTORE
-        headers = {
-            "Content-type": "application/xml",
-            "Accept": "application/xml"
-        }
-
-        cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores"])
-        xml = "<coverageStore>" \
-                    "<name>"+ str(name) +"</name>" \
-                    "<workspace>"+ str(workspace) +"</workspace>" \
-                    "<enabled>true</enabled>" \
-                    "<type>GeoTIFF</type>" \
-                    "<title>oiajsdoijaosdijoisdaj</title>" \
-                    "<abstract>oiajsdoijaosdijoisdaj</abstract>" \
-            "</coverageStore>"
-
-        log.info(headers)
-        log.info(name)
-        self._publish_coveragestore(cs_url, "POST", xml, headers)
-
-        #  ADD LAYER TO COVERAGESTORE
-        headers = {
-            "Content-type": "image/tiff",
-            "Accept": "application/xml"
-        }
-        cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name, "file." + ext])
-        self._publish_coveragestore(cs_url, "PUT", message, headers)
-
-
-
-    # # CREATE COVERAGESTORE
-    # curl -u $user:$passwd -v -XPOST -H 'Content-Type: application/xml' -d '<coverageStore><name>'$store'</name><workspace>'$workspace'</workspace></coverageStore>' ${geoserver_uri}/rest/workspaces/$workspace/coveragestores
-    #
-    # # ADD LAYER TO COVERAGESTORE
-    # curl -u $user:$passwd -v -XPUT -H 'Content-Type: text/plain' -d 'file:'${file} ${geoserver_uri}/rest/workspaces/$workspace/coveragestores/$store/external.geotiff?configure=first\&coverageName=$store
-    #
-    # # ENABLE LAYER BUT NOT ADVERTISING IT
-    # # it's not possible to set SRS from REST, so enable the layer is wasteful without that. At least, with the layer I've tested, which geoserver didn't recognize the SRS.
-    # curl -u $user:$passwd -v -XPUT -H 'Content-Type: text/xml' -d '<layer><metadata><entry key="advertised">false</entry></metadata><enabled>true</enabled></layer>' ${geoserver_uri}/rest/layers/$layer
-    #
-    # # ENABLE COVERAGE
-    # # after adding the layer, and if it has right SRS, it's possible to enable the store
-    # curl -u $user:$passwd -v -XPUT -d '<coverageStore><name>'$store'</name><enabled>true</enabled></coverageStore>' -H "Content-Type: text/xml" ${geoserver_uri}/rest/workspaces/$workspace/coveragestores/$store.xml
-
-
+            #  Update metadata of the layer
+            json_data = data
+            del json_data['name']
+            self.update_layer_metadata(name, json_data, "json")
+        finally:
+            # check if it always called
+            self.reload_configuration_geoserver_slaves()
+            return True
 
         return True
-
 
     def _publish_coveragestore(self, cs_url, type, message, headers):
         log.info(cs_url)
         try:
             headers, response = self.http.request(cs_url, type, message, headers)
             self._cache.clear()
+            log.info(headers)
+            log.info(response)
             if headers.status != 201:
             #raise UploadError(response)
                 log.info(headers)
@@ -189,20 +125,34 @@ class Geoserver():
             #     log.warn('call nlink(archive) : ' + archive)
             #     # nlink(archive)
 
+    def update_layer_metadata(self, name, data, c_type="json"):
+        """
+        Update the layer by json or xml
+        :param name: name of the layer
+        :type name: string
+        :param data: json
+        :type name: string cointaining the data to update i.e. json '{"layer":{"title":"title of the layer"}}' or xml <layer><title>title of the layer</title></layer>
+        :param type: string that can be "json" or "xml"
+        :type name: string
+        :return: True if updated
+        """
+        try:
+            headers = get_headers(c_type)
+            cs_url = url(self.service_url, ["layers", name + "." + c_type])
+            self._publish_coveragestore(cs_url, "PUT", data, headers)
+        finally:
+            # check if it always called
+            self.reload_configuration_geoserver_slaves()
+            return True
 
-    def delete_coveragestore(self, layername, workspace=None, purge=True, recurse=True):
+    def delete_coveragestore(self, name, workspace=None, purge=True, recurse=True):
         if workspace is None:
             workspace = self.get_default_workspace()
 
         # TODO: it makes two, calls, so probably it's better just handle the delete code
-        if self.check_if_coveragestore_exist(layername, workspace):
-            cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", layername])
-            log.info(cs_url);
-            #headers, response = self.http.request(cs_url, "DELETE")
-
+        if self.check_if_coveragestore_exist(name, workspace):
+            cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name])
             return self.delete(cs_url, purge, recurse)
-        else:
-            return "NO COVERAGE STORE AVAILABLE"
 
     def delete(self, rest_url, purge=False, recurse=False):
         """
@@ -223,24 +173,17 @@ class Geoserver():
         if params:
             rest_url = rest_url + "?" + "&".join(params)
 
-        headers = {
-            "Content-type": "application/xml",
-            "Accept": "application/xml"
-        }
+        headers = get_headers("xml")
         response, content = self.http.request(rest_url, "DELETE", headers=headers)
         self._cache.clear()
 
-        log.info(response)
-
         if response.status == 200:
-            #return (response, content)
-            # reload geoserver cluster
+            # reload geoservers slaves configurations
             self.reload_configuration_geoserver_slaves()
-            return 'coverage uploaded'
+            return True
         else:
-            log.error("Tried to make a DELETE request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
-            #raise FailedRequestError("Tried to make a DELETE request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
-            return ("Tried to make a DELETE request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
+           raise PGeoException(content, headers.status)
+
 
     def check_if_coveragestore_exist(self, name, workspace=None):
         if workspace is None:
@@ -254,7 +197,7 @@ class Geoserver():
         return False
 
 
-    def set_default_style(self, stylename, layername, enabled=True):
+    def set_default_style(self, layername, stylename, enabled=True):
         """
         Method used to change the default style of a layer
         :param stylename: the name of the style to set ad default one
@@ -354,3 +297,24 @@ class Geoserver():
                 return True
             else:
                 return False
+
+
+def get_headers(c_type):
+    c_type = c_type.lower()
+    headers = {
+        "Accept": "application/xml"
+    }
+    if c_type == "geotiff":
+        headers["Content-type"] = "image/tiff"
+    elif c_type == "tiff":
+        headers["Content-type"] = "image/tiff"
+    elif c_type == "xml":
+        headers["Content-type"] = "application/xml"
+    elif c_type == "json":
+        headers["Content-type"] = "application/json"
+    elif c_type == "archive":
+        headers["Content-type"] = "application/archive"
+    else:
+        raise PGeoException('Headers type "%s" not supported' % type)
+
+    return headers

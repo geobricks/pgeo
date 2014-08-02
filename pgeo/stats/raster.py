@@ -18,12 +18,12 @@ class Stats():
         self.settings = settings
 
         # db_stats will connect to the database
-        self.db_stats = self.get_default_db("stats", True)
+        self.db_stats = self._get_default_db("stats", True)
 
         # db_stats will NOT connect to the database
-        self.db_spatial = self.get_default_db("spatial", True)
+        self.db_spatial = self._get_default_db("spatial", True)
 
-    def zonalstats(self, json_stats):
+    def zonal_stats(self, json_stats):
         # TODO: a common zonalstats
         '''
         :param json_stats: json with statistics definitions
@@ -32,25 +32,36 @@ class Stats():
 
         # Raster
         # if the raster is a raster store in the datadir
-        if json_stats["raster"]["uid"]:
-            l = json_stats["raster"]["uid"].split(":")
-            json_stats["raster"]["path"] = os.path.join(self.settings["folders"]["geoserver_datadir"], "data",  l[0], l[1], l[1] + ".geotiff");
+        if "uid" in json_stats["raster"]:
+            json_stats["raster"]["path"] = self._get_raster_path(json_stats["raster"]["uid"])
 
         # Vector
         # TODO: make an ENUM somewhere (i.e. database, geojson, etc)
         log.info(json_stats["vector"]["type"])
         if json_stats["vector"]["type"] == "database":
-            self._zonalstats_by_vector_database(json_stats)
+            self._zonal_stats_by_vector_database(json_stats)
         elif json_stats["vector"]["type"] == "geojson":
             log.warn("TODO: Geojson statistics")
 
         # Stats
         # TODO: save stats in case is needed or return statistics
-
-
         return None
 
-    def _zonalstats_by_vector_database(self, json_stats):
+    def get_stats(self, json_stats):
+        if "uid" in json_stats["raster"]:
+            json_stats["raster"]["path"] = self._get_raster_path(json_stats["raster"]["uid"])
+        return raster.get_statistics(json_stats["raster"]["path"])
+
+    def get_histogram(self, json_stats):
+        if "uid" in json_stats["raster"]:
+            json_stats["raster"]["path"] = self._get_raster_path(json_stats["raster"]["uid"])
+        return raster.get_histogram(json_stats["raster"]["path"], json_stats["stats"])
+
+    def _get_raster_path(self, uid):
+        l = uid.split(":")
+        return os.path.join(self.settings["folders"]["geoserver_datadir"], "data",  l[0], l[1], l[1] + ".geotiff");
+
+    def _zonal_stats_by_vector_database(self, json_stats):
         # Stats result
         stats = None
 
@@ -112,14 +123,12 @@ class Stats():
     def _get_statistics(self):
         return None
 
-
-
     # get the default db from the settings
-    def get_default_db(self, type, connect=True):
+    def _get_default_db(self, dtype, connect=True):
         try:
             if self.settings["stats"]:
                 if self.settings["db"]:
-                    db_id = self.settings["stats"]["db"][type]
+                    db_id = self.settings["stats"]["db"][dtype]
                     db = self.settings["db"][db_id]
                     if connect:
                         return DBStats(db)

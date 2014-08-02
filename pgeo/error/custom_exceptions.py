@@ -14,11 +14,20 @@ class PGeoException(Exception):
         rv['status_code'] = self.status_code
         return rv
 
+    def get_message(self):
+        return self.message
+
+    def get_status_code(self):
+        return self.status_code
+
+
 errors = {
     510:  'Error fetching available data providers.',
     511:  'Data provider is not currently supported.',
     512:  'Source type is not currently supported.',
 
     #geoserver
-    520: 'There is already a store named'
+    520: "There is already a store named",
+    521: "No coverage store named",
+    522:  "Layer file doesn't exists"
 }
