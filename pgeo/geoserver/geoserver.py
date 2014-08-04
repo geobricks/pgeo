@@ -7,6 +7,7 @@ from pgeo.error.custom_exceptions import PGeoException, errors
 
 log = log.logger(__name__)
 
+
 class Geoserver():
 
     config = None
