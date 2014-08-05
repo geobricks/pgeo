@@ -21,7 +21,7 @@
     },
     "meContent" : {
         "resourceRepresentationType" : "geographic",
-        "keywords" : ["MODIS", "NDVI"],
+        "keywords" : [],
         "description" : {
             "EN" : "description of the layer"
         },
