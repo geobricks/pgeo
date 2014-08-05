@@ -31,7 +31,7 @@ settings = {
         "metadata": "metadata/",
         "stats": "stats/",
         "geoserver": "geoserver/",
-
+        "metadata_templates": "metadata/templates/",
         # used on runtime statistics (for Published layers this is the Geoservers Cluster "datadir")
         "geoserver_datadir": "/home/vortex/Desktop/LAYERS/TRMM",
     },
@@ -39,7 +39,7 @@ settings = {
     # Databases
     "db": {
         "metadata": {
-            "connection": "mongodb://exldvsdmxreg1.ext.fao.org:27017/",
+            "connection": "mongodb://localhost:27017/",
             "database": "metadata",
             "document": {
                 "layer": "layer"
@@ -102,3 +102,14 @@ def read_config_file_json(filename, folder=''):
     path = directory + '/' + settings['folders']['config'] + settings['folders'][folder]
     extension = '' if '.json' in filename else '.json'
     return json.loads(open(path + filename + extension).read())
+
+
+def read_template(filename):
+    try:
+        directory = os.path.dirname(os.path.dirname(__file__))
+        filename = filename.lower()
+        path = directory + '/' + settings['folders']['config'] + '/' + settings['folders']['metadata_templates']
+        extension = '' if '.json' in filename else '.json'
+        return json.loads(open(path + filename + extension).read())
+    except Exception, e:
+        print e
