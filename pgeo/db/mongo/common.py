@@ -14,11 +14,9 @@ def insert(client, database, collection, data):
     @return: id
     """
     try:
-        id = client[database][collection].insert(data)
-        return id
+        return client[database][collection].insert(data)
     except Exception, e:
         print "Insert ERROR ", e
-        return None
 
 
 """

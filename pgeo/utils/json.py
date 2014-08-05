@@ -2,9 +2,9 @@ from copy import deepcopy
 
 
 def dict_merge(a, b):
-    '''
+    """
     Source: https://www.xormedia.com/recursively-merge-dictionaries-in-python/
-    '''
+    """
     if not isinstance(b, dict):
         return b
     result = deepcopy(a)
