@@ -1,17 +1,14 @@
 {
-    "uid" : "workspace:layername", //layername
-
+    "uid" : "workspace:layername",
     "title" : {
         "EN" : "title of the layer",
         "FR" : "title of the layer"
     },
-    "creationDate" : 1328405808080, //milliseconds
+    "creationDate" : 1328405808080,
     "parentIdentifiers" : null,
     "metadataStandardName" : "FENIX",
     "metadataStandardVersion" : "0.1",
     "noDataValue" : "-5000",
-
-    // vettoriali
     "language" : {
         "codeList" : "Languages",
         "version" : "1.0",
@@ -22,15 +19,12 @@
         "version" : "...",
         "codes" : [{"code" : "UTF8"}]
     },
-
     "meContent" : {
         "resourceRepresentationType" : "geographic",
         "keywords" : ["MODIS", "NDVI"],
         "description" : {
             "EN" : "description of the layer"
         },
-
-        // dobbiamo personalizzare la codelist decadale (ivano)
         "seReferencePopulation" : {
             "referencePeriod" : {
                 "codeList" : "dekads",
@@ -40,29 +34,23 @@
                 ]
             }
         },
-
         "seCoverage" : {
             "coverageTime" : {
-                "from" : 1328405808080, //milliseconds
-                "to": 1328405808080 //milliseconds
+                "from" : 1328405808080,
+                "to": 1328405808080
             },
-
             "coverageGeographic" : {
                 "codeList" : "...",
                 "version" : "...",
                 "codes" : [{"code" : "world"}]
             },
-
-            // NOI
             "coverageSector" : {
                 "codeList" : "...",
                 "version" : "...",
                 "codes" : [{"code" : "MODISQ1"}]
             }
         }
-
     },
-
     "meStatisticalProcessing" : {
         "seDatasource" : {
             "sePrimaryDataCollection" : {
@@ -74,30 +62,22 @@
                     "version" : "...",
                     "codes" : [{"code" : "MODIS"}]
                 },
-
                 "collectionPeriodicity" : {
                     "codeList" : "...",
                     "version" : "...",
                     "codes" : [{"code" : "dekad"}]
                 }
             },
-
-            // da riverdere
             "seDataCompilation" : {
-                "aggregationProcessing" : "avg" // none/avg/da
+                "aggregationProcessing" : "avg"
             }
-
         }
     },
-
-
     "meMaintenance" : {
         "seUpdate" : {
-            "updateDate" : 1328405808080 //milliseconds
+            "updateDate" : 1328405808080
         }
     },
-
-
     "meSpatialRepresentation" :{
         "layerType" : "raster",
         "seBoundingBox": {
@@ -106,7 +86,6 @@
             "Ymin": null,
             "Ymax": null
         },
-
         "seGridSpatialRepresentation" : {
             "numberOfDimension" : null,
             "axisDimesionProperties" : null,
@@ -115,18 +94,16 @@
             "cellOfOrigin" : null,
             "XYposition" : null
         },
-
         "seVectorSpatialRepresentation" : {
-            "geometricObjects" : "point" //point, line, multiline etc
+            "geometricObjects" : "point"
         }
     },
-
     "meReferenceSystem" : {
         "referenceSystemIdentifier": "EPSG",
         "referenceSystemName": {
             "EN":"European Petroleum Survey Group"
         },
-        "referenceSystemAuthority": null, //ERROR
+        "referenceSystemAuthority": null,
         "seProjection" : {
             "projection" : {
                 "codeList" : "...",
@@ -146,7 +123,6 @@
             "datumName" : {"EN":"WGS84"}
         }
     },
-
     "meAccessibility" : {
         "seDistribution": {
             "onlineResource" : "/2012/10/017/EPSG/4326/STD/layer.geotiff"
