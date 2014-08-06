@@ -14,3 +14,14 @@ def find_layer_by_id(layer_id):
 
 def find_layers_by_dekad(dekad):
     return client[db][doc].find({'meContent.seReferencePopulation.referencePeriod.codes.code': {'$in': [dekad]}})
+
+
+def find_layers_by_product(product):
+    return client[db][doc].find({'meContent.seCoverage.coverageSector.codes.code': {'$in': [product]}})
+
+
+def find_layers_by_product_and_dekad(product, dekad):
+    return client[db][doc].find({'$and':[
+                                    {'meContent.seCoverage.coverageSector.codes.code': {'$in': [product]}},
+                                    {'meContent.seReferencePopulation.referencePeriod.codes.code': {'$in': [dekad]}}
+                                ]})
