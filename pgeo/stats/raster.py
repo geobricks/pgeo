@@ -110,6 +110,7 @@ class Stats():
                 stats_query = "SELECT * FROM " + from_query + " WHERE " + column_filter + " IN (" + str(r[column_filter_index]) + ")"
 
                 #stats.append(self._get_stats_query(query, str(r[0]), str(r[1]), self.geostats['save_stats']))
+                log.info(r)
                 db_connection_string = self.db_spatial.get_connection_string(True);
                 filepath = raster.crop_by_vector_database(raster_path, stats_query,db_connection_string)
 
