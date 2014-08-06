@@ -28,8 +28,9 @@ def dict_merge_and_convert_dates(a, b):
     result = deepcopy(a)
     for k, v in b.iteritems():
         if k in result and isinstance(result[k], dict):
-            result[k] = dict_merge(result[k], v)
+            result[k] = dict_merge_and_convert_dates(result[k], v)
         else:
+            print k
             result[k] = deepcopy(v)
             try:
                 result[k] = parser.parse(result[k])
