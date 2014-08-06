@@ -30,10 +30,10 @@ def dict_merge_and_convert_dates(a, b):
         if k in result and isinstance(result[k], dict):
             result[k] = dict_merge_and_convert_dates(result[k], v)
         else:
-            print k
             result[k] = deepcopy(v)
-            try:
-                result[k] = parser.parse(result[k])
-            except Exception:
-                pass
+            if 'version' not in k:
+                try:
+                    result[k] = parser.parse(result[k])
+                except Exception:
+                    pass
     return result

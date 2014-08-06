@@ -1,9 +1,93 @@
 {
+    "parentIdentifiers" : null,
+    "metadataStandardName" : "FENIX",
+    "metadataStandardVersion" : "0.1",
+    "noDataValue" : "-5000",
+    "language" : {
+        "codeList" : "Languages",
+        "version" : "1.0",
+        "codes" : [{"code" : "EN"}]
+    },
+    "characterSet" : {
+        "codeList" : "CharacterSets",
+        "version" : "1.0",
+        "codes" : [{"code" : "UTF8"}]
+    },
     "meContent" : {
         "resourceRepresentationType" : "geographic",
         "keywords" : ["MODIS", "NDVI"],
         "description" : {
-            "EN" : "description of the layer"
+            "EN" : "Global MODIS vegetation indices are designed to provide consistent spatial and temporal comparisons of vegetation conditions. Blue, red, and near-infrared reflectances, centered at 469-nanometers, 645-nanometers, and 858-nanometers, respectively, are used to determine the MODIS daily vegetation indices."
+        },
+        "seCoverage" : {
+            "coverageGeographic" : {
+                "codeList" : "GAUL",
+                "version" : "1.0",
+                "codes" : [{"code" : "5000"}]
+            }
+        }
+    },
+    "meStatisticalProcessing" : {
+        "seDatasource" : {
+            "sePrimaryDataCollection" : {
+                "dataCollector" : {
+                    "organisation" : "NASA"
+                },
+                "typeOfCollection" : {
+                    "codeList" : "Products",
+                    "version" : "1.0",
+                    "codes" : [{"code" : "MODIS"}]
+                },
+                "collectionPeriodicity" : {
+                    "codeList" : "Periodicity",
+                    "version" : "1.0",
+                    "codes" : [{"code" : "dekad"}]
+                }
+            }
+        }
+    },
+    "meSpatialRepresentation" :{
+        "layerType" : "raster",
+        "seBoundingBox": {
+            "Xmin": null,
+            "Xmax": null,
+            "Ymin": null,
+            "Ymax": null
+        },
+        "seGridSpatialRepresentation" : {
+            "numberOfDimension" : null,
+            "axisDimesionProperties" : null,
+            "cellGeometry" : null,
+            "cellOfOrigin" : null,
+            "XYposition" : null
+        },
+        "seVectorSpatialRepresentation" : {
+            "geometricObjects" : "point"
+        }
+    },
+    "meReferenceSystem" : {
+        "referenceSystemIdentifier": "EPSG",
+        "referenceSystemName": {
+            "EN":"European Petroleum Survey Group"
+        },
+        "referenceSystemAuthority": null,
+        "seProjection" : {
+            "projection" : {
+                "codeList" : "MapProjections",
+                "version" : "1.0",
+                "codes" : [{"code" : "EPSG:4326"}]
+            },
+            "projectionName" : { "EN" : "EPSG:4326" }
+        },
+        "seDatum" : {
+            "datum" :  {
+                "codeList" : "datum",
+                "version" : "1.0",
+                "codes" : [
+                    {"code" : "WGS84"}
+                ]
+            },
+            "datumName" : {"EN":"WGS84"}
         }
     }
 }
