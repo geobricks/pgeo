@@ -15,7 +15,6 @@ setup(
         'pymongo >= 2.7.1',
         'psycopg2 >= 2.4.5',
         'GDAL >= 1.10.1',
-        'httplib2 >= 0.8',
-        'bson >= 0.3.3'
+        'httplib2 >= 0.8'
     ]
 )
