@@ -12,24 +12,14 @@ def find_layer_by_id(layer_id):
     return client[db][doc].find_one({'_id': ObjectId(layer_id)})
 
 
-def find_layers_by_dekad(dekad):
-    return client[db][doc].find({'meContent.seReferencePopulation.referencePeriod.codes.code': {'$in': [dekad]}})
-
-
-def find_layers_by_product(product):
-    return client[db][doc].find({'meContent.seCoverage.coverageSector.codes.code': {'$in': [product]}})
-
-
-def find_layers_by_product_and_dekad(product, dekad):
-    return client[db][doc].find({'$and':[
-                                    {'meContent.seCoverage.coverageSector.codes.code': {'$in': [product]}},
-                                    {'meContent.seReferencePopulation.referencePeriod.codes.code': {'$in': [dekad]}}
-                                ]})
-
-
-def find_layers_by_product_and_dekad_and_type(product, dekad, type):
-    return client[db][doc].find({'$and':[
-                                    {'meContent.seCoverage.coverageSector.codes.code': {'$in': [product]}},
-                                    {'meContent.seReferencePopulation.referencePeriod.codes.code': {'$in': [dekad]}},
-                                    {'meStatisticalProcessing.seDatasource.seDataCompilation.aggregationProcessing': type}
-                                ]})
+def find_layers_by_product(product, dekad, agg_type):
+    q = {}
+    conditions = []
+    if product is not None:
+        conditions.append({'meContent.seCoverage.coverageSector.codes.code': {'$in': [product]}})
+    if dekad is not None:
+        conditions.append({'meContent.seReferencePopulation.referencePeriod.codes.code': {'$in': [dekad]}})
+    if agg_type is not None:
+        conditions.append({'meStatisticalProcessing.seDatasource.seDataCompilation.aggregationProcessing': agg_type})
+    q['$and'] = conditions
+    return client[db][doc].find(q)
