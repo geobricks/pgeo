@@ -22,9 +22,9 @@ class MongoSearch():
         @param layer_id: MongoDB uid
         @return: Metadata document in JSON format.
         """
-        return self.client[self.db][self.doc].find_one({'_id': ObjectId(layer_id)})
+        return self.client[self.db_name][self.table_name].find_one({'_id': ObjectId(layer_id)})
 
-    def find_layers_by_product(self, product, dekad, agg_type):
+    def find_layers_by_product(self, product=None, dekad=None, agg_type=None):
         """
         Find layers according to user's selections.
         @param product: Product ID, e.g. 'MOD13Q1'
