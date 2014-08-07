@@ -9,7 +9,7 @@ log = log.logger(__name__)
 
 # example of statistics
 stats_config = {
-    "descriptive_statistics": {
+    "descriptive_stats": {
         "force": True
     },
     "histogram": {
@@ -58,19 +58,22 @@ def crop_by_vector_database(input_file, query=None, db_connection_string=None, d
 
 
 def get_statistics(input_file, config=stats_config):
-    log.info("get_statistics: %s" % input_file)
     """
     :param input_file: file to be processed
     :param config: json config file to be passed
     :return: computed statistics
     """
+    log.info("get_statistics: %s" % input_file)
+
+    if config is None:
+        config = stats_config
 
     stats = {}
     try:
         if os.path.isfile(input_file):
             ds = gdal.Open(input_file)
-            if "descriptive_statistics" in config:
-                stats["stats"] = _get_descriptive_statistics(ds, config["descriptive_statistics"])
+            if "descriptive_stats" in config:
+                stats["stats"] = _get_descriptive_statistics(ds, config["descriptive_stats"])
             if "histogram" in config:
                 stats["hist"] = _get_histogram(ds, config["histogram"])
         else:
@@ -123,12 +126,11 @@ def _get_descriptive_statistics(ds, config):
         srcband = ds.GetRasterBand(band)
         if srcband is None:
             continue
-        '''if force:
+        # TODO: check why the "force" doesn't work on GetStatistics but the ComputeStatistics works
+        if force:
             s = srcband.ComputeStatistics(0)
         else:
             s = srcband.GetStatistics(False, force)
-        '''
-        s = srcband.GetStatistics(False, force)
         if stats is None:
             continue
         stats.append({"band": band, "min": s[0], "max": s[1], "mean": s[2], "sd": s[3]})
@@ -136,7 +138,7 @@ def _get_descriptive_statistics(ds, config):
 
 
 def _get_histogram(ds, config):
-    log.info("config %s " % config)
+    #log.info("config %s " % config)
     # variables
     # TODO boolean of config value
     force = True if "force" not in config else bool(config["force"])

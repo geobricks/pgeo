@@ -24,6 +24,7 @@ class Stats():
         self.db_spatial = self._get_default_db("spatial", True)
 
     def zonal_stats(self, json_stats):
+        stats = None
         # TODO: a common zonalstats
         '''
         :param json_stats: json with statistics definitions
@@ -37,15 +38,15 @@ class Stats():
 
         # Vector
         # TODO: make an ENUM somewhere (i.e. database, geojson, etc)
-        log.info(json_stats["vector"]["type"])
+        #log.info(json_stats["vector"]["type"])
         if json_stats["vector"]["type"] == "database":
-            self._zonal_stats_by_vector_database(json_stats)
+            stats = self._zonal_stats_by_vector_database(json_stats)
         elif json_stats["vector"]["type"] == "geojson":
             log.warn("TODO: Geojson statistics")
 
         # Stats
         # TODO: save stats in case is needed or return statistics
-        return None
+        return stats
 
     def get_stats(self, json_stats):
         if "uid" in json_stats["raster"]:
@@ -63,10 +64,13 @@ class Stats():
 
     def _zonal_stats_by_vector_database(self, json_stats):
         # Stats result
-        stats = None
+        stats = []
+
+        # raster statistics
+        raster_statistics = None if "raster_stats" not in json_stats["stats"] else json_stats["stats"]["raster_stats"]
 
         # Raster path
-        log.info(json_stats["raster"])
+        #log.info(json_stats["raster"])
         raster_path = json_stats["raster"]["path"]
 
         # Query Options
@@ -91,7 +95,7 @@ class Stats():
         if ( where is not None):
             query += " WHERE " + where
 
-        log.info(query)
+        #log.info(query)
 
         # query DB
         codes = self.db_spatial.query(query)
@@ -102,22 +106,28 @@ class Stats():
 
         # get column filter index
         # TODO: make it dynamic
-        column_filter_index = 0
+        column_filter_code_index = 0
+        column_filter_label_index = 1
 
         if codes:
             for r in codes:
+
+                code = str(r[column_filter_code_index])
+                label = str(r[column_filter_label_index])
                 # TODO: problems with query Strings and Integers (or whatever)
-                stats_query = "SELECT * FROM " + from_query + " WHERE " + column_filter + " IN (" + str(r[column_filter_index]) + ")"
+                stats_query = "SELECT * FROM " + from_query + " WHERE " + column_filter + " IN (" + code + ")"
 
                 #stats.append(self._get_stats_query(query, str(r[0]), str(r[1]), self.geostats['save_stats']))
-                log.info(r)
+                #log.info(code)
                 db_connection_string = self.db_spatial.get_connection_string(True);
                 filepath = raster.crop_by_vector_database(raster_path, stats_query,db_connection_string)
 
-                log.info(filepath)
+                #log.info(filepath)
                 if filepath:
-                    log.info(raster.get_statistics(filepath))
-
+                    raster_stats = raster.get_statistics(filepath, raster_statistics)
+                    if raster_stats:
+                        obj = {"code": code, "label": label, "data": raster_stats}
+                        stats.append(obj)
         return stats
 
 
