@@ -42,6 +42,10 @@ class MongoSearchTestClass(unittest.TestCase):
         layers = self.mongo_search.find_layers_by_dekad_range('08-3', '08-3')
         self.failUnlessEqual(4, len(layers))
 
+    def test_search_by_dekad_range_and_product(self):
+        layers = self.mongo_search.find_layers_by_dekad_range('08-3', '08-3', 'MOD13Q1')
+        self.failUnlessEqual(1, len(layers))
+
     def test_delete_by_id(self):
         id = '53e495e4f8cd6719385f81a0'
         layer = self.mongo_search.find_layer_by_id(id)
