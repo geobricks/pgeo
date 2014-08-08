@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 #******************************************************************************
 #
-#  Project:  GDAL
-#  Purpose:  Command line raster calculator for gdal supported files
-#  Author:   Chris Yesson, chris.yesson@ioz.ac.uk
+#  Purpose:  Quick Extension of gdal_calc.py. Command line raster calculator for gdal supported files.
+#  Support multiple files instead of a fixed number like in gdal_calc.py
+#  Author:   Simone Murzilli, simone.murzilli@gmail.com
+#  Based on gdal_calc.py. Author:   Chris Yesson, chris.yesson@ioz.ac.uk
 #
 #******************************************************************************
 #  Copyright (c) 2010, Chris Yesson <chris.yesson@ioz.ac.uk>
@@ -32,13 +33,13 @@
 # Command line raster calculator for gdal supported files. Use any basic arithmetic supported by numpy arrays such as +-*\ along with logical operators such as >.  Note that all files must be the same dimensions, but no projection checking is performed.  Use gdal_calc.py --help for list of options.
 
 # example 1 - add two files together
-# gdal_calc.py -A input1.tif -B input2.tif --outfile=result.tif --calc="A+B"
+# gdal_calculations.py --aa input1.tif --bb input2.tif --outfile=result.tif --calc="aa+bb" --alphalist=['aa','bb']
 
 # example 2 - average of two layers
-# gdal_calc.py -A input.tif -B input2.tif --outfile=result.tif --calc="(A+B)/2"
+# gdal_calculations.py --aa input1.tif --bb input2.tif --outfile=result.tif --calc="(aa+bb)/2" --alphalist=['aa','bb']
 
 # example 3 - set values of zero and below to null
-# gdal_calc.py -A input.tif --outfile=result.tif --calc="A*(A>0)" --NoDataValue=0
+# gdal_calculations.py --aa input1.tif --outfile=result.tif --calc="aa*(aa>0)" --NoDataValue=0 --alphalist=['aa']
 ################################################################
 
 try:
