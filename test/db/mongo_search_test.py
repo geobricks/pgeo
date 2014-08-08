@@ -37,5 +37,9 @@ class MongoSearchTestClass(unittest.TestCase):
         layers = self.mongo_search.find_layers_by_product(None, None, None, confidentiality)
         self.failUnlessEqual(1, layers.count())
 
+    def test_search_by_dekad_range(self):
+        layers = self.mongo_search.find_layers_by_dekad_range('08-3', '08-3')
+        self.failUnlessEqual(4, len(layers))
+
 if __name__ == '__main__':
     unittest.main()

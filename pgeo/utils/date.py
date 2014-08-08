@@ -38,9 +38,18 @@ def create_dekad_code(month, dekad):
     return c + str(month) + '-' + str(dekad)
 
 
-# print range(1,11)
-# print range(11,21)
-# print range(21,32)
-# print day_of_the_year_to_dekad("256", 2013)
-# print day_of_the_year_to_dekad("30", 2013)
-# print day_of_the_year_to_dekad(30, 2013)
+def dekad_to_day_from(dekad):
+    if int(dekad[3]) == 1:
+        return 1
+    elif int(dekad[3]) == 2:
+        return 11
+    elif int(dekad[3]) == 3:
+        return 21
+
+def dekad_to_day_to(dekad):
+    if int(dekad[3]) == 1:
+        return 10
+    elif int(dekad[3]) == 2:
+        return 20
+    elif int(dekad[3]) == 3:
+        return 31
