@@ -1,7 +1,6 @@
 import unittest
 from pgeo.config.settings import settings
 from pgeo.db.mongo.search import MongoSearch
-from bson import json_util
 
 
 class MongoSearchTestClass(unittest.TestCase):
@@ -21,7 +20,7 @@ class MongoSearchTestClass(unittest.TestCase):
     def test_search_by_product(self):
         product = 'MOD13Q1'
         layers = self.mongo_search.find_layers_by_product(product)
-        self.failUnlessEqual(3, layers.count())
+        self.failUnlessEqual(6, layers.count())
 
     def test_search_by_dekad(self):
         dekad = '08-1'
@@ -31,7 +30,12 @@ class MongoSearchTestClass(unittest.TestCase):
     def test_search_by_type(self):
         type = 'avg'
         layers = self.mongo_search.find_layers_by_product(None, None, type)
-        self.failUnlessEqual(3, layers.count())
+        self.failUnlessEqual(6, layers.count())
+
+    def test_search_by_confidentiality(self):
+        confidentiality = 'private'
+        layers = self.mongo_search.find_layers_by_product(None, None, None, confidentiality)
+        self.failUnlessEqual(1, layers.count())
 
 if __name__ == '__main__':
     unittest.main()

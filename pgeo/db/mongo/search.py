@@ -24,7 +24,7 @@ class MongoSearch():
         """
         return self.client[self.db_name][self.table_name].find_one({'_id': ObjectId(layer_id)})
 
-    def find_layers_by_product(self, product=None, dekad=None, agg_type=None):
+    def find_layers_by_product(self, product=None, dekad=None, agg_type=None, confidentiality=None):
         """
         Find layers according to user's selections.
         @param product: Product ID, e.g. 'MOD13Q1'
@@ -40,5 +40,7 @@ class MongoSearch():
             conditions.append({'meContent.seReferencePopulation.referencePeriod.codes.code': {'$in': [dekad]}})
         if agg_type is not None:
             conditions.append({'meStatisticalProcessing.seDatasource.seDataCompilation.aggregationProcessing': agg_type})
+        if confidentiality is not None:
+            conditions.append({'meAccessibility.seConfidentiality.codes.code': {'$in': [confidentiality]}})
         q['$and'] = conditions
         return self.client[self.db_name][self.table_name].find(q)
