@@ -48,9 +48,15 @@ class MongoSearch():
         return self.client[self.db_name][self.table_name].find(q)
 
     def find_layers_by_dekad_range(self, dekad_from, dekad_to):
-
+        """
+        Find all the layers in the specified range.
+        @param dekad_from: Starting dekad of the interval
+        @type dekad_from: string
+        @param dekad_to: Ending dekad of the interval
+        @type dekad_to: string
+        @return: Array of layers in the dekads range
+        """
         q = []
-
         p = {}
         p['url'] = '$meAccessibility.seDistribution.onlineResource'
         p['year'] = {'$year': '$meContent.seCoverage.coverageTime.from'}
@@ -58,18 +64,13 @@ class MongoSearch():
         p['month_to'] = {'$month': '$meContent.seCoverage.coverageTime.to'}
         p['day_from'] = {'$dayOfMonth': '$meContent.seCoverage.coverageTime.from'}
         p['day_to'] = {'$dayOfMonth': '$meContent.seCoverage.coverageTime.to'}
-
         a = {'$project': p}
-
         m = {}
         m['month_from'] = {'$gte': int(dekad_from[0:2])}
         m['month_to'] = {'$lte': int(dekad_to[0:2])}
         m['day_from'] = {'$gte': dekad_to_day_from(dekad_from)}
         m['day_to'] = {'$gte': dekad_to_day_to(dekad_to)}
-
         b = {'$match': m}
-
         q.append(a)
         q.append(b)
-
         return self.client[self.db_name][self.table_name].aggregate(q)['result']

@@ -1,6 +1,7 @@
 import unittest
 from pgeo.config.settings import settings
 from pgeo.db.mongo.search import MongoSearch
+from pgeo.db.mongo.metadata.db import remove_metadata_by_id
 
 
 class MongoSearchTestClass(unittest.TestCase):
@@ -40,6 +41,15 @@ class MongoSearchTestClass(unittest.TestCase):
     def test_search_by_dekad_range(self):
         layers = self.mongo_search.find_layers_by_dekad_range('08-3', '08-3')
         self.failUnlessEqual(4, len(layers))
+
+    def test_delete_by_id(self):
+        id = '53e495e4f8cd6719385f81a0'
+        layer = self.mongo_search.find_layer_by_id(id)
+        self.failUnless(layer is not None)
+        remove_metadata_by_id(id)
+        layer = self.mongo_search.find_layer_by_id(id)
+        self.failUnless(layer is None)
+
 
 if __name__ == '__main__':
     unittest.main()

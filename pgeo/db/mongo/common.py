@@ -1,7 +1,6 @@
-import sys
 from bson import json_util
-from pgeo.config import settings
-from pgeo.utils import log
+from bson.objectid import ObjectId
+from pgeo.error.custom_exceptions import PGeoException
 
 
 def insert(client, database, collection, data):
@@ -34,6 +33,13 @@ def remove(client, database, collection, data):
     except Exception, e:
         print "Delete ERROR ", e
         return None
+
+
+def remove_by_id(client, database, collection, id):
+    try:
+        return client[database][collection].remove({'_id': ObjectId(id)})
+    except Exception, e:
+        raise PGeoException(e, status_code=500)
 
 
 """

@@ -28,6 +28,15 @@ def remove_metadata(json):
     return common.remove(client, database, document_layer, json)
 
 
+def remove_metadata_by_id(id):
+    """
+    Delete Layer Metadata in mongodb
+    @param id: Metadata's id
+    @return: id
+    """
+    return common.remove_by_id(client, database, document_layer, id)
+
+
 def find(collection):
     """
     Return entire collection
