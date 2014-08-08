@@ -1,0 +1,79 @@
+<html>
+	<head>
+		<script type='text/javascript' src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
+		<script type='text/javascript'>
+			function create_metadata() {
+				var payload = {
+					"uid" : "FENIX:MOD13Q1_NDVI_2014_08_3",
+					"title" : {
+				        "EN" : "MODIS NDVI 250m August 3rd Dekad",
+				        "IT" : "MODIS NDVI 250m Agosto 3 Decade"
+				    },
+				    "language" : {
+				        "codes" : [{"code" : "100"}]
+				    },
+				    "creationDate" : new Date().toISOString(),
+				    "meContent" : {
+				        "description" : {
+				            "EN" : "MODIS NDVI 250m",
+				            "IT" : "MODIS NDVI 250m"
+				        },
+				        "seReferencePopulation" : {
+				            "referencePeriod" : {
+				                "codeList" : "dekads",
+				                "version" : "1.0",
+				                "codes" : [
+				                    {
+				                    	"code" : "08-3"
+				                    }
+				                ]
+				            }
+				        },
+				        "seCoverage" : {
+				            "coverageTime" : {
+				                "from" : "2014-08-21",
+				                "to": "2014-08-31"
+				            },
+				            "coverageSector" : {
+				                "codes" : [{"code" : "MOD13Q1"}]
+				            }
+				        }
+				    },
+				    "meMaintenance" : {
+				        "seUpdate" : {
+				            "updateDate" : new Date().toISOString()
+				        }
+				    },
+				    "meAccessibility" : {
+				        "seDistribution": {
+				            "onlineResource" : "/2014/08/017/EPSG/4326/STD/layer.geotiff"
+				        }
+				    }
+				};
+				$.ajax({
+				    type: 'POST',
+				    url: 'http://127.0.0.1:5005/metadata/create/',
+				    data: JSON.stringify(payload),
+				    contentType: 'application/json;charset=UTF-8',
+				    dataType: 'html',
+				    success: function(response) {
+				    	console.log($.parseJSON(response));
+				    	$('#result').html('<div style="color: green;">' + response + '</div>');
+				    },
+				    error: function (a, b, c) {
+				    	console.log(a);
+				    	console.log(b);
+				    	console.log(c);
+				    	$('#result').html('<div style="color: red;">' + a + '</div>');
+				    }
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<button style='width: 100%;' onclick='create_metadata();'>
+			Create Metadata
+		</button>
+		<div id="result"></div>
+	</body>
+</html>
