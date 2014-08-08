@@ -4,7 +4,6 @@ from pgeo.config.settings import settings
 from pgeo.config.settings import read_config_file_json
 
 
-print settings['db']['metadata']['document']['layer']
 client = pymongo.MongoClient(settings['db']['metadata']['connection'])
 database = settings['db']['metadata']['database']
 document_layer = settings['db']['metadata']['document']['layer']

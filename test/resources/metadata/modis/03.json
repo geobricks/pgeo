@@ -1,0 +1,64 @@
+{
+    "uid": "FENIX:MOD13Q1_NDVI_2014_08_3",
+    "title": {
+        "EN": "MODIS NDVI 250m August 3rd Dekad",
+        "IT": "MODIS NDVI 250m Agosto 3 Decade"
+    },
+    "language": {
+        "codes": [
+            {
+                "code": "100"
+            }
+        ]
+    },
+    "creationDate": "2014-08-08",
+    "meContent": {
+        "description": {
+            "EN": "MODIS NDVI 250m",
+            "IT": "MODIS NDVI 250m"
+        },
+        "seReferencePopulation": {
+            "referencePeriod": {
+                "codeList": "dekads",
+                "version": "1.0",
+                "codes": [
+                    {
+                        "code": "08-3"
+                    }
+                ]
+            }
+        },
+        "seCoverage": {
+            "coverageTime": {
+                "from": "2014-08-21",
+                "to": "2014-08-31"
+            },
+            "coverageSector": {
+                "codes": [
+                    {
+                        "code": "MOD13Q1"
+                    }
+                ]
+            }
+        }
+    },
+    "meMaintenance": {
+        "seUpdate": {
+            "updateDate": "2014-08-08"
+        }
+    },
+    "meAccessibility": {
+        "seDistribution": {
+            "onlineResource": "/2014/08/017/EPSG/4326/STD/layer.geotiff"
+        },
+        "seConfidentiality": {
+            "codeList": "Confidentiality",
+            "version": "1.0",
+            "codes": [
+                {
+                    "code": "private"
+                }
+            ]
+        }
+    }
+}
