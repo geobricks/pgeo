@@ -102,7 +102,9 @@ def get_descriptive_statistics(input_file, config):
 def get_histogram(input_file, config):
     """
     :param input_file: file to be processed
+    :type string
     :param config: json config file to be passed
+    :type json
     :return: return and array with the min, max, mean, sd statistics per band i.e. [{"band": 1, "buckets": 256, "values": [43256, 357, ...], "max": 998.0, "min": 0.0}]
     """
     try:
@@ -113,6 +115,53 @@ def get_histogram(input_file, config):
             raise PGeoException(errors[522], 404)
     except PGeoException, e:
         raise PGeoException(e.get_message(), e.get_status_code())
+
+
+
+def location_values(input_files, x, y, band=None):
+    """
+    Get the value of a (x, y) location
+
+    # TODO:
+    1) pass a json, instead of [files] pass file and id
+    2) pass as well the projection used i.e. EPSG:4326
+    3) for now it's used x, y as lat lon (it's not used the projection)
+
+    :param input_files: files to be processed
+    :type array
+    :param x: x value (for now it's used LatLon)
+    :type float
+    :param y: y value (for now it's used LatLon)
+    :type float
+    :param band: band default=None (not yet used)
+    :return: and array with the values of the (x, y) location
+    """
+    values = []
+    for input_file in input_files:
+        values.append(_location_value(input_file, x, y, band))
+    return values
+
+
+def _location_value(input_file, x, y, band=None):
+    """
+    Get the value of a (x, y) location
+    :param input_file: file to be processed
+    :type string
+    :param x: x value
+    :type float
+    :param y: y value
+    :type float
+    :param band: band default=None (not yet used)
+    :return: the value of the (x, y) location
+    """
+    # TODO: check with -wgs84 values instead of -geoloc that is the reference system of the image
+    #cmd = "gdallocationinfo -valonly " + input_file + " -l_srs EPSG:3857 -geoloc " + str(x) + " " + str(y)
+    #cmd = "gdallocationinfo -valonly " + input_file + " -geoloc " + str(x) + " " + str(y)
+    cmd = "gdallocationinfo -valonly " + input_file + " -wgs84 " + str(x) + " " + str(y)
+
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    output, error = process.communicate()
+    return output.strip()
 
 
 def _get_descriptive_statistics(ds, config):

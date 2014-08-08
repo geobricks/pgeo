@@ -26,8 +26,8 @@ errors = {
     511:  'Data provider is not currently supported.',
     512:  'Source type is not currently supported.',
     513:  'Error while parsing the payload of the request.',
-    #geoserver
+    # geoserver
     520: "There is already a store named",
     521: "No coverage store named",
-    522:  "Layer file doesn't exists"
+    522:  "Layer file doesn't exists",
 }
