@@ -13,11 +13,10 @@ class Metadata:
     seach = None
 
     def __init__(self, config):
-
         self.config = config
         self.db_metadata = DBMetadata(config)
         self.search = MongoSearch(config['connection'], config["database"], config['document']['layer'])
-
+        log.info("---Metadata initialization---")
         log.info(self.db_metadata)
         log.info(self.search)
 

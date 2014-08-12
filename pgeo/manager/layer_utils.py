@@ -1,6 +1,7 @@
 import glob
 import os
 import json
+from copy import deepcopy
 from pgeo.config.settings import settings, read_config_file_json
 from pgeo.manager.manager import Manager, sanitize_name
 from pgeo.utils.log import logger
@@ -11,7 +12,7 @@ log = logger("pgeo.manager.layer_utils")
 
 raster_template = "raster"
 
-metadata_json = {}
+default_metadata_json = {}
 
 def harvest_folder(path):
     """
@@ -35,20 +36,21 @@ def harvest_folder(path):
             if os.path.isfile(metadata_file):
                 metadata_json = json.loads(open(metadata_file).read())
                 log.info(metadata_json)
+            else:
+                log.warn("Metadata '%s' doesn't exists " % metadata_file)
+                log.warn("Setting the default metadata file for '%s' " % name)
+                # TODO: create a default metadata if the file doesn't exists it doesn't exists
+                metadata = deepcopy(default_metadata_json)
 
-                # exists a metadata file
-                # merge with raster_metadata
-            # TODO: create a default metadata if the file doesn't exists it doesn't exists
+            log.info("Prossessing the raster '%s' " % (name))
             metadata = merge_layer_metadata(raster_template, metadata_json)
 
             # process metadata with the default workspace if uid is not set in the medata
             if "uid" not in metadata:
                 metadata["uid"] = manager.geoserver.get_default_workspace() + ":" + sanitize_name(name)
-
-            # TODO: read EPSG from file
-
             manager.publish_coverage(file, metadata)
 
+            log.info("Raster published '%s' " % (name))
         else:
             log.warn("Coverage '%s' already exists " % name)
 

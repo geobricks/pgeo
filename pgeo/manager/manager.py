@@ -104,10 +104,6 @@ class Manager():
 
             name = filesystem.get_filename(file_path)
 
-            # publish on metadata
-            log.info("insert metadata")
-            self.metadata.db_metadata.insert_metadata(metadata_def)
-
             # publish coveragestore on geoserver
             # TODO: merge the metadata with the default vector metadata
             if "name" not in geoserver_def:
