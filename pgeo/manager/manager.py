@@ -1,16 +1,17 @@
-from pgeo.config import settings
 from pgeo.geoserver.geoserver import Geoserver
 from pgeo.metadata.metadata import Metadata
 
 
-class Publish():
+class Layer():
 
-    metadata = Metadata(settings.metadata)
-    geoserver = Geoserver(settings.geoserver)
-    spatial_db = Geoserver(settings.geoserver)
 
-    def __init__(self):
-        return None
+    def __init__(self, config):
+
+        #
+        self.metadata = Metadata(config["db"]["metadata"])
+        self.geoserver = Geoserver(config["geoserver"])
+        self.spatial_db = Geoserver(config["geoserver"])
+
 
     def publish(self):
         return None
@@ -30,3 +31,9 @@ class Publish():
     def rollback(self):
         # TODO: implement something if metadata or geoserver fails to publish or delete
         return None
+
+
+from pgeo.config.settings import settings
+metadata = Layer(settings)
+
+print metadata
