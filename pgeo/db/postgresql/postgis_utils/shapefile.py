@@ -21,13 +21,24 @@ IMPORT_MODE_SPATIAL_INDEX = ""
 
 
 def import_shapefile(datasource, shapefile, table, overwrite=False, encoding='latin1'):
+    if "schema" in datasource:
+        table = datasource["schema"] + "." + table
+
     _import_shapefile(datasource['host'], datasource['port'], datasource['dbname'], datasource['username'], datasource['password'], shapefile, table, overwrite, encoding)
     return True
 
 def _import_shapefile(host, port, dbname, user, password, shapefile, table, overwrite, encoding):
     conn = psycopg2.connect("host=%s  port='%s' dbname=%s user=%s password=%s" % (host, port, dbname, user, password))
+    if overwrite:
+        _drop_table(conn, table)
+
     _shape_to_postgresql(conn, shapefile, table, IMPORT_MODE_CREATE + IMPORT_MODE_DATA + IMPORT_MODE_SPATIAL_INDEX, encoding)
     _vacuum_analyze(conn, table)
+
+
+def _drop_table(conn, table):
+    curs = conn.cursor()
+    curs.execute("DROP TABLE IF EXISTS " + table)
 
 
 #TODO: how to handle the encoding?
@@ -45,7 +56,8 @@ def _shape_to_postgresql(conn, shape_path, table, mode, encoding='latin1', srid=
         "-W", encoding,
         "-s", srid,
         shape_path,
-        table]
+        table
+    ]
     print args
     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=log_file)
 
