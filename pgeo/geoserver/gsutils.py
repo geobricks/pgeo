@@ -44,7 +44,7 @@ def prepare_upload_bundle(name, data):
     archive when it's done."""
     fd, path = mkstemp()
     zip_file = ZipFile(path, 'w')
-    print zip_file
+    print data.iteritems()
     for ext, stream in data.iteritems():
         fname = "%s.%s" % (name, ext)
         print fname
