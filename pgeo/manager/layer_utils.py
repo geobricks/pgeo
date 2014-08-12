@@ -32,7 +32,9 @@ def harvest_folder(path):
 
         path, filename, name = filesystem.get_filename(file_path, True)
         #log.info("%s %s %s " % (path, filename, name))
-        if manager.geoserver.check_if_coveragestore_exist(name) is False:
+        default_workspace = manager.geoserver.get_default_workspace()
+        name = sanitize_name(name)
+        if manager.geoserver.check_if_layer_exist(name, default_workspace) is False:
             metadata_file = os.path.join(path, name + ".json")
             log.info("Check Metadata File: %s" % metadata_file)
             if os.path.isfile(metadata_file):
@@ -49,7 +51,7 @@ def harvest_folder(path):
 
             # process metadata with the default workspace if uid is not set in the metadata
             if "uid" not in metadata:
-                metadata["uid"] = manager.geoserver.get_default_workspace() + ":" + sanitize_name(name)
+                metadata["uid"] = default_workspace + ":" + name
             manager.publish_coverage(file_path, metadata)
 
             log.info("Raster published '%s' " % (name))

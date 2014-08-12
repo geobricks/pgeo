@@ -60,7 +60,7 @@ class Geoserver():
         path = data["path"]
 
         if not overwrite:
-            if self.check_if_coveragestore_exist(name, workspace):
+            if self.check_if_layer_exist(name, workspace):
                 raise PGeoException(errors[520]+": %s" % name)
 
         # default geotiff headers and extension
@@ -143,7 +143,7 @@ class Geoserver():
 
         if not overwrite:
             log.warn("TODO: shapefile")
-            #if self.check_if_coveragestore_exist(name, workspace):
+            #if self.check_if_layer_exist(name, workspace):
             #  raise PGeoException(errors[520]+": %s" % name)
 
         try:
@@ -245,7 +245,7 @@ class Geoserver():
             workspace = self.get_default_workspace()
 
         # TODO: it makes two, calls, so probably it's better just handle the delete code
-        if self.check_if_coveragestore_exist(name, workspace):
+        if self.check_if_layer_exist(name, workspace):
             cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name])
             return self.delete(cs_url, purge, recurse)
 
@@ -279,10 +279,11 @@ class Geoserver():
         else:
            raise PGeoException(content, headers.status)
 
-    def check_if_coveragestore_exist(self, name, workspace=None):
+    def check_if_layer_exist(self, name, workspace=None):
         if workspace is None:
             workspace = self.get_default_workspace()
-        cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name])
+        layername = workspace +":" + name
+        cs_url = url(self.service_url, ["layers", layername + ".json"])
         log.info("checking coverage exists: %s (%s)" % (name, cs_url))
         response, content = self.http.request(cs_url, "GET")
         if response.status == 200:
