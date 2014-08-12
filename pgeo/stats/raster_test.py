@@ -4,8 +4,8 @@ from pgeo.config.settings import settings
 
 layer = {
     # the stored UID in the GeoMetadata database
-    "uid" : "modis:test_bella_guide3",
-    }
+    "uid": "modis:test_bella_guide3",
+}
 
 
 
