@@ -1,9 +1,9 @@
 from pgeo.utils.log import logger
 
-log = logger("pgeo.manager.manager_bridge")
+log = logger("pgeo.metadata.metadata_bridge")
 
 
-def translate_from_metadata_to_geoserver(metadata_json):
+def translate_from_metadata_to_geoserver(metadata_json, file_path=None):
     geoserver_json = {
         #"name" : ""
         "title" : "",
@@ -15,8 +15,9 @@ def translate_from_metadata_to_geoserver(metadata_json):
         }
     }
     try:
+        log.info(metadata_json)
         l = metadata_json["uid"].split(":")
-        if len(l) > 0:
+        if len(l) > 1:
             geoserver_json["name"] = l[1]
             geoserver_json["workspace"] = l[0]
         else:
@@ -38,6 +39,9 @@ def translate_from_metadata_to_geoserver(metadata_json):
         geoserver_json["defaultStyle"]["name"] = metadata_json["meSpatialRepresentation"]["seDefaultStyle"]["name"]
     except Exception:
         pass
+
+    if file_path is not None:
+        geoserver_json["path"] = file_path
 
     return geoserver_json
 
