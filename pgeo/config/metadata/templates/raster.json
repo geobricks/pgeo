@@ -1,0 +1,19 @@
+{
+    "meSpatialRepresentation" :{
+        "layerType" : "raster",
+        "seBoundingBox": {
+            "Xmin": null,
+            "Xmax": null,
+            "Ymin": null,
+            "Ymax": null
+        },
+        "seGridSpatialRepresentation" : {
+            "numberOfDimension" : null,
+            "axisDimesionProperties" : null,
+
+            "cellGeometry" : null,
+            "cellOfOrigin" : null,
+            "XYposition" : null
+        }
+    }
+}

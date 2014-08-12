@@ -69,14 +69,15 @@ settings = {
 
     # Geoserver
     "geoserver": {
-        "geoserver_master": "http://168.202.28.214:9090/geoserver/rest",
+        "geoserver_master": "http://localhost:9090/geoserver/rest",
         "geoserver_slaves": [],
         "username": "admin",
         "password": "geoserver",
         "default_workspace": "fenix",
         # this is used as default datasource to this is a reference to the spatial_db
         # da vedere!
-        "default_db": "spatial"
+        # this should be connected with the current spatial db
+        "default_datastore": "pgeo"
     },
 
     # Stats
@@ -108,7 +109,7 @@ def read_template(filename):
     try:
         directory = os.path.dirname(os.path.dirname(__file__))
         filename = filename.lower()
-        path = directory + '/' + settings['folders']['config'] + '/' + settings['folders']['metadata_templates']
+        path = os.path.join(directory, settings['folders']['config'], settings['folders']['metadata_templates'])
         extension = '' if '.json' in filename else '.json'
         return json.loads(open(path + filename + extension).read())
     except Exception, e:

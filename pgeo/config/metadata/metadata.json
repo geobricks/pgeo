@@ -80,6 +80,9 @@
     },
     "meSpatialRepresentation" :{
         "layerType" : "raster",
+        "seDefaultStyle" : {
+            "name" : "ndvi"
+        },
         "seBoundingBox": {
             "Xmin": null,
             "Xmax": null,

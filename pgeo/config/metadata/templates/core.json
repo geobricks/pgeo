@@ -1,14 +1,10 @@
 {
-    "uid" : "workspace:layername",
     "title" : {
-        "EN" : "title of the layer",
-        "FR" : "title of the layer"
+        "EN" : ""
     },
-    "creationDate" : 1328405808080,
     "parentIdentifiers" : null,
     "metadataStandardName" : "FENIX",
     "metadataStandardVersion" : "0.1",
-    "noDataValue" : "-5000",
     "language" : {
         "codeList" : "Languages",
         "version" : "1.0",
@@ -23,92 +19,46 @@
         "resourceRepresentationType" : "geographic",
         "keywords" : [],
         "description" : {
-            "EN" : "description of the layer"
-        },
-        "seReferencePopulation" : {
-            "referencePeriod" : {
-                "codeList" : "dekads",
-                "version" : "1.0",
-                "codes" : [
-                    {"code" : "01-1"}
-                ]
-            }
-        },
-        "seCoverage" : {
-            "coverageTime" : {
-                "from" : 1328405808080,
-                "to": 1328405808080
-            },
-            "coverageGeographic" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "world"}]
-            },
-            "coverageSector" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "MODISQ1"}]
-            }
+            "EN" : ""
         }
     },
     "meStatisticalProcessing" : {
         "seDatasource" : {
             "sePrimaryDataCollection" : {
                 "dataCollector" : {
-                    "organisation" : "NASA"
+                    "organisation" : ""
                 },
                 "typeOfCollection" : {
                     "codeList" : "...",
                     "version" : "...",
-                    "codes" : [{"code" : "MODIS"}]
+                    "codes" : [{"code" : ""}]
                 },
                 "collectionPeriodicity" : {
                     "codeList" : "...",
                     "version" : "...",
-                    "codes" : [{"code" : "dekad"}]
+                    "codes" : [{"code" : ""}]
                 }
             },
             "seDataCompilation" : {
-                "aggregationProcessing" : "avg"
+                "aggregationProcessing" : ""
             }
         }
     },
     "meMaintenance" : {
         "seUpdate" : {
-            "updateDate" : 1328405808080
-        }
-    },
-    "meSpatialRepresentation" :{
-        "layerType" : "raster",
-        "seBoundingBox": {
-            "Xmin": null,
-            "Xmax": null,
-            "Ymin": null,
-            "Ymax": null
-        },
-        "seGridSpatialRepresentation" : {
-            "numberOfDimension" : null,
-            "axisDimesionProperties" : null,
-
-            "cellGeometry" : null,
-            "cellOfOrigin" : null,
-            "XYposition" : null
-        },
-        "seVectorSpatialRepresentation" : {
-            "geometricObjects" : "point"
         }
     },
     "meReferenceSystem" : {
         "referenceSystemIdentifier": "EPSG",
         "referenceSystemName": {
-            "EN":"European Petroleum Survey Group"
+            "EN": "European Petroleum Survey Group"
         },
         "referenceSystemAuthority": null,
         "seProjection" : {
             "projection" : {
-                "codeList" : "...",
-                "version" : "...",
-                "codes" : [{"code" : "..."}]
+                "codeList" : "EPSG",
+                "version" : "1.0",
+                "codes" : [{"code" : ""}]
             },
             "projectionName" : { "EN" : "..." }
         },
@@ -125,7 +75,7 @@
     },
     "meAccessibility" : {
         "seDistribution": {
-            "onlineResource" : "/2012/10/017/EPSG/4326/STD/layer.geotiff"
+            "onlineResource" : ""
         }
     }
 }
