@@ -28,7 +28,7 @@ def crop_by_vector_database(input_file, query=None, db_connection_string=None, d
     :param dstnodata: set nodata on the nodata value
     :return: the output file path that has been processed, or None if there is any problem on the processing
     """
-    output_file =  filesystem.create_tmp_filename('output_', '.geotiff')
+    output_file = filesystem.create_tmp_filename('output_', '.geotiff')
     args = [
         'gdalwarp',
         "-q",
@@ -41,7 +41,8 @@ def crop_by_vector_database(input_file, query=None, db_connection_string=None, d
         query,
         "-dstnodata",
         dstnodata,
-        "-crop_to_cutline",
+        #"-crop_to_cutline",
+        #"-dstalpha",
         input_file,
         output_file
     ]
@@ -178,10 +179,12 @@ def _get_descriptive_statistics(ds, config):
         # TODO: check why the "force" doesn't work on GetStatistics but the ComputeStatistics works
         if force:
             s = srcband.ComputeStatistics(0)
+            #s = srcband.ComputeRasterMinMax(False)
         else:
             s = srcband.GetStatistics(False, force)
         if stats is None:
             continue
+        #srcband.SetStatistics(float(s[0]), float(s[1]), float(s[2]), float(s[3]))
         stats.append({"band": band, "min": s[0], "max": s[1], "mean": s[2], "sd": s[3]})
     return stats
 
