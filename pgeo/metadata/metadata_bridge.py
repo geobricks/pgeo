@@ -1,4 +1,7 @@
 from pgeo.utils.log import logger
+from pgeo.gis.raster import get_authority
+
+
 
 log = logger("pgeo.metadata.metadata_bridge")
 
@@ -45,6 +48,19 @@ def translate_from_metadata_to_geoserver(metadata_json, file_path=None):
 
     return geoserver_json
 
+
+# TODO: move it
+def add_metadata_from_raster(file_path, metadata_json):
+    autorityname, authoritycode = get_authority(file_path)
+    print autorityname
+    print authoritycode
+    # TODO: add to the metadata the EPSG code
+    #metadata_json["defaultStyle"]["name"] = metadata_json["meSpatialRepresentation"]["seDefaultStyle"]["name"]
+
+    # get boundingbox and set it
+
+def add_metadata_from_vector(file_path, metadata_json):
+    return "TODO:"
 
 def translate_from_geoserver_to_metadata(metadata_json):
     return "TODO:"

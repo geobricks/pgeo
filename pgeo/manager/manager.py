@@ -6,7 +6,7 @@ from pgeo.utils import filesystem
 from pgeo.db.postgresql.postgis_utils import shapefile
 from pgeo.error.custom_exceptions import PGeoException
 from pgeo.utils import log
-from pgeo.metadata import metadata_bridge
+from pgeo.metadata.metadata_bridge import add_metadata_from_vector, add_metadata_from_raster, translate_from_metadata_to_geoserver
 
 
 log = log.logger(__name__)
@@ -26,8 +26,20 @@ class Manager():
         self.stats = Stats(config)
 
 
-    def publish(self):
-        return None
+    def publish_shapefile(self, file_path, metadata_def=None, overwrite=False):
+        """
+        @param file_path:
+        @param metadata_def:
+        @param overwrite:
+        @return:
+        """
+        try:
+            # add additional layer info to the metadata i.e. bbox and EPSG code
+            add_metadata_from_vector(file_path, metadata_def)
+            # add additional layer info to the metadata i.e. bbox and EPSG code
+            self._publish_coverage(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite)
+        except PGeoException, e:
+            raise PGeoException(e.get_message(), e.get_status_code())
 
     def _publish_shapefile(self, file_path, metadata_def=None, geoserver_def=None, overwrite=False):
         """
@@ -85,8 +97,10 @@ class Manager():
         @return:
         """
         try:
-
-            self._publish_coverage(file_path, metadata_def, metadata_bridge.translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite)
+            # add additional layer info to the metadata i.e. bbox and EPSG code
+            add_metadata_from_raster(file_path, metadata_def)
+            # add additional layer info to the metadata i.e. bbox and EPSG code
+            self._publish_coverage(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite)
         except PGeoException, e:
             raise PGeoException(e.get_message(), e.get_status_code())
 

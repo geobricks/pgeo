@@ -1,4 +1,4 @@
-from osgeo import gdal
+from osgeo import gdal, osr
 import os
 import subprocess
 from pgeo.utils import log
@@ -210,3 +210,15 @@ def _get_histogram(ds, config):
         hist = ds.GetRasterBand(band).GetHistogram(buckets=buckets, min=min, max=max, include_out_of_range=include_out_of_range)
         stats.append({"band": band, "buckets": buckets, "min": min, "max": max, "values": hist})
     return stats
+
+
+def get_authority(file_path):
+    """
+    @param file_path: path to the file
+    @type file_path: string
+    @return: AuthorityName, AuthorityCode
+    """
+    ds = gdal.Open( file_path )
+    prj = ds.GetProjection()
+    srs=osr.SpatialReference(wkt=prj)
+    return srs.GetAttrValue("AUTHORITY", 0),  srs.GetAttrValue("AUTHORITY", 1)
