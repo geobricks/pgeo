@@ -5,7 +5,8 @@ from pgeo.config.settings import settings
 from pgeo.config.settings import read_config_file_json
 from pgeo.utils import log
 import shutil
-from os.path import basename
+from pgeo.error.custom_exceptions import PGeoException
+from pgeo.error.custom_exceptions import errors
 
 log = log.logger("pgeo.utils.filesystem")
 
@@ -163,3 +164,16 @@ def create_folder(conf, parameters, folder, root_folder):
     if 'folders' in folder and len(folder['folders']) > 0:
         for sub_folder in folder['folders']:
             create_folder(conf, parameters, sub_folder, directory)
+
+
+def list_sources():
+    try:
+        path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/' + settings['folders']['config'] + settings['folders']['data_providers'])
+        out = []
+        files = os.listdir(path)
+        files.sort()
+        for filename in files:
+            out.append({'code': filename, 'label': filename[:filename.index('.json')]})
+        return out
+    except Exception, err:
+        raise PGeoException(errors[510], status_code=510)
