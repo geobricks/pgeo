@@ -112,9 +112,9 @@
                             "label": "label"
                         },
                         "description": {
-                            "en": "Available Years",
-                            "it": "Anni Disponibili",
-                            "pt": "Anos Disponíveis"
+                            "en": "Available Years - From",
+                            "it": "Anni Disponibili - Da",
+                            "pt": "Anos Disponíveis - Desde"
                         },
                         "selection_type": "single",
                         "services": [
@@ -142,7 +142,30 @@
                                     "pt": "Dias Disponíveis - Desde"
                                 },
                                 "selection_type": "single"
-                            },
+                            }
+                        ]
+                    },
+                    {
+                        "id": "list_years_to",
+                        "path": "modis/{product}",
+                        "parameters": [
+                            {
+                                "parameter_name": "product",
+                                "parameter_value": "list_products"
+                            }
+                        ],
+                        "payload": {
+                            "fields": ["code", "label"],
+                            "id": "code",
+                            "label": "label"
+                        },
+                        "description": {
+                            "en": "Available Years - To",
+                            "it": "Anni Disponibili - A",
+                            "pt": "Anos Disponíveis - Até"
+                        },
+                        "selection_type": "single",
+                        "services": [
                             {
                                 "id": "list_days_to",
                                 "path": "modis/{product}/{year}",
@@ -153,7 +176,7 @@
                                     },
                                     {
                                         "parameter_name": "year",
-                                        "parameter_value": "list_years_from"
+                                        "parameter_value": "list_years_to"
                                     }
                                 ],
                                 "payload": {
