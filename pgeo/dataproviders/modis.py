@@ -2,6 +2,7 @@ from ftplib import FTP
 from pgeo.config.settings import read_config_file_json
 from pgeo.error.custom_exceptions import PGeoException
 from pgeo.error.custom_exceptions import errors
+from pgeo.utils.date import day_of_the_year_to_date
 
 
 conf = read_config_file_json('modis', 'data_providers')
@@ -77,7 +78,8 @@ def list_days(product_name, year):
             l.sort()
             out = []
             for s in l:
-                out.append({'code': s, 'label': s})
+                date = day_of_the_year_to_date(s, year).strftime('%d %B')
+                out.append({'code': s, 'label': date})
             ftp.quit()
             return out
         else:
