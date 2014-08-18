@@ -75,14 +75,14 @@
             },
             "description": {
                 "en": "Available Layers",
-                "it": "Layers Disponibili"
+                "it": "Layers Disponibili",
+                "pt": "Layers Disponíveis"
             },
             "selection_type": "multiple"
         },
         "filters": [
             {
                 "id": "list_products",
-                "base_url": "http://127.0.0.1:5005/browse/",
                 "path": "modis",
                 "parameters": [],
                 "payload": {
@@ -99,7 +99,6 @@
                 "services": [
                     {
                         "id": "list_years_from",
-                        "base_url": "http://127.0.0.1:5005/browse/",
                         "path": "modis/{product}",
                         "parameters": [
                             {
@@ -121,7 +120,6 @@
                         "services": [
                             {
                                 "id": "list_days_from",
-                                "base_url": "http://127.0.0.1:5005/browse/",
                                 "path": "modis/{product}/{year}",
                                 "parameters": [
                                     {
@@ -149,7 +147,6 @@
                     },
                     {
                         "id": "list_years_to",
-                        "base_url": "http://127.0.0.1:5005/browse/",
                         "path": "modis/{product}",
                         "parameters": [
                             {
@@ -171,7 +168,6 @@
                         "services": [
                             {
                                 "id": "list_days_to",
-                                "base_url": "http://127.0.0.1:5005/browse/",
                                 "path": "modis/{product}/{year}",
                                 "parameters": [
                                     {
