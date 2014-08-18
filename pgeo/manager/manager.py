@@ -17,7 +17,7 @@ class Manager():
     metadata = None
     geoserver = None
     stats = None
-    statial_db = None
+    spatial_db = None
 
     def __init__(self, config):
         self.metadata = Metadata(config["db"]["metadata"])
