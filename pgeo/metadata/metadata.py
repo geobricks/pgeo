@@ -29,12 +29,10 @@ def merge_layer_metadata(template_name, data):
         @param data: User data, in JSON format
         @return: Merged JSON
     """
-    print data
-    print template_name
     core_template = read_template('core')
     template = read_template(template_name)
     out = dict_merge_and_convert_dates(core_template, data)
-    log.info(out)
+    #log.info(out)
     out = dict_merge_and_convert_dates(out, template)
-    log.info(out)
+    #log.info(out)
     return out

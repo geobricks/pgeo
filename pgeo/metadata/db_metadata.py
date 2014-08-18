@@ -28,7 +28,6 @@ class DBMetadata:
         @param json: json data
         @return: id
         """
-        log.info(json)
         return common.insert(self.client, self.database, self.document_layer, json)
 
     def remove_metadata(self, json):

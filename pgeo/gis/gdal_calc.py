@@ -1,12 +1,13 @@
 import subprocess
-from scripts import gdal_calculations
+import os
 import random
 import string
 import glob
 from pgeo.error.custom_exceptions import PGeoException
+from pgeo.utils.filesystem import get_filename
 
 # base script location
-base_script_gdal_calculations = "scripts/gdal_calculations.py"
+base_script_gdal_calculations = os.path.join(os.path.dirname(__file__), "scripts", "gdal_calculations.py")
 
 
 def _random_char(char_numbers=5):
@@ -111,10 +112,15 @@ def _create_cmd_calc_ratio(alphalist):
     :type array
     :return: cmd command
     """
-    cmd = ' --calc="('
+    # TODO: doesn't make a float there are problems with the 0 values otherwise
+    cmd = " --type Float32 --NoDataValue=0 "
+    # TODO: check if the conversion can affect the perfomance
+    conversion_file_to_float = "*1.0"
+
+    cmd += ' --calc="('
     index=0
     for filevar in alphalist :
-        cmd += filevar
+        cmd += filevar + conversion_file_to_float
         index += 1
         if index < len(alphalist):
             cmd += "/"
@@ -161,7 +167,7 @@ def _process_layers(cmd):
     return True
 
 
-def calc_layers(files, outputfile, calc_type="avg"):
+def calc_layers(files, outputfile, calc_type="avg", overwrite=True):
     """
     :param files: array of files or String with the path
     :type array or string: Array of files ["/path/a.tif","/path/b.tif"] or string with the path i.e. "/path/*.tif"
@@ -171,6 +177,10 @@ def calc_layers(files, outputfile, calc_type="avg"):
     :return: True if the layer has been processed
     """
     cmd = ""
+
+    if overwrite:
+        cmd += " --overwrite "
+
     alphalist = []
     if isinstance(files, basestring):
         cmd += _create_cmd_filelist_from_path(files, alphalist)

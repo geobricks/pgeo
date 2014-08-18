@@ -63,8 +63,8 @@ def harvest_folder(path):
 def remove_uploded():
     return None
 
-
-harvest_folder("/home/vortex/Desktop/LAYERS/bulk_import_test/")
+# Test
+#harvest_folder("/home/vortex/Desktop/LAYERS/bulk_import_test/")
 
 
 

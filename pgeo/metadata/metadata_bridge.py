@@ -1,5 +1,6 @@
 from pgeo.utils.log import logger
 from pgeo.gis.raster import get_authority
+from pgeo.utils.filesystem import get_filename
 
 
 
@@ -51,13 +52,16 @@ def translate_from_metadata_to_geoserver(metadata_json, file_path=None):
 
 # TODO: move it
 def add_metadata_from_raster(file_path, metadata_json):
-    autorityname, authoritycode = get_authority(file_path)
-    print autorityname
-    print authoritycode
-    # TODO: add to the metadata the EPSG code
-    #metadata_json["defaultStyle"]["name"] = metadata_json["meSpatialRepresentation"]["seDefaultStyle"]["name"]
-
-    # get boundingbox and set it
+    try:
+        autorityname, authoritycode = get_authority(file_path)
+        # print autorityname
+        # print authoritycode
+        # TODO: add to the metadata the EPSG code
+        #metadata_json["defaultStyle"]["name"] = metadata_json["meSpatialRepresentation"]["seDefaultStyle"]["name"]
+    except Exception, e:
+        log.error(e)
+        pass
+        # get boundingbox and set it
 
 def add_metadata_from_vector(file_path, metadata_json):
     return "TODO:"

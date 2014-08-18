@@ -307,7 +307,7 @@ class Geoserver():
         cs_url = url(self.service_url, ["layers", name])
         log.info("Change Layer: %s  default style in %s" % (name, stylename))
         headers, response = self.http.request(cs_url, "PUT", xml, headers)
-        print cs_url
+        log.info(cs_url)
         if headers.status == 200:
             # reload geoserver cluster
             self.reload_configuration_geoserver_slaves()

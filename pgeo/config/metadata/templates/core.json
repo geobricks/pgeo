@@ -20,6 +20,11 @@
         "keywords" : [],
         "description" : {
             "EN" : ""
+        },
+        "seCoverage" : {
+            "coverageTime" : {},
+            "coverageGeographic" : {},
+            "coverageSector" : {}
         }
     },
     "meStatisticalProcessing" : {

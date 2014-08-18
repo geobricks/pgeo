@@ -71,7 +71,7 @@ json_stats = {
         "name" : "MODISQ13",
 
         # the stored UID in the GeoMetadata database (uses Geoserver Path (?) )
-        "uid" : "trmm:3B42RT.2014010100.7.03hr",
+        "uid" : "fenix:test",
 
         # OR instead of the uid directly gives the path of the source layer without using the Default Path
         #"path" : "/hove/Desktop/GIS/layer.geojson",
@@ -88,13 +88,13 @@ json_stats = {
 
             # used to query the db and retrieve the right codes
             "query_condition" : {
-                "select": "adm0_code, adm0_name",
-                "from": "{{SCHEMA}}.gaul0",
-                "where": "adm0_code IN ('68', '69') GROUP BY adm0_code, adm0_name ",
+                "select": "adm1_code, adm1_name",
+                "from": "{{SCHEMA}}.gaul1",
+                "where": "adm0_name IN ('Somalia') GROUP BY adm1_code, adm1_name ",
             },
 
             # used to subquery the db to get the geometry and process the raster
-            "column_filter": "adm0_code",
+            "column_filter": "adm1_code",
 
             # used to fill stats table (raster["name"].vector["name"])
             "stats_columns" : {

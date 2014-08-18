@@ -59,6 +59,17 @@ class Manager():
             shp_folder_and_name = os.path.join(shp_folder, shp_name) + ".shp"
             log.info(shp_folder_and_name)
 
+            # sanitize the layer_name
+            name = sanitize_name(shp_name)
+
+            # getting the default workspace
+            default_workspace = self.geoserver.get_default_workspace()
+            if "workspace" in metadata_def["meSpatialRepresentation"]:
+                default_workspace = metadata_def["meSpatialRepresentation"]["workspace"]
+
+            # setting up the uid
+            metadata_def["uid"] = default_workspace + ":" + name
+
             # publish shapefile on geoserver
             # TODO: merge the metadata with the default vector metadata
             if "name" not in geoserver_def:
@@ -116,7 +127,16 @@ class Manager():
             log.info(geoserver_def)
             # layer_def = layer_def["coverageStore"]
 
-            name = filesystem.get_filename(file_path)
+            # sanitize the layer_name
+            name = sanitize_name(filesystem.get_filename(file_path))
+
+            # getting the default workspace
+            default_workspace = self.geoserver.get_default_workspace()
+            if "workspace" in metadata_def["meSpatialRepresentation"]:
+                default_workspace = metadata_def["meSpatialRepresentation"]["workspace"]
+
+            # setting up the uid
+            metadata_def["uid"] = default_workspace + ":" + name
 
             # publish coveragestore on geoserver
             # TODO: merge the metadata with the default vector metadata
@@ -125,10 +145,10 @@ class Manager():
             if "title" not in geoserver_def:
                 geoserver_def["title"] = name
             if "workspace" not in geoserver_def:
-                geoserver_def["workspace"] = self.geoserver.get_default_workspace()
+                geoserver_def["workspace"] = default_workspace
 
             # clean layer name
-            geoserver_def["name"] = sanitize_name(geoserver_def["name"])
+            #geoserver_def["name"] = sanitize_name(geoserver_def["name"])
 
             # publish on metadata
             self.metadata.db_metadata.insert_metadata(metadata_def)

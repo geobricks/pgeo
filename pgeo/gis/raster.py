@@ -41,7 +41,9 @@ def crop_by_vector_database(input_file, query=None, db_connection_string=None, d
         query,
         "-dstnodata",
         dstnodata,
-        #"-crop_to_cutline",
+        # -crop_to_cutline is needed otherwise the layer is not cropped
+        # TODO: resolve shifting problem
+        "-crop_to_cutline",
         #"-dstalpha",
         input_file,
         output_file

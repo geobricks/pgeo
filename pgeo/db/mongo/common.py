@@ -15,7 +15,7 @@ def insert(client, database, collection, data):
     try:
         return client[database][collection].insert(data)
     except Exception, e:
-        print "Insert ERROR ", e
+        raise PGeoException(e)
 
 
 """
