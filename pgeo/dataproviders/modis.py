@@ -114,7 +114,9 @@ def list_layers(product_name, year, day):
                     end = line.index(';', start)
                     size = line[start + len('Size='):end]
                     start = line.index(product_name.upper())
-                    code = line[start:]
+                    code = 'ftp://' + conf['source']['ftp']['base_url'] + conf['source']['ftp']['data_dir']
+                    code += product_name.upper() + '/' + year + '/' + day + '/'
+                    code += line[start:]
                     h = code[2 + code.index('.h'):4 + code.index('.h')]
                     v = code[1 + code.index('v'):3 + code.index('v')]
                     label = 'H ' + h + ', V ' + v + ' (' + str(round((float(size) / 1000000), 2)) + ' MB)'
