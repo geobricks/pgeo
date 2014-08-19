@@ -21,7 +21,8 @@ out_template = {
     'progress': 0,
     'total_size': 'unknown',
     'status': 'unknown',
-    'thread': 'unknown'
+    'thread': 'unknown',
+    'key': None
 }
 
 
@@ -92,8 +93,9 @@ class LayerDownloadThread(Thread):
                     progress_map[self.file_name]['download_size'] = progress_map[self.file_name]['download_size'] + len(chunk)
                     progress_map[self.file_name]['progress'] = float('{0:.2f}'.format(float(progress_map[self.file_name]['download_size']) / float(progress_map[self.file_name]['total_size']) * 100))
                     progress_map[self.file_name]['status'] = 'DOWNLOADING'
-                    log.info(self.thread_name + ' is processing: ' + self.file_name)
-                    log.info('\tProgress: ' + str(self.percent_done()) + '%')
+                    progress_map[self.file_name]['key'] = self.key
+                    # log.info(self.thread_name + ' is processing: ' + self.file_name)
+                    # log.info('\tProgress: ' + str(self.percent_done()) + '%')
 
                 progress_map[self.file_name]['status'] = 'COMPLETE'
                 f.close()
