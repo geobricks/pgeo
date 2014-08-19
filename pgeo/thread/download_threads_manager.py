@@ -8,6 +8,7 @@ import time
 from threading import Timer
 import urllib2
 from pgeo.utils import log
+from pgeo.utils.filesystem import create_filesystem
 
 
 thread_manager_processes = {}
@@ -74,7 +75,7 @@ class LayerDownloadThread(Thread):
                     progress_map[self.file_name]['download_size'] = 0
 
                 file_size_dl = 0
-                while progress_map[self.file_name]['progress'] < 100:
+                while self.percent_done() < 100:
                     chunk = u.read(self.block_sz)
                     if not buffer:
                         break
@@ -84,8 +85,10 @@ class LayerDownloadThread(Thread):
                     progress_map[self.file_name]['download_size'] = progress_map[self.file_name]['download_size'] + len(chunk)
                     progress_map[self.file_name]['progress'] = float('{0:.2f}'.format(float(progress_map[self.file_name]['download_size']) / float(progress_map[self.file_name]['total_size']) * 100))
                     progress_map[self.file_name]['status'] = 'DOWNLOADING'
-                    log.info(self.file_name + ': ' + str(progress_map[self.file_name]['progress']) + '%')
+                    log.info(self.thread_name + ' is processing: ' + self.file_name)
+                    log.info('\tProgress: ' + str(self.percent_done()) + '%')
 
+                progress_map[self.file_name]['status'] = 'COMPLETE'
                 f.close()
 
             else:
@@ -94,7 +97,7 @@ class LayerDownloadThread(Thread):
             time.sleep(1)
 
     def percent_done(self):
-        return float(self.download_size) / float(self.total_size) * 100
+        return float('{0:.2f}'.format(float(self.download_size) / float(self.total_size) * 100))
 
 
 class Manager(Thread):
