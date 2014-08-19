@@ -52,17 +52,20 @@ class LayerDownloadThread(Thread):
                 self.file_obj = self.queue.get()
                 self.file_name = self.file_obj['file_name']
                 self.file_path = self.file_obj['file_path']
-
+                self.download_size = 0
                 if self.file_name not in progress_map:
                     progress_map[self.file_name] = {}
                 self.queue_lock.release()
 
-                self.download_size = 0
-                self.total_size = self.file_obj['size']
                 local_file = os.path.join(self.conf['target']['target_dir'], self.file_name)
-
                 u = urllib2.urlopen(self.file_path)
                 f = open(local_file, 'wb')
+
+                if 'size' in self.file_obj:
+                    self.total_size = self.file_obj['size']
+                else:
+                    meta = u.info()
+                    self.total_size = int(meta.getheaders('Content-Length')[0])
 
                 progress_map[self.file_name]['layer_name'] = self.file_name
                 progress_map[self.file_name]['total_size'] = self.total_size
@@ -82,7 +85,6 @@ class LayerDownloadThread(Thread):
                     progress_map[self.file_name]['progress'] = float('{0:.2f}'.format(float(progress_map[self.file_name]['download_size']) / float(progress_map[self.file_name]['total_size']) * 100))
                     progress_map[self.file_name]['status'] = 'DOWNLOADING'
                     log.info(self.file_name + ': ' + str(progress_map[self.file_name]['progress']) + '%')
-                    # log.info(str(progress_map[self.file_name]['progress'] < 100))
 
                 f.close()
 
@@ -144,11 +146,3 @@ class Manager(Thread):
             t.join()
 
         log.info('DONE | Layers Download Manager')
-
-
-
-file_paths_and_sizes = [{'file_name': 'MOD13Q1.A2012097.h00v08.005.2012114105915.hdf', 'size': '5146512', 'file_path': u'ftp://ladsweb.nascom.nasa.gov/allData/5/MOD13Q1/2012/097/MOD13Q1.A2012097.h00v08.005.2012114105915.hdf', 'label': 'H 00, V 08 (5.15 MB)'},
-                        {'file_name': 'MOD13Q1.A2012097.h00v09.005.2012114113338.hdf', 'size': '5258870', 'file_path': u'ftp://ladsweb.nascom.nasa.gov/allData/5/MOD13Q1/2012/097/MOD13Q1.A2012097.h00v09.005.2012114113338.hdf', 'label': 'H 00, V 09 (5.26 MB)'},
-                        {'file_name': 'MOD13Q1.A2012097.h00v10.005.2012114105414.hdf', 'size': '5629950', 'file_path': u'ftp://ladsweb.nascom.nasa.gov/allData/5/MOD13Q1/2012/097/MOD13Q1.A2012097.h00v10.005.2012114105414.hdf', 'label': 'H 00, V 10 (5.63 MB)'}]
-mgr = Manager('modis', file_paths_and_sizes)
-mgr.run()
