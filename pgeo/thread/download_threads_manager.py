@@ -64,23 +64,25 @@ class LayerDownloadThread(Thread):
                 u = urllib2.urlopen(self.file_path)
                 f = open(local_file, 'wb')
 
+                progress_map[self.file_name]['layer_name'] = self.file_name
+                progress_map[self.file_name]['total_size'] = self.total_size
+                progress_map[self.file_name]['progress'] = 0
+                if 'download_size' not in progress_map[self.file_name]:
+                    progress_map[self.file_name]['download_size'] = 0
+
                 file_size_dl = 0
-                while self.download_size < self.total_size:
+                while progress_map[self.file_name]['progress'] < 100:
                     chunk = u.read(self.block_sz)
                     if not buffer:
                         break
                     file_size_dl += len(chunk)
                     f.write(chunk)
                     self.download_size += len(chunk)
-                    progress_map[self.file_name]['layer_name'] = self.file_name
-                    progress_map[self.file_name]['total_size'] = self.total_size
-                    if 'download_size' not in progress_map[self.file_name]:
-                        progress_map[self.file_name]['download_size'] = 0
                     progress_map[self.file_name]['download_size'] = progress_map[self.file_name]['download_size'] + len(chunk)
                     progress_map[self.file_name]['progress'] = float('{0:.2f}'.format(float(progress_map[self.file_name]['download_size']) / float(progress_map[self.file_name]['total_size']) * 100))
                     progress_map[self.file_name]['status'] = 'DOWNLOADING'
-                    # log.info(self.file_name + ': ' + str(progress_map[self.file_name]['progress']) + '%')
-                    log.info(str(self.download_size) + ' VS ' + str(self.total_size) + '? ' + str((self.download_size < self.total_size)))
+                    log.info(self.file_name + ': ' + str(progress_map[self.file_name]['progress']) + '%')
+                    # log.info(str(progress_map[self.file_name]['progress'] < 100))
 
                 f.close()
 
