@@ -14,8 +14,15 @@ from pgeo.utils.filesystem import create_filesystem
 thread_manager_processes = {}
 progress_map = {}
 threads_map_key = 'FENIX'
-
 log = log.logger('download_threads_manager.py')
+out_template = {
+    'download_size': 0,
+    'layer_name': 'unknown',
+    'progress': 0,
+    'total_size': 'unknown',
+    'status': 'unknown',
+    'thread': 'unknown'
+}
 
 
 def create_structure(source, product, year, day):
@@ -55,7 +62,9 @@ class LayerDownloadThread(Thread):
                 self.file_path = self.file_obj['file_path']
                 self.download_size = 0
                 if self.file_name not in progress_map:
-                    progress_map[self.file_name] = {}
+                    out_template['thread'] = self.thread_name
+                    out_template['layer_name'] = self.file_name
+                    progress_map[self.file_name] = out_template
                 self.queue_lock.release()
 
                 local_file = os.path.join(self.conf['target']['target_dir'], self.file_name)
@@ -68,9 +77,7 @@ class LayerDownloadThread(Thread):
                     meta = u.info()
                     self.total_size = int(meta.getheaders('Content-Length')[0])
 
-                progress_map[self.file_name]['layer_name'] = self.file_name
                 progress_map[self.file_name]['total_size'] = self.total_size
-                progress_map[self.file_name]['progress'] = 0
                 if 'download_size' not in progress_map[self.file_name]:
                     progress_map[self.file_name]['download_size'] = 0
 
