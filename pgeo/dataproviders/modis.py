@@ -114,15 +114,22 @@ def list_layers(product_name, year, day):
                     end = line.index(';', start)
                     size = line[start + len('Size='):end]
                     start = line.index(product_name.upper())
-                    code = 'ftp://' + conf['source']['ftp']['base_url'] + conf['source']['ftp']['data_dir']
-                    code += product_name.upper() + '/' + year + '/' + day + '/'
-                    code += line[start:]
-                    h = code[2 + code.index('.h'):4 + code.index('.h')]
-                    v = code[1 + code.index('v'):3 + code.index('v')]
+                    file_name = line[start:]
+                    file_path = 'ftp://' + conf['source']['ftp']['base_url'] + conf['source']['ftp']['data_dir']
+                    file_path += product_name.upper() + '/' + year + '/' + day + '/'
+                    file_path += line[start:]
+                    h = file_name[2 + file_name.index('.h'):4 + file_name.index('.h')]
+                    v = file_name[1 + file_name.index('v'):3 + file_name.index('v')]
                     label = 'H ' + h + ', V ' + v + ' (' + str(round((float(size) / 1000000), 2)) + ' MB)'
-                    out.append({'code': code, 'label': label, 'size': size})
+                    out.append({
+                        'file_name': file_name,
+                        'file_path': file_path,
+                        'label': label,
+                        'size': size
+                    })
                 except:
                     pass
+            print out
             return out
         else:
             raise PGeoException(errors[512], status_code=512)

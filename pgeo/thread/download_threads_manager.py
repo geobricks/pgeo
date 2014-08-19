@@ -1,17 +1,20 @@
 from threading import Thread
 from threading import Lock
 import Queue
-from ftplib import FTP
+from pgeo.config.settings import read_config_file_json
 import os
 import uuid
 import time
 from threading import Timer
-from pgeo.config.settings import read_config_file_json
+import urllib2
+from pgeo.utils import log
 
 
 thread_manager_processes = {}
 progress_map = {}
 threads_map_key = 'FENIX'
+
+log = log.logger('download_threads_manager.py')
 
 
 def create_structure(source, product, year, day):
@@ -20,83 +23,70 @@ def create_structure(source, product, year, day):
 
 class LayerDownloadThread(Thread):
 
-    layer_name = None
-    source_name = None
+    file_obj = None
+    file_name = None
+    file_path = None
     total_size = 0
     download_size = 0
 
-    def __init__(self, source_name, product, year, day, thread_name, q, key, queue_lock):
+    def __init__(self, source, thread_name, queue, queue_lock, key, block_sz=16384):
 
         Thread.__init__(self)
 
-        self.source_name = source_name
         self.thread_name = thread_name
-        self.product = product
-        self.year = year
-        self.day = day
-        self.config = read_config_file_json(self.source_name, 'data_providers')
-        self.q = q
-        self.key = key
+        self.queue = queue
         self.queue_lock = queue_lock
+        self.key = key
+        self.block_sz = block_sz
+        self.source = source
+        self.conf = read_config_file_json(self.source, 'data_providers')
 
     def run(self):
 
         while not exit_flag:
+
             self.queue_lock.acquire()
-            if not self.q.empty():
-                self.layer_name = self.q.get()
-                if self.layer_name not in progress_map:
-                    progress_map[self.layer_name] = {}
+
+            if not self.queue.empty():
+
+                self.file_obj = self.queue.get()
+                self.file_name = self.file_obj['file_name']
+                self.file_path = self.file_obj['file_path']
+
+                if self.file_name not in progress_map:
+                    progress_map[self.file_name] = {}
                 self.queue_lock.release()
-                ftp = FTP(self.confif['source']['ftp']['base_url'])
-                ftp.login()
-                ftp.cwd(self.config['source']['ftp']['data_dir'] + self.product + '/' + self.year + '/' + self.day + '/')
-                ftp.sendcmd('TYPE i')
-                total_size = ftp.size(self.layer_name)
-                file = self.layer_name
-                local_file = os.path.join(self.confif['target']['target_dir'] + '/' + self.product + '/' + self.year + '/' + self.day, file)
-                if not os.path.isfile(local_file):
-                    try:
-                        file_size = os.stat(local_file).st_size
-                        if file_size < self.total_size:
-                            print 'Downloading ' + str(self.layer_name)
-                            with open(local_file, 'w') as f:
-                                def callback(chunk):
-                                    f.write(chunk)
-                                    self.download_size += len(chunk)
-                                    progress_map[self.layer_name]['layer_name'] = self.layer_name
-                                    progress_map[self.layer_name]['total_size'] = total_size
-                                    if 'download_size' not in progress_map[self.layer_name]:
-                                        progress_map[self.layer_name]['download_size'] = 0
-                                    progress_map[self.layer_name]['download_size'] = progress_map[self.layer_name]['download_size'] + len(chunk)
-                                    progress_map[self.layer_name]['progress'] = float(progress_map[self.layer_name]['download_size']) / float(progress_map[self.layer_name]['total_size']) * 100
-                                    progress_map[self.layer_name]['status'] = 'DOWNLOADING'
-                                ftp.retrbinary('RETR %s' % file, callback)
-                    except Exception, e:
-                        print 'Downloading ' + str(self.layer_name)
-                        with open(local_file, 'w') as f:
-                            def callback(chunk):
-                                f.write(chunk)
-                                self.download_size += len(chunk)
-                                progress_map[self.layer_name]['layer_name'] = self.layer_name
-                                progress_map[self.layer_name]['total_size'] = total_size
-                                if 'download_size' not in progress_map[self.layer_name]:
-                                    progress_map[self.layer_name]['download_size'] = 0
-                                progress_map[self.layer_name]['download_size'] = progress_map[self.layer_name]['download_size'] + len(chunk)
-                                progress_map[self.layer_name]['progress'] = float(progress_map[self.layer_name]['download_size']) / float(progress_map[self.layer_name]['total_size']) * 100
-                                progress_map[self.layer_name]['status'] = 'DOWNLOADING'
-                            try:
-                                ftp.retrbinary('RETR %s' % file, callback)
-                            except Exception, e:
-                                print 'EXCEPTION DOWNLOADING ' + str(file)
-                                print self.config['source']['ftp']['data_dir'] + self.product + '/' + self.year + '/' + self.day + '/' + self.layer_name
-                                print e.message
-                                print str(e)
-                                progress_map[self.layer_name]['status'] = 'ERROR'
-                                pass
-                ftp.quit()
+
+                self.download_size = 0
+                self.total_size = self.file_obj['size']
+                local_file = os.path.join(self.conf['target']['target_dir'], self.file_name)
+
+                u = urllib2.urlopen(self.file_path)
+                f = open(local_file, 'wb')
+
+                file_size_dl = 0
+                while self.download_size < self.total_size:
+                    chunk = u.read(self.block_sz)
+                    if not buffer:
+                        break
+                    file_size_dl += len(chunk)
+                    f.write(chunk)
+                    self.download_size += len(chunk)
+                    progress_map[self.file_name]['layer_name'] = self.file_name
+                    progress_map[self.file_name]['total_size'] = self.total_size
+                    if 'download_size' not in progress_map[self.file_name]:
+                        progress_map[self.file_name]['download_size'] = 0
+                    progress_map[self.file_name]['download_size'] = progress_map[self.file_name]['download_size'] + len(chunk)
+                    progress_map[self.file_name]['progress'] = float('{0:.2f}'.format(float(progress_map[self.file_name]['download_size']) / float(progress_map[self.file_name]['total_size']) * 100))
+                    progress_map[self.file_name]['status'] = 'DOWNLOADING'
+                    # log.info(self.file_name + ': ' + str(progress_map[self.file_name]['progress']) + '%')
+                    log.info(str(self.download_size) + ' VS ' + str(self.total_size) + '? ' + str((self.download_size < self.total_size)))
+
+                f.close()
+
             else:
                 self.queue_lock.release()
+
             time.sleep(1)
 
     def percent_done(self):
@@ -105,12 +95,10 @@ class LayerDownloadThread(Thread):
 
 class Manager(Thread):
 
-    def __init__(self, source, product, year, day):
+    def __init__(self, source, file_paths_and_sizes):
         Thread.__init__(self)
         self.source = source
-        self.product = product
-        self.year = year
-        self.day = day
+        self.file_paths_and_sizes = file_paths_and_sizes
 
     def run(self):
         t = Timer(1, self.start_manager)
@@ -121,18 +109,10 @@ class Manager(Thread):
         global exit_flag
         exit_flag = 0
 
-        print 'START | Layers Download Manager'
-
-        config = read_config_file_json(self.source, 'data_providers')
-        ftp = FTP(config.get('ftp'))
-        ftp.login()
-        ftp.cwd(config.get('ftp_dir'))
-        ftp.cwd(self.product)
-        ftp.cwd(self.year)
-        ftp.cwd(self.day)
         global name_list
-        name_list = ftp.nlst()
-        ftp.quit()
+        name_list = self.file_paths_and_sizes
+
+        log.info('START | Layers Download Manager')
 
         thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
         queue_lock = Lock()
@@ -141,7 +121,7 @@ class Manager(Thread):
 
         for tName in thread_list:
             key = str(uuid.uuid4())
-            thread = LayerDownloadThread(self.source, self.product, self.year, self.day, tName, work_queue, key, queue_lock)
+            thread = LayerDownloadThread(self.source, tName, work_queue, queue_lock, key)
             thread.start()
             if not threads_map_key in thread_manager_processes:
                 thread_manager_processes[threads_map_key] = {}
@@ -161,4 +141,12 @@ class Manager(Thread):
         for t in threads:
             t.join()
 
-        print 'DONE | Layers Download Manager'
+        log.info('DONE | Layers Download Manager')
+
+
+
+file_paths_and_sizes = [{'file_name': 'MOD13Q1.A2012097.h00v08.005.2012114105915.hdf', 'size': '5146512', 'file_path': u'ftp://ladsweb.nascom.nasa.gov/allData/5/MOD13Q1/2012/097/MOD13Q1.A2012097.h00v08.005.2012114105915.hdf', 'label': 'H 00, V 08 (5.15 MB)'},
+                        {'file_name': 'MOD13Q1.A2012097.h00v09.005.2012114113338.hdf', 'size': '5258870', 'file_path': u'ftp://ladsweb.nascom.nasa.gov/allData/5/MOD13Q1/2012/097/MOD13Q1.A2012097.h00v09.005.2012114113338.hdf', 'label': 'H 00, V 09 (5.26 MB)'},
+                        {'file_name': 'MOD13Q1.A2012097.h00v10.005.2012114105414.hdf', 'size': '5629950', 'file_path': u'ftp://ladsweb.nascom.nasa.gov/allData/5/MOD13Q1/2012/097/MOD13Q1.A2012097.h00v10.005.2012114105414.hdf', 'label': 'H 00, V 10 (5.63 MB)'}]
+mgr = Manager('modis', file_paths_and_sizes)
+mgr.run()

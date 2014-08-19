@@ -8,7 +8,7 @@
         }
     },
     "target": {
-        "target_dir": "/home/kalimaha/Development/GIS/MODIS/",
+        "target_dir": "/Users/simona/Desktop",
         "folders": [
             {
                 "folder_name": "{{product}}",
