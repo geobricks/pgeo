@@ -123,6 +123,9 @@ def zip_files(name, files, path=folder_tmp):
     return zip_path
 
 
+# def get_filesystem_path(source, parameters):
+
+
 def create_filesystem(source, parameters):
     """
     Create the filesystem structure according to the configuration file.
@@ -133,11 +136,13 @@ def create_filesystem(source, parameters):
     @param parameters: e.g. {'product': 'MOD13Q1', 'year': '2014', 'day': '033'}
     """
     conf = read_config_file_json(source, 'data_providers')['target']
+    final_path = conf['target_dir']
     if not os.path.exists(conf['target_dir']):
         os.makedirs(conf['target_dir'])
     if len(conf['folders']) > 0:
         for folder in conf['folders']:
-            create_folder(conf, parameters, folder, conf['target_dir'])
+            final_path = create_folder(conf, parameters, folder, conf['target_dir'])
+    return final_path
 
 
 def create_folder(conf, parameters, folder, root_folder):
@@ -158,12 +163,13 @@ def create_folder(conf, parameters, folder, root_folder):
         for key in parameters:
             if folder['folder_name'] == '{{' + key + '}}':
                 folder_name = folder['folder_name'].replace('{{' + key + '}}', parameters[key])
-    directory = os.path.join(root_folder, folder_name)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    root_folder = os.path.join(root_folder, folder_name)
+    if not os.path.exists(root_folder):
+        os.makedirs(root_folder)
     if 'folders' in folder and len(folder['folders']) > 0:
         for sub_folder in folder['folders']:
-            create_folder(conf, parameters, sub_folder, directory)
+            root_folder = create_folder(conf, parameters, sub_folder, root_folder)
+    return root_folder
 
 
 def list_sources():

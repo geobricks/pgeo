@@ -26,10 +26,6 @@ out_template = {
 }
 
 
-def create_structure(source, product, year, day):
-    print 'CALL FILESYSTEM!!!'
-
-
 class LayerDownloadThread(Thread):
 
     file_obj = None
@@ -38,7 +34,7 @@ class LayerDownloadThread(Thread):
     total_size = 0
     download_size = 0
 
-    def __init__(self, source, thread_name, queue, queue_lock, key, block_sz=16384):
+    def __init__(self, source, thread_name, queue, queue_lock, key, target_dir, block_sz=16384):
 
         Thread.__init__(self)
 
@@ -49,6 +45,7 @@ class LayerDownloadThread(Thread):
         self.block_sz = block_sz
         self.source = source
         self.conf = read_config_file_json(self.source, 'data_providers')
+        self.target_dir = target_dir
 
     def run(self):
 
@@ -66,7 +63,7 @@ class LayerDownloadThread(Thread):
                     progress_map[self.file_name] = {}
                 self.queue_lock.release()
 
-                local_file = os.path.join(self.conf['target']['target_dir'], self.file_name)
+                local_file = os.path.join(self.target_dir, self.file_name)
                 u = urllib2.urlopen(self.file_path)
                 f = open(local_file, 'wb')
 
@@ -111,10 +108,18 @@ class LayerDownloadThread(Thread):
 
 class Manager(Thread):
 
-    def __init__(self, source, file_paths_and_sizes):
+    def __init__(self, source, file_paths_and_sizes, filesystem_structure):
+        """
+        Manager for the download threads.
+        @param source: e.g. 'MODIS'
+        @param file_paths_and_sizes: Array of objects with the following fields:
+        ['file_name', 'size', 'label', 'file_path']
+        @param filesystem_structure: e.g. {'product': 'MOD13Q1', 'year': '2014', 'day': '033'}
+        """
         Thread.__init__(self)
         self.source = source
         self.file_paths_and_sizes = file_paths_and_sizes
+        self.filesystem_structure = filesystem_structure
 
     def run(self):
         t = Timer(1, self.start_manager)
@@ -130,6 +135,9 @@ class Manager(Thread):
 
         log.info('START | Layers Download Manager')
 
+        target_dir = create_filesystem(self.source, self.filesystem_structure)
+        print target_dir
+
         thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
         queue_lock = Lock()
         work_queue = Queue.Queue(len(name_list))
@@ -137,7 +145,7 @@ class Manager(Thread):
 
         for tName in thread_list:
             key = str(uuid.uuid4())
-            thread = LayerDownloadThread(self.source, tName, work_queue, queue_lock, key)
+            thread = LayerDownloadThread(self.source, tName, work_queue, queue_lock, key, target_dir)
             thread.start()
             if not threads_map_key in thread_manager_processes:
                 thread_manager_processes[threads_map_key] = {}
