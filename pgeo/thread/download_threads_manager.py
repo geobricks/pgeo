@@ -77,15 +77,19 @@ class LayerDownloadThread(Thread):
                 if 'download_size' not in progress_map[self.file_name]:
                     progress_map[self.file_name]['download_size'] = 0
 
-                file_size_dl = 0
-                while self.percent_done() < 100:
-                    chunk = u.read(self.block_sz)
-                    if not buffer:
-                        break
-                    file_size_dl += len(chunk)
-                    f.write(chunk)
-                    self.download_size += len(chunk)
-                    self.update_progress_map()
+                if not os.path.isfile(local_file) or os.stat(local_file).st_size < self.total_size:
+                    file_size_dl = 0
+                    while self.percent_done() < 100:
+                        chunk = u.read(self.block_sz)
+                        if not buffer:
+                            break
+                        file_size_dl += len(chunk)
+                        f.write(chunk)
+                        self.download_size += len(chunk)
+                        self.update_progress_map()
+                else:
+                    progress_map[self.file_name]['download_size'] = self.total_size
+                    progress_map[self.file_name]['progress'] = 100
 
                 progress_map[self.file_name]['status'] = 'COMPLETE'
                 f.close()
@@ -136,7 +140,6 @@ class Manager(Thread):
         log.info('START | Layers Download Manager')
 
         target_dir = create_filesystem(self.source, self.filesystem_structure)
-        print target_dir
 
         thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
         queue_lock = Lock()
