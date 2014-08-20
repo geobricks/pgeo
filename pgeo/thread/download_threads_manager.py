@@ -63,9 +63,7 @@ class LayerDownloadThread(Thread):
                 self.file_path = self.file_obj['file_path']
                 self.download_size = 0
                 if self.file_name not in progress_map:
-                    out_template['thread'] = self.thread_name
-                    out_template['layer_name'] = self.file_name
-                    progress_map[self.file_name] = out_template
+                    progress_map[self.file_name] = {}
                 self.queue_lock.release()
 
                 local_file = os.path.join(self.conf['target']['target_dir'], self.file_name)
@@ -90,12 +88,7 @@ class LayerDownloadThread(Thread):
                     file_size_dl += len(chunk)
                     f.write(chunk)
                     self.download_size += len(chunk)
-                    progress_map[self.file_name]['download_size'] = progress_map[self.file_name]['download_size'] + len(chunk)
-                    progress_map[self.file_name]['progress'] = float('{0:.2f}'.format(float(progress_map[self.file_name]['download_size']) / float(progress_map[self.file_name]['total_size']) * 100))
-                    progress_map[self.file_name]['status'] = 'DOWNLOADING'
-                    progress_map[self.file_name]['key'] = self.key
-                    # log.info(self.thread_name + ' is processing: ' + self.file_name)
-                    # log.info('\tProgress: ' + str(self.percent_done()) + '%')
+                    self.update_progress_map()
 
                 progress_map[self.file_name]['status'] = 'COMPLETE'
                 f.close()
@@ -107,6 +100,13 @@ class LayerDownloadThread(Thread):
 
     def percent_done(self):
         return float('{0:.2f}'.format(float(self.download_size) / float(self.total_size) * 100))
+
+    def update_progress_map(self):
+        progress_map[self.file_name]['download_size'] = self.download_size
+        progress_map[self.file_name]['progress'] = float('{0:.2f}'.format(float(progress_map[self.file_name]['download_size']) / float(progress_map[self.file_name]['total_size']) * 100))
+        progress_map[self.file_name]['progress'] = self.percent_done()
+        progress_map[self.file_name]['status'] = 'DOWNLOADING'
+        progress_map[self.file_name]['key'] = self.key
 
 
 class Manager(Thread):
