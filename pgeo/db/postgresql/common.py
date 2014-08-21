@@ -65,7 +65,11 @@ class DBConnection:
                 rows = cur.fetchall()
                 return rows
             else:
-                return False
+                log.warn("Query contains invalid characters")
+                raise PGeoException("Query contains invalid characters", status_code=404)
+        except PGeoException, e:
+                self.con.rollback()
+                raise PGeoException(e.get_message(), e.get_status_code())
         except Exception, e:
             self.con.rollback()
             log.warn("Query error: use raise Exception? " + str(e))
