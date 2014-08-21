@@ -4,6 +4,7 @@ import subprocess
 from pgeo.utils import log
 from pgeo.utils import filesystem
 from pgeo.error.custom_exceptions import PGeoException, errors
+import math
 
 log = log.logger(__name__)
 
@@ -187,7 +188,16 @@ def _get_descriptive_statistics(ds, config):
         if stats is None:
             continue
         #srcband.SetStatistics(float(s[0]), float(s[1]), float(s[2]), float(s[3]))
-        stats.append({"band": band, "min": s[0], "max": s[1], "mean": s[2], "sd": s[3]})
+        # if math.isnan(s[2]):
+        #     s[2] = "null"
+        # if math.isnan(s[2]):
+        #     s[3] = "null"
+        if math.isnan(s[2]):
+            log.warn("polygon is empty! %s " % s)
+        else:
+            stats.append({"band": band, "min": s[0], "max": s[1], "mean": s[2], "sd": s[3]})
+
+
     return stats
 
 
@@ -208,7 +218,6 @@ def _get_histogram(ds, config):
         else:
             min = ds.GetRasterBand(band).GetMinimum()
             max = ds.GetRasterBand(band).GetMaximum()
-
         hist = ds.GetRasterBand(band).GetHistogram(buckets=buckets, min=min, max=max, include_out_of_range=include_out_of_range)
         stats.append({"band": band, "buckets": buckets, "min": min, "max": max, "values": hist})
     return stats
