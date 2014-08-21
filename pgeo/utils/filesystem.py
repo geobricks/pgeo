@@ -179,7 +179,8 @@ def list_sources():
         files = os.listdir(path)
         files.sort()
         for filename in files:
-            out.append({'code': filename, 'label': filename[:filename.index('.json')]})
+            if '__' not in filename:
+                out.append({'code': filename, 'label': filename[:filename.index('.json')]})
         return out
     except Exception, err:
         raise PGeoException(errors[510], status_code=510)

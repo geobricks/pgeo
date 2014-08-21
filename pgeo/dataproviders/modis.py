@@ -129,9 +129,17 @@ def list_layers(product_name, year, day):
                     })
                 except:
                     pass
-            print out
             return out
         else:
             raise PGeoException(errors[512], status_code=512)
+    except:
+        raise PGeoException(errors[511], status_code=511)
+
+
+def list_countries():
+    try:
+        countries = read_config_file_json('__gaul2modis', 'data_providers')
+        print countries
+        return countries
     except:
         raise PGeoException(errors[511], status_code=511)
