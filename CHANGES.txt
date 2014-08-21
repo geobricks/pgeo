@@ -1,1 +1,2 @@
-v0.1, 04-08-2014 -- Initial release.
+v0.1.0, 04-08-2014 -- Initial release.
+v0.1.1, 21-08-2014 -- Layers download threads added.
