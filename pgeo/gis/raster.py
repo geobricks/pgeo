@@ -238,7 +238,7 @@ def get_authority(file_path):
 
 # Process HDFs
 def process_hdfs(obj):
-    log.inf(obj)
+    log.info(obj)
 
     # extract bands
     hdfs = extract_files_and_band_names(obj["source_path"], obj["band"])
