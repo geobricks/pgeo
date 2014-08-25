@@ -36,19 +36,19 @@
     },
     "processing": {
         "output_file_name": "MODIS_250m.tif",
-        "source_path": "/home/kalimaha/Desktop/MODIS/MOD13A1/2014/001",
+        "source_path": "",
         "band": 1,
-        "output_path": "/home/kalimaha/Desktop/MODIS/MOD13A1/2014/001/OUTPUT",
+        "output_path": "",
         "gdal_merge": {},
         "gdalwarp": {
             "-multi": "",
             "-of": "GTiff",
-            "-tr": "0.004166665, -0.004166665",
+            "-tr": "",
             "-s_srs": "'+proj=sinu +R=6371007.181 +nadgrids=@null +wktext'",
             "-co": "'TILED=YES'",
             "-t_srs": "EPSG:4326",
             "-srcnodata": -3000,
-            "-dstnodata": "nodata",
+            "-dstnodata": "None",
             "-overwrite": ""
         },
         "gdaladdo": {
