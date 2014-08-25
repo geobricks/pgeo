@@ -64,35 +64,40 @@ class LayerDownloadThread(Thread):
                 self.queue_lock.release()
 
                 local_file = os.path.join(self.target_dir, self.file_name)
-                u = urllib2.urlopen(self.file_path)
-                f = open(local_file, 'wb')
 
-                if 'size' in self.file_obj:
-                    self.total_size = self.file_obj['size']
-                else:
-                    meta = u.info()
-                    self.total_size = int(meta.getheaders('Content-Length')[0])
+                # Download the file only if its size is different from the one on the FTP
+                if str(os.stat(local_file).st_size < self.total_size):
 
-                progress_map[self.file_name]['total_size'] = self.total_size
-                if 'download_size' not in progress_map[self.file_name]:
-                    progress_map[self.file_name]['download_size'] = 0
+                    u = urllib2.urlopen(self.file_path)
+                    f = open(local_file, 'wb')
 
-                if not os.path.isfile(local_file) or os.stat(local_file).st_size < self.total_size:
-                    file_size_dl = 0
-                    while self.percent_done() < 100:
-                        chunk = u.read(self.block_sz)
-                        if not buffer:
-                            break
-                        file_size_dl += len(chunk)
-                        f.write(chunk)
-                        self.download_size += len(chunk)
-                        self.update_progress_map()
+                    if 'size' in self.file_obj:
+                        self.total_size = self.file_obj['size']
+                    else:
+                        meta = u.info()
+                        self.total_size = int(meta.getheaders('Content-Length')[0])
+
+                    progress_map[self.file_name]['total_size'] = self.total_size
+                    if 'download_size' not in progress_map[self.file_name]:
+                        progress_map[self.file_name]['download_size'] = 0
+
+                    if not os.path.isfile(local_file) or os.stat(local_file).st_size < self.total_size:
+                        file_size_dl = 0
+                        while self.percent_done() < 100:
+                            chunk = u.read(self.block_sz)
+                            if not buffer:
+                                break
+                            file_size_dl += len(chunk)
+                            f.write(chunk)
+                            self.download_size += len(chunk)
+                            self.update_progress_map()
+
+                    progress_map[self.file_name]['status'] = 'COMPLETE'
+                    f.close()
+
                 else:
                     progress_map[self.file_name]['download_size'] = self.total_size
                     progress_map[self.file_name]['progress'] = 100
-
-                progress_map[self.file_name]['status'] = 'COMPLETE'
-                f.close()
 
             else:
                 self.queue_lock.release()
@@ -124,12 +129,13 @@ class Manager(Thread):
         self.source = source
         self.file_paths_and_sizes = file_paths_and_sizes
         self.filesystem_structure = filesystem_structure
+        self.target_dir = None
 
     def run(self):
         t = Timer(1, self.start_manager)
         t.start()
-        target_dir = create_filesystem(self.source, self.filesystem_structure)
-        return target_dir
+        self.target_dir = create_filesystem(self.source, self.filesystem_structure)
+        return self.target_dir
 
     def start_manager(self):
 
@@ -148,7 +154,7 @@ class Manager(Thread):
 
         for tName in thread_list:
             key = str(uuid.uuid4())
-            thread = LayerDownloadThread(self.source, tName, work_queue, queue_lock, key, target_dir)
+            thread = LayerDownloadThread(self.source, tName, work_queue, queue_lock, key, self.target_dir)
             thread.start()
             if not threads_map_key in thread_manager_processes:
                 thread_manager_processes[threads_map_key] = {}
