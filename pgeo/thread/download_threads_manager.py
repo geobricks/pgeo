@@ -128,6 +128,8 @@ class Manager(Thread):
     def run(self):
         t = Timer(1, self.start_manager)
         t.start()
+        target_dir = create_filesystem(self.source, self.filesystem_structure)
+        return target_dir
 
     def start_manager(self):
 
@@ -138,8 +140,6 @@ class Manager(Thread):
         name_list = self.file_paths_and_sizes
 
         log.info('START | Layers Download Manager')
-
-        target_dir = create_filesystem(self.source, self.filesystem_structure)
 
         thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
         queue_lock = Lock()
