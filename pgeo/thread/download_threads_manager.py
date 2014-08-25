@@ -129,12 +129,11 @@ class Manager(Thread):
         self.source = source
         self.file_paths_and_sizes = file_paths_and_sizes
         self.filesystem_structure = filesystem_structure
-        self.target_dir = None
+        self.target_dir = create_filesystem(self.source, self.filesystem_structure)
 
     def run(self):
         t = Timer(1, self.start_manager)
         t.start()
-        self.target_dir = create_filesystem(self.source, self.filesystem_structure)
         return self.target_dir
 
     def start_manager(self):
