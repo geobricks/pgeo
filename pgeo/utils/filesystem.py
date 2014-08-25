@@ -142,6 +142,11 @@ def create_filesystem(source, parameters):
     if len(conf['folders']) > 0:
         for folder in conf['folders']:
             final_path = create_folder(conf, parameters, folder, conf['target_dir'])
+
+    out_folder = os.path.join(final_path, 'OUTPUT')
+    if not os.path.exists(out_folder):
+        os.makedirs(out_folder)
+
     return final_path
 
 

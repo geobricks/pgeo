@@ -65,17 +65,24 @@ class LayerDownloadThread(Thread):
 
                 local_file = os.path.join(self.target_dir, self.file_name)
 
+                if 'size' in self.file_obj:
+                    self.total_size = self.file_obj['size']
+                else:
+                    u = urllib2.urlopen(self.file_path)
+                    meta = u.info()
+                    self.total_size = int(meta.getheaders('Content-Length')[0])
+
                 # Download the file only if its size is different from the one on the FTP
-                if str(os.stat(local_file).st_size < self.total_size):
+                allow_layer_download = True
+                try:
+                    allow_layer_download = int(os.stat(local_file).st_size) < int(self.total_size)
+                except OSError, e:
+                    pass
+
+                if allow_layer_download:
 
                     u = urllib2.urlopen(self.file_path)
                     f = open(local_file, 'wb')
-
-                    if 'size' in self.file_obj:
-                        self.total_size = self.file_obj['size']
-                    else:
-                        meta = u.info()
-                        self.total_size = int(meta.getheaders('Content-Length')[0])
 
                     progress_map[self.file_name]['total_size'] = self.total_size
                     if 'download_size' not in progress_map[self.file_name]:
