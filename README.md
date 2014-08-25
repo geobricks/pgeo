@@ -1,4 +1,4 @@
 p-geo
 =====
 
-Python module for geographic services.
+Python library for geographic services.
