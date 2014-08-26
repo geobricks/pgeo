@@ -13,6 +13,7 @@ from pgeo.utils.filesystem import create_filesystem
 
 thread_manager_processes = {}
 progress_map = {}
+multi_progress_map = {}
 threads_map_key = 'FENIX'
 log = log.logger('download_threads_manager.py')
 out_template = {
@@ -24,6 +25,7 @@ out_template = {
     'thread': 'unknown',
     'key': None
 }
+exit_flags = {}
 
 
 class LayerDownloadThread(Thread):
@@ -34,7 +36,7 @@ class LayerDownloadThread(Thread):
     total_size = 0
     download_size = 0
 
-    def __init__(self, source, thread_name, queue, queue_lock, key, target_dir, block_sz=16384):
+    def __init__(self, source, thread_name, queue, queue_lock, key, target_dir, tab_id, block_sz=16384):
 
         Thread.__init__(self)
 
@@ -46,10 +48,12 @@ class LayerDownloadThread(Thread):
         self.source = source
         self.conf = read_config_file_json(self.source, 'data_providers')
         self.target_dir = target_dir
+        self.tab_id = tab_id
 
     def run(self):
 
-        while not exit_flag:
+        # while not exit_flag:
+        while not exit_flags[self.tab_id]:
 
             self.queue_lock.acquire()
 
@@ -59,8 +63,13 @@ class LayerDownloadThread(Thread):
                 self.file_name = self.file_obj['file_name']
                 self.file_path = self.file_obj['file_path']
                 self.download_size = 0
+
                 if self.file_name not in progress_map:
                     progress_map[self.file_name] = {}
+                if self.tab_id not in multi_progress_map:
+                    multi_progress_map[self.tab_id] = {}
+                    if self.file_name not in multi_progress_map[self.tab_id]:
+                        multi_progress_map[self.tab_id][self.file_name] = {}
                 self.queue_lock.release()
 
                 local_file = os.path.join(self.target_dir, self.file_name)
@@ -85,8 +94,11 @@ class LayerDownloadThread(Thread):
                     f = open(local_file, 'wb')
 
                     progress_map[self.file_name]['total_size'] = self.total_size
+                    multi_progress_map[self.tab_id][self.file_name]['total_size'] = self.total_size
                     if 'download_size' not in progress_map[self.file_name]:
                         progress_map[self.file_name]['download_size'] = 0
+                    if 'download_size' not in multi_progress_map[self.tab_id][self.file_name]:
+                        multi_progress_map[self.tab_id][self.file_name]['download_size'] = 0
 
                     if not os.path.isfile(local_file) or os.stat(local_file).st_size < self.total_size:
                         file_size_dl = 0
@@ -100,11 +112,14 @@ class LayerDownloadThread(Thread):
                             self.update_progress_map()
 
                     progress_map[self.file_name]['status'] = 'COMPLETE'
+                    multi_progress_map[self.tab_id][self.file_name]['status'] = 'COMPLETE'
                     f.close()
 
                 else:
                     progress_map[self.file_name]['download_size'] = self.total_size
+                    multi_progress_map[self.tab_id][self.file_name]['download_size'] = self.total_size
                     progress_map[self.file_name]['progress'] = 100
+                    multi_progress_map[self.tab_id][self.file_name]['progress'] = 100
 
             else:
                 self.queue_lock.release()
@@ -121,10 +136,16 @@ class LayerDownloadThread(Thread):
         progress_map[self.file_name]['status'] = 'DOWNLOADING'
         progress_map[self.file_name]['key'] = self.key
 
+        multi_progress_map[self.tab_id][self.file_name]['download_size'] = self.download_size
+        multi_progress_map[self.tab_id][self.file_name]['progress'] = float('{0:.2f}'.format(float(multi_progress_map[self.tab_id][self.file_name]['download_size']) / float(multi_progress_map[self.tab_id][self.file_name]['total_size']) * 100))
+        multi_progress_map[self.tab_id][self.file_name]['progress'] = self.percent_done()
+        multi_progress_map[self.tab_id][self.file_name]['status'] = 'DOWNLOADING'
+        multi_progress_map[self.tab_id][self.file_name]['key'] = self.key
+
 
 class Manager(Thread):
 
-    def __init__(self, source, file_paths_and_sizes, filesystem_structure):
+    def __init__(self, source, file_paths_and_sizes, filesystem_structure, tab_id):
         """
         Manager for the download threads.
         @param source: e.g. 'MODIS'
@@ -137,6 +158,7 @@ class Manager(Thread):
         self.file_paths_and_sizes = file_paths_and_sizes
         self.filesystem_structure = filesystem_structure
         self.target_dir = create_filesystem(self.source, self.filesystem_structure)
+        self.tab_id = tab_id
 
     def run(self):
         t = Timer(1, self.start_manager)
@@ -145,22 +167,18 @@ class Manager(Thread):
 
     def start_manager(self):
 
-        global exit_flag
-        exit_flag = 0
-
-        global name_list
-        name_list = self.file_paths_and_sizes
+        exit_flags[self.tab_id] = 0
 
         log.info('START | Layers Download Manager')
 
         thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
         queue_lock = Lock()
-        work_queue = Queue.Queue(len(name_list))
+        work_queue = Queue.Queue(len(self.file_paths_and_sizes))
         threads = []
 
         for tName in thread_list:
             key = str(uuid.uuid4())
-            thread = LayerDownloadThread(self.source, tName, work_queue, queue_lock, key, self.target_dir)
+            thread = LayerDownloadThread(self.source, tName, work_queue, queue_lock, key, self.target_dir, self.tab_id)
             thread.start()
             if not threads_map_key in thread_manager_processes:
                 thread_manager_processes[threads_map_key] = {}
@@ -168,14 +186,15 @@ class Manager(Thread):
             threads.append(thread)
 
         queue_lock.acquire()
-        for word in name_list:
+        for word in self.file_paths_and_sizes:
             work_queue.put(word)
         queue_lock.release()
 
         while not work_queue.empty():
             pass
 
-        exit_flag = 1
+        # exit_flag = 1
+        exit_flags[self.tab_id] = 1
 
         for t in threads:
             t.join()
