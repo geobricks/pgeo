@@ -202,7 +202,6 @@ def is_layer_in_the_range(file_name, from_h, to_h, from_v, to_v):
 def list_countries():
     try:
         countries = read_config_file_json('__gaul2modis', 'data_providers')
-        print countries
         return countries
     except:
         raise PGeoException(errors[511], status_code=511)
