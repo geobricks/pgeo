@@ -22,7 +22,12 @@ stats_config = {
 }
 
 
-def crop_by_vector_database(input_file, query=None, db_connection_string=None, dstnodata='nodata'):
+def get_nodata_value(file_path, band=1):
+    ds = gdal.Open(file_path)
+    return ds.GetRasterBand(band).GetNoDataValue()
+
+
+def crop_by_vector_database(input_file, query=None, db_connection_string=None, srcnodata='nodata', dstnodata='nodata'):
     """
     :param input_file: file to be cropped
     :param query: query that has to be passed to the db
@@ -30,6 +35,7 @@ def crop_by_vector_database(input_file, query=None, db_connection_string=None, d
     :param dstnodata: set nodata on the nodata value
     :return: the output file path that has been processed, or None if there is any problem on the processing
     """
+    output_file_gdal_warp = filesystem.create_tmp_filename('output_', '.geotiff')
     output_file = filesystem.create_tmp_filename('output_', '.geotiff')
     args = [
         'gdalwarp',
@@ -41,21 +47,40 @@ def crop_by_vector_database(input_file, query=None, db_connection_string=None, d
         db_connection_string,
         "-csql",
         query,
+        "-srcnodata",
+        str(srcnodata),
         "-dstnodata",
-        dstnodata,
+        str(dstnodata),
         # -crop_to_cutline is needed otherwise the layer is not cropped
         # TODO: resolve shifting problem
         "-crop_to_cutline",
         #"-dstalpha",
         input_file,
-        output_file
+        output_file_gdal_warp
     ]
     try:
+        print args
         #TODO: handle subprocess Error (like that is not taken)
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
         stdout_value = proc.communicate()[0]
         raise PGeoException(stdout_value, 500)
+
+    args = [
+        'gdal_translate',
+        "-a_nodata",
+        str(dstnodata),
+        output_file_gdal_warp,
+        output_file
+    ]
+    try:
+        print args
+        #TODO: handle subprocess Error (like that is not taken)
+        proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
+    except:
+        stdout_value = proc.communicate()[0]
+        raise PGeoException(stdout_value, 500)
+
 
     if os.path.isfile(output_file):
         return output_file
@@ -219,6 +244,9 @@ def _get_histogram(ds, config):
         else:
             min = ds.GetRasterBand(band).GetMinimum()
             max = ds.GetRasterBand(band).GetMaximum()
+
+        #hist = ds.GetRasterBand(band).GetDefaultHistogram( force = 0 )
+        #stats.append({"band": band, "buckets": hist[2], "min": hist[0], "max": hist[1], "values": hist[3]})
         hist = ds.GetRasterBand(band).GetHistogram(buckets=buckets, min=min, max=max, include_out_of_range=include_out_of_range)
         stats.append({"band": band, "buckets": buckets, "min": min, "max": max, "values": hist})
     return stats

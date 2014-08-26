@@ -109,6 +109,9 @@ class Stats():
         column_filter_code_index = 0
         column_filter_label_index = 1
 
+        srcnodatavalue = raster.get_nodata_value(raster_path)
+        log.info("SRC NODATA!: %s" % srcnodatavalue)
+
         if codes:
             for r in codes:
 
@@ -120,7 +123,7 @@ class Stats():
                 #stats.append(self._get_stats_query(query, str(r[0]), str(r[1]), self.geostats['save_stats']))
                 #log.info(code)
                 db_connection_string = self.db_spatial.get_connection_string(True);
-                filepath = raster.crop_by_vector_database(raster_path, stats_query,db_connection_string)
+                filepath = raster.crop_by_vector_database(raster_path, stats_query, db_connection_string, srcnodatavalue, srcnodatavalue)
 
                 #log.info(filepath)
                 if filepath:

@@ -6,6 +6,9 @@ from pgeo.utils import log
 
 log = log.logger(__name__)
 
+# REMOVE EXAMPLE
+#db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['EARTHSTAT']}})
+
 
 class Metadata:
 

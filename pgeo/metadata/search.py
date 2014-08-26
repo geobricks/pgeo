@@ -2,6 +2,9 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from pgeo.utils.date import dekad_to_day_from
 from pgeo.utils.date import dekad_to_day_to
+from pgeo.utils.log import logger
+
+log = logger(__name__)
 
 
 class MongoSearch():
@@ -44,7 +47,11 @@ class MongoSearch():
             conditions.append({'meStatisticalProcessing.seDatasource.seDataCompilation.aggregationProcessing': agg_type})
         if confidentiality is not None:
             conditions.append({'meAccessibility.seConfidentiality.codes.code': {'$in': [confidentiality]}})
-        q['$and'] = conditions
+        #q['$and'] = conditions
+        q["$query"] = {'$and' : conditions}
+        #q["$project"] = {'$title' : 1}
+        q["$orderby"] = {'meContent.seCoverage.coverageTime.to': 1, 'title': 1, }
+        log.info(q)
         return self.client[self.db_name][self.table_name].find(q)
 
     def find_layers_by_dekad_range(self, dekad_from, dekad_to, product=None):
