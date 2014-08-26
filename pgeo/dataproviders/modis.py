@@ -205,3 +205,30 @@ def list_countries():
         return countries
     except:
         raise PGeoException(errors[511], status_code=511)
+
+
+def list_layers_countries_subset(product_name, year, day, countries):
+    """
+    List all the available layers for a given MODIS product, year and day.
+    @param product_name: Code of MODIS product, e.g. 'MOD13Q1'
+    @param year: e.g. '2010'
+    @param day: Day of the year, three digits, e.g. '017'
+    @param countries: GAUL codes, comma separated e.g. '18,25,34'
+    @type countries: String, comma separated
+    @return: An array of code/label/size objects.
+    """
+    countries_list = countries.split(',')
+    out = []
+    try:
+        gaul_2_modis = read_config_file_json('__gaul2modis', 'data_providers')
+        for g2m in gaul_2_modis:
+            if g2m['gaul_code'] in countries_list:
+                from_h = g2m['from_h']
+                to_h = g2m['to_h']
+                from_v = g2m['from_v']
+                to_v = g2m['to_v']
+                tmp = list_layers_subset(product_name, year, day, from_h, to_h, from_v, to_v)
+                out += tmp
+        return out
+    except:
+        raise PGeoException(errors[511], status_code=511)
