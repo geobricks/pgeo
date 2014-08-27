@@ -26,8 +26,9 @@ class DBConnection:
                 self.con = psycopg2.connect(db_connect_string)
                 log.info("Database '%s' connection opened. " % datasource['dbname'] )
             except psycopg2.DatabaseError as db_error:
-                log.error("Error :\n{0}".format(db_error))
-                raise PGeoException("Error :\n{0}".format(db_error))
+                log.warn("Error :\n{0}".format(db_error))
+                pass
+                # raise PGeoException("Error :\n{0}".format(db_error))
 
     # TODO: autocommit as parameter (FOR BULK)
     def insert(self, table, insert_keys, insert_values, values):
