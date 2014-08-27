@@ -12,7 +12,6 @@ from pgeo.utils.filesystem import create_filesystem
 
 
 thread_manager_processes = {}
-progress_map = {}
 multi_progress_map = {}
 threads_map_key = 'FENIX'
 log = log.logger('download_threads_manager.py')
@@ -64,12 +63,11 @@ class LayerDownloadThread(Thread):
                 self.file_path = self.file_obj['file_path']
                 self.download_size = 0
 
-                if self.file_name not in progress_map:
-                    progress_map[self.file_name] = {}
                 if self.tab_id not in multi_progress_map:
                     multi_progress_map[self.tab_id] = {}
-                    if self.file_name not in multi_progress_map[self.tab_id]:
-                        multi_progress_map[self.tab_id][self.file_name] = {}
+                if self.file_name not in multi_progress_map[self.tab_id]:
+                    multi_progress_map[self.tab_id][self.file_name] = {}
+
                 self.queue_lock.release()
 
                 local_file = os.path.join(self.target_dir, self.file_name)
@@ -93,10 +91,7 @@ class LayerDownloadThread(Thread):
                     u = urllib2.urlopen(self.file_path)
                     f = open(local_file, 'wb')
 
-                    progress_map[self.file_name]['total_size'] = self.total_size
                     multi_progress_map[self.tab_id][self.file_name]['total_size'] = self.total_size
-                    if 'download_size' not in progress_map[self.file_name]:
-                        progress_map[self.file_name]['download_size'] = 0
                     if 'download_size' not in multi_progress_map[self.tab_id][self.file_name]:
                         multi_progress_map[self.tab_id][self.file_name]['download_size'] = 0
 
@@ -111,14 +106,11 @@ class LayerDownloadThread(Thread):
                             self.download_size += len(chunk)
                             self.update_progress_map()
 
-                    progress_map[self.file_name]['status'] = 'COMPLETE'
                     multi_progress_map[self.tab_id][self.file_name]['status'] = 'COMPLETE'
                     f.close()
 
                 else:
-                    progress_map[self.file_name]['download_size'] = self.total_size
                     multi_progress_map[self.tab_id][self.file_name]['download_size'] = self.total_size
-                    progress_map[self.file_name]['progress'] = 100
                     multi_progress_map[self.tab_id][self.file_name]['progress'] = 100
 
             else:
@@ -130,12 +122,6 @@ class LayerDownloadThread(Thread):
         return float('{0:.2f}'.format(float(self.download_size) / float(self.total_size) * 100))
 
     def update_progress_map(self):
-        progress_map[self.file_name]['download_size'] = self.download_size
-        progress_map[self.file_name]['progress'] = float('{0:.2f}'.format(float(progress_map[self.file_name]['download_size']) / float(progress_map[self.file_name]['total_size']) * 100))
-        progress_map[self.file_name]['progress'] = self.percent_done()
-        progress_map[self.file_name]['status'] = 'DOWNLOADING'
-        progress_map[self.file_name]['key'] = self.key
-
         multi_progress_map[self.tab_id][self.file_name]['download_size'] = self.download_size
         multi_progress_map[self.tab_id][self.file_name]['progress'] = float('{0:.2f}'.format(float(multi_progress_map[self.tab_id][self.file_name]['download_size']) / float(multi_progress_map[self.tab_id][self.file_name]['total_size']) * 100))
         multi_progress_map[self.tab_id][self.file_name]['progress'] = self.percent_done()

@@ -142,11 +142,9 @@ def create_filesystem(source, parameters):
     if len(conf['folders']) > 0:
         for folder in conf['folders']:
             final_path = create_folder(conf, parameters, folder, conf['target_dir'])
-
     out_folder = os.path.join(final_path, 'OUTPUT')
     if not os.path.exists(out_folder):
         os.makedirs(out_folder)
-
     return final_path
 
 
@@ -166,8 +164,8 @@ def create_folder(conf, parameters, folder, root_folder):
     folder_name = folder['folder_name']
     if '{{' in folder_name and '}}' in folder_name:
         for key in parameters:
-            if folder['folder_name'] == '{{' + key + '}}':
-                folder_name = folder['folder_name'].replace('{{' + key + '}}', parameters[key])
+            if str(folder['folder_name']) == '{{' + key + '}}':
+                folder_name = str(folder['folder_name']).replace('{{' + key + '}}', str(parameters[key]))
     root_folder = os.path.join(root_folder, folder_name)
     if not os.path.exists(root_folder):
         os.makedirs(root_folder)

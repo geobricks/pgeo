@@ -185,8 +185,8 @@ def list_layers_subset(product_name, year, day, from_h, to_h, from_v, to_v):
             return out
         else:
             raise PGeoException(errors[512], status_code=512)
-    except:
-        raise PGeoException(errors[511], status_code=511)
+    except Exception, e:
+        raise PGeoException(str(e), status_code=500)
 
 
 def is_layer_in_the_range(file_name, from_h, to_h, from_v, to_v):
@@ -230,5 +230,5 @@ def list_layers_countries_subset(product_name, year, day, countries):
                 tmp = list_layers_subset(product_name, year, day, from_h, to_h, from_v, to_v)
                 out += tmp
         return out
-    except:
-        raise PGeoException(errors[511], status_code=511)
+    except Exception, e:
+        raise PGeoException(e.get_message(), e.get_status_code())
