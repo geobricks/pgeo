@@ -65,8 +65,8 @@ class LayerDownloadThread(Thread):
 
                 if self.tab_id not in multi_progress_map:
                     multi_progress_map[self.tab_id] = {}
-                if self.file_name not in multi_progress_map[self.tab_id]:
-                    multi_progress_map[self.tab_id][self.file_name] = {}
+                # if self.file_name not in multi_progress_map[self.tab_id]:
+                multi_progress_map[self.tab_id][self.file_name] = {}
 
                 self.queue_lock.release()
 
@@ -92,8 +92,8 @@ class LayerDownloadThread(Thread):
                     f = open(local_file, 'wb')
 
                     multi_progress_map[self.tab_id][self.file_name]['total_size'] = self.total_size
-                    if 'download_size' not in multi_progress_map[self.tab_id][self.file_name]:
-                        multi_progress_map[self.tab_id][self.file_name]['download_size'] = 0
+                    # if 'download_size' not in multi_progress_map[self.tab_id][self.file_name]:
+                    multi_progress_map[self.tab_id][self.file_name]['download_size'] = 0
 
                     if not os.path.isfile(local_file) or os.stat(local_file).st_size < self.total_size:
                         file_size_dl = 0

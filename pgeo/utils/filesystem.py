@@ -138,7 +138,11 @@ def create_filesystem(source, parameters):
     conf = read_config_file_json(source, 'data_providers')['target']
     final_path = conf['target_dir']
     if not os.path.exists(conf['target_dir']):
-        os.makedirs(conf['target_dir'])
+        try:
+            os.makedirs(conf['target_dir'])
+        except:
+            print 'Error creating: ' + str(final_path)
+            os.makedirs(conf['target_dir'])
     if len(conf['folders']) > 0:
         for folder in conf['folders']:
             final_path = create_folder(conf, parameters, folder, conf['target_dir'])
