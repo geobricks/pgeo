@@ -1,8 +1,9 @@
-from osgeo import gdal, osr
+from osgeo import gdal, osr, ogr
 import os
 import subprocess
 import glob
 import math
+import json
 from pgeo.utils import log
 from pgeo.utils import filesystem
 from pgeo.error.custom_exceptions import PGeoException, errors
@@ -27,7 +28,202 @@ def get_nodata_value(file_path, band=1):
     return ds.GetRasterBand(band).GetNoDataValue()
 
 
-def crop_by_vector_database(input_file, query=None, db_connection_string=None, srcnodata='nodata', dstnodata='nodata'):
+def crop_by_vector_database_olod(input_file, minlat, minlon, maxlat, maxlon, wkt, srcnodata='nodata', dstnodata='nodata'):
+    # [[[1371670.86187088, 5713124.13469331], [1371670.86187088, 5885247.87691568], [1548365.06134181, 5885247.87691568], [1548365.06134181, 5713124.13469331], [1371670.86187088, 5713124.13469331]]]
+
+    output_file_gdal_translate = filesystem.create_tmp_filename('output_', '.geotiff')
+    output_file_gdal_warp = filesystem.create_tmp_filename('output_', '.geotiff')
+    output_file = filesystem.create_tmp_filename('output_', '.geotiff')
+    args = [
+        'gdal_translate',
+        '-projwin',
+        str(minlat),
+        str(minlon),
+        str(maxlat),
+        str(maxlon),
+        input_file,
+        output_file_gdal_translate
+    ]
+    try:
+        print args
+        #TODO: handle subprocess Error (like that is not taken)
+        proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
+    except:
+        stdout_value = proc.communicate()[0]
+        raise PGeoException(stdout_value, 500)
+
+    args = [
+        'gdalwarp',
+        "-q",
+        "-multi",
+        "-of",
+        "GTiff",
+        "-cutline",
+        wkt,
+        "-srcnodata",
+        str(srcnodata),
+        "-dstnodata",
+        str(dstnodata),
+        # -crop_to_cutline is needed otherwise the layer is not cropped
+        # TODO: resolve shifting problem
+        # "-crop_to_cutline",
+        # "-dstalpha",
+        output_file_gdal_translate,
+        output_file_gdal_warp
+    ]
+    try:
+        print args
+        #TODO: handle subprocess Error (like that is not taken)
+        proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
+    except:
+        stdout_value = proc.communicate()[0]
+        raise PGeoException(stdout_value, 500)
+
+    # TODO: is it useful the third opetation?
+    args = [
+        'gdal_translate',
+        "-a_nodata",
+        str(dstnodata),
+        output_file_gdal_warp,
+        output_file
+    ]
+    try:
+        print args
+        #TODO: handle subprocess Error (like that is not taken)
+        proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
+    except:
+        stdout_value = proc.communicate()[0]
+        raise PGeoException(stdout_value, 500)
+
+
+    filesystem.remove(output_file_gdal_warp)
+    filesystem.remove(output_file_gdal_translate)
+
+    if os.path.isfile(output_file):
+        return output_file
+    return None
+
+
+def crop_by_vector_database(raster_path, db_spatial, query_extent, query_layer):
+    srcnodatavalue = get_nodata_value(raster_path)
+    extent = db_spatial.query(query_extent)
+    log.info(extent)
+    geom = json.dumps(extent)
+    g = json.loads(geom)
+    log.info(g)
+    obj = g[0][0]
+    log.info(obj)
+    obj = json.loads(obj)
+    # TODO: this is hardcoded because the returning bbox is different from the one used by GDAL processing
+    log.info(obj["coordinates"])
+    minlat = obj["coordinates"][0][0][0]
+    minlon = obj["coordinates"][0][1][1]
+    maxlat = obj["coordinates"][0][2][0]
+    maxlon = obj["coordinates"][0][0][1]
+    db_connection_string = db_spatial.get_connection_string(True);
+    return _crop_by_vector_database(raster_path, query_layer, db_connection_string, minlat, minlon, maxlat, maxlon, srcnodatavalue, srcnodatavalue)
+
+
+# TODO: instead of the connection string pass the geometry
+def _crop_by_vector_database(input_file, query, db_connection_string, minlat, minlon, maxlat, maxlon, srcnodata='nodata', dstnodata='nodata'):
+   # [[[1371670.86187088, 5713124.13469331], [1371670.86187088, 5885247.87691568], [1548365.06134181, 5885247.87691568], [1548365.06134181, 5713124.13469331], [1371670.86187088, 5713124.13469331]]]
+
+
+    # From ST_Extent it's needed to get 1,4,3,2 of the values
+    # BBOX(1371670.86187088
+    # 5713124.13469331
+    # 1548365.06134181
+    # 5885247.87691568)
+    #
+    # bounding box to pass to the layer
+    #1371670.86187088 5885247.87691568 1548365.06134181 5713124.13469331
+    #
+    # gdal_translate -projwin 1371670.86187088 5885247.87691568 1548365.06134181 5713124.1346933 /home/vortex/Desktop/LAYERS/earthstat/output/rice_area1.tif /home/vortex/Desktop/LAYERS/tmp/test3.tif
+
+    # gdal_rasterize -b 1 -b 2 -b 3 -burn 255 -burn 255 -burn 255 -l VETOR_SHP D:/GDAL/VETOR_SHP.shp D:/GDAL/LS_SCALE.tif
+    # print db_connection_string
+    #
+    # query = "SELECT geom from spatial.gaul1_3857_test where adm1_code = '1620'"
+
+    #log.info(query)
+
+    output_file_gdal_translate = filesystem.create_tmp_filename('output_', '.geotiff')
+    output_file_gdal_warp = filesystem.create_tmp_filename('output_', '.geotiff')
+    output_file = filesystem.create_tmp_filename('output_', '.geotiff')
+    args = [
+        'gdal_translate',
+        '-projwin',
+        str(minlat),
+        str(minlon),
+        str(maxlat),
+        str(maxlon),
+        input_file,
+        output_file_gdal_translate
+    ]
+    try:
+        print args
+        #TODO: handle subprocess Error (like that is not taken)
+        proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
+    except:
+        stdout_value = proc.communicate()[0]
+        raise PGeoException(stdout_value, 500)
+
+
+    args = [
+        'gdalwarp',
+        "-q",
+        "-multi",
+        "-of",
+        "GTiff",
+        "-cutline",
+        db_connection_string,
+        "-csql",
+        query,
+        "-srcnodata",
+        str(srcnodata),
+        "-dstnodata",
+        str(dstnodata),
+        # -crop_to_cutline is needed otherwise the layer is not cropped
+        # TODO: resolve shifting problem
+        # "-crop_to_cutline",
+        # "-dstalpha",
+        output_file_gdal_translate,
+        output_file_gdal_warp
+    ]
+    try:
+        print args
+        #TODO: handle subprocess Error (like that is not taken)
+        proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
+    except:
+        stdout_value = proc.communicate()[0]
+        raise PGeoException(stdout_value, 500)
+
+    # TODO: is it useful the third opetation?
+    args = [
+        'gdal_translate',
+        "-a_nodata",
+        str(dstnodata),
+        output_file_gdal_warp,
+        output_file
+    ]
+    try:
+        print args
+        #TODO: handle subprocess Error (like that is not taken)
+        proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
+    except:
+        stdout_value = proc.communicate()[0]
+        raise PGeoException(stdout_value, 500)
+
+
+    filesystem.remove(output_file_gdal_warp)
+    filesystem.remove(output_file_gdal_translate)
+
+    if os.path.isfile(output_file):
+        return output_file
+    return None
+
+
+def crop_by_vector_database_ok(input_file, query=None, db_connection_string=None, srcnodata='nodata', dstnodata='nodata'):
     """
     :param input_file: file to be cropped
     :param query: query that has to be passed to the db
@@ -53,7 +249,7 @@ def crop_by_vector_database(input_file, query=None, db_connection_string=None, s
         str(dstnodata),
         # -crop_to_cutline is needed otherwise the layer is not cropped
         # TODO: resolve shifting problem
-        "-crop_to_cutline",
+        # "-crop_to_cutline",
         #"-dstalpha",
         input_file,
         output_file_gdal_warp
