@@ -1,5 +1,6 @@
 import os
 import json
+from osgeo import ogr
 from pgeo.stats.db_stats import DBStats
 from pgeo.utils import log
 from pgeo.gis import raster
@@ -34,7 +35,7 @@ class Stats():
         # Raster
         # if the raster is a raster store in the datadir
         if "uid" in json_stats["raster"]:
-            json_stats["raster"]["path"] = self._get_raster_path(json_stats["raster"]["uid"])
+            json_stats["raster"]["path"] = self.get_raster_path(json_stats["raster"]["uid"])
 
         # Vector
         # TODO: make an ENUM somewhere (i.e. database, geojson, etc)
@@ -50,15 +51,15 @@ class Stats():
 
     def get_stats(self, json_stats):
         if "uid" in json_stats["raster"]:
-            json_stats["raster"]["path"] = self._get_raster_path(json_stats["raster"]["uid"])
+            json_stats["raster"]["path"] = self.get_raster_path(json_stats["raster"]["uid"])
         return raster.get_statistics(json_stats["raster"]["path"])
 
     def get_histogram(self, json_stats):
         if "uid" in json_stats["raster"]:
-            json_stats["raster"]["path"] = self._get_raster_path(json_stats["raster"]["uid"])
+            json_stats["raster"]["path"] = self.get_raster_path(json_stats["raster"]["uid"])
         return raster.get_histogram(json_stats["raster"]["path"], json_stats["stats"])
 
-    def _get_raster_path(self, uid):
+    def get_raster_path(self, uid):
         l = uid.split(":")
         return os.path.join(self.settings["folders"]["geoserver_datadir"], "data",  l[0], l[1], l[1] + ".geotiff");
 
@@ -97,9 +98,6 @@ class Stats():
 
         #log.info(query)
 
-        # query DB
-        codes = self.db_spatial.query(query)
-
         # parsing results
         # the column filter is used to parse the
         column_filter = vector_opt['column_filter']
@@ -110,22 +108,18 @@ class Stats():
         column_filter_label_index = 1
 
         srcnodatavalue = raster.get_nodata_value(raster_path)
-        log.info("SRC NODATA!: %s" % srcnodatavalue)
+        # log.info("SRC NODATA!: %s" % srcnodatavalue)
+
+        # query DB
+        codes = self.db_spatial.query(query)
 
         if codes:
             for r in codes:
-
                 code = str(r[column_filter_code_index])
                 label = str(r[column_filter_label_index])
-                # TODO: problems with query Strings and Integers (or whatever)
-                stats_query = "SELECT * FROM " + from_query + " WHERE " + column_filter + " IN (" + code + ")"
-
-                #stats.append(self._get_stats_query(query, str(r[0]), str(r[1]), self.geostats['save_stats']))
-                #log.info(code)
-                db_connection_string = self.db_spatial.get_connection_string(True);
-                filepath = raster.crop_by_vector_database(raster_path, stats_query, db_connection_string, srcnodatavalue, srcnodatavalue)
-
-                #log.info(filepath)
+                query_extent = "SELECT ST_AsGeoJSON(ST_Extent(geom)) FROM " + from_query + " WHERE " + column_filter + " IN (" + code + ")"
+                query_layer = "SELECT * FROM " + from_query + " WHERE " + column_filter + " IN (" + code + ")"
+                filepath = raster.crop_by_vector_database(raster_path, self.db_spatial, query_extent, query_layer)
                 if filepath:
                     raster_stats = raster.get_statistics(filepath, raster_statistics)
                     if raster_stats:
