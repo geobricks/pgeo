@@ -33,7 +33,10 @@ settings = {
         "geoserver": "geoserver/",
         "metadata_templates": "metadata/templates/",
         # used on runtime statistics (for Published layers this is the Geoservers Cluster "datadir")
-        "geoserver_datadir": "/home/vortex/Desktop/LAYERS/TRMM",
+        "geoserver_datadir": "/home/vortex/programs/SERVERS/tomcat_geoservers/data/",
+        #"geoserver_datadir": "/home/vortex/Desktop/LAYERS/GEOSERVER_TEST",
+
+        "distribution": "/home/vortex/Desktop/LAYERS/DISTRIBUTION/"
     },
 
     # Databases
