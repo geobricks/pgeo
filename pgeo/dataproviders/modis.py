@@ -3,9 +3,41 @@ from pgeo.config.settings import read_config_file_json
 from pgeo.error.custom_exceptions import PGeoException
 from pgeo.error.custom_exceptions import errors
 from pgeo.utils.date import day_of_the_year_to_date
+from BeautifulSoup import BeautifulSoup
+import urllib
 
 
 conf = read_config_file_json('modis', 'data_providers')
+
+
+def get_modis_product_table():
+
+    sock = urllib.urlopen('https://lpdaac.usgs.gov/products/modis_products_table')
+    html = sock.read()
+    sock.close()
+    soup = BeautifulSoup(html)
+
+    tables = soup.findAll('table')
+    table = tables[len(tables) - 1]
+    tbody = table.find('tbody')
+    trs = tbody.findAll('tr')
+
+    products = []
+    keys = ['code', 'platform', 'modis_data_product', 'raster_type', 'spatial_resolution', 'temporal_resolution']
+
+    for tr in trs:
+        p = {}
+        counter = 0
+        tds = tr.findAll('td')
+        for td in tds:
+            text = ''.join(td.find(text=True)).strip().replace('\n', '')
+            if counter == 0:
+                text = td.find('a').find(text=True)
+            p[keys[counter]] = text
+            counter += 1
+        products.append(p)
+
+    return products
 
 
 def list_products():
