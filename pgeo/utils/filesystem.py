@@ -36,6 +36,18 @@ def create_tmp_folder(path=''):
     """
     return (os.path.join(folder_tmp, path) + str(uuid.uuid4())).encode('utf-8')
 
+def create_folder_in_tmp(folder_name):
+    """
+    Create the tmp folder from the folder_tmp
+
+    @type path: string
+    @param path: path from the tmp folder
+    @return: the path to a tmp folder
+    """
+    path = os.path.join(folder_tmp, folder_name)
+    os.mkdir(path)
+    return path
+
 def create_tmp_file(string_value, path='', extension=''):
     """
     Create a tmp file with the passed string
@@ -109,7 +121,10 @@ def get_filename(filepath, extension=False):
 
 
 def zip_files(name, files, path=folder_tmp):
-    zip_path = os.path.join(path, name +".zip")
+    extension = ".zip"
+    if ".zip" in name:
+        extension = ""
+    zip_path = os.path.join(path, name +extension)
     log.info("Zip: '%s' from zip_files %s - %s" % (zip_path, name, files))
     zf = zipfile.ZipFile(zip_path, "w")
     zip_subdir = path
