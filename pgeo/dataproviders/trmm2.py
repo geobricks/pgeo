@@ -30,8 +30,8 @@ def list_years():
             return out
         else:
             raise PGeoException(errors[512], status_code=512)
-    except:
-        raise PGeoException(errors[511], status_code=511)
+    except Exception, e:
+        raise PGeoException(e.message, status_code=500)
 
 
 def list_months(year):

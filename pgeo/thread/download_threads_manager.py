@@ -76,14 +76,20 @@ class LayerDownloadThread(Thread):
                 if 'size' in self.file_obj:
                     self.total_size = self.file_obj['size']
                 else:
-                    u = urllib2.urlopen(self.file_path)
-                    meta = u.info()
-                    self.total_size = int(meta.getheaders('Content-Length')[0])
+                    try:
+                        u = urllib2.urlopen(self.file_path)
+                        meta = u.info()
+                        self.total_size = int(meta.getheaders('Content-Length')[0])
+                    except:
+                        pass
 
                 if self.total_size is None:
-                    u = urllib2.urlopen(self.file_path)
-                    meta = u.info()
-                    self.total_size = int(meta.getheaders('Content-Length')[0])
+                    try:
+                        u = urllib2.urlopen(self.file_path)
+                        meta = u.info()
+                        self.total_size = int(meta.getheaders('Content-Length')[0])
+                    except:
+                        pass
 
                 # Download the file only if its size is different from the one on the FTP
                 allow_layer_download = True
@@ -92,35 +98,33 @@ class LayerDownloadThread(Thread):
                 except OSError, e:
                     pass
 
-                print 'allow_layer_download? ' + str(allow_layer_download)
-
                 if allow_layer_download:
 
-                    u = urllib2.urlopen(self.file_path)
-                    f = open(local_file, 'wb')
+                    try:
 
-                    multi_progress_map[self.tab_id][self.file_name]['total_size'] = self.total_size
-                    multi_progress_map[self.tab_id][self.file_name]['download_size'] = 0
+                        u = urllib2.urlopen(self.file_path)
+                        f = open(local_file, 'wb')
 
-                    print multi_progress_map
-                    print str(os.path.isfile(local_file))
-                    print os.stat(local_file).st_size < self.total_size
-                    print
+                        multi_progress_map[self.tab_id][self.file_name]['total_size'] = self.total_size
+                        multi_progress_map[self.tab_id][self.file_name]['download_size'] = 0
 
-                    if not os.path.isfile(local_file) or os.stat(local_file).st_size < self.total_size:
-                        file_size_dl = 0
-                        while self.percent_done() < 100:
-                            chunk = u.read(self.block_sz)
-                            if not buffer:
-                                break
-                            print str(local_file) + ' advanced of ' + str(len(chunk))
-                            file_size_dl += len(chunk)
-                            f.write(chunk)
-                            self.download_size += len(chunk)
-                            self.update_progress_map()
+                        if not os.path.isfile(local_file) or os.stat(local_file).st_size < self.total_size:
+                            file_size_dl = 0
+                            while self.percent_done() < 100:
+                                chunk = u.read(self.block_sz)
+                                if not buffer:
+                                    break
+                                file_size_dl += len(chunk)
+                                f.write(chunk)
+                                self.download_size += len(chunk)
+                                self.update_progress_map()
 
-                    multi_progress_map[self.tab_id][self.file_name]['status'] = 'COMPLETE'
-                    f.close()
+                        multi_progress_map[self.tab_id][self.file_name]['status'] = 'COMPLETE'
+                        f.close()
+
+                    except Exception, e:
+                        log.error(str(e))
+                        pass
 
                 else:
                     multi_progress_map[self.tab_id][self.file_name]['download_size'] = self.total_size
