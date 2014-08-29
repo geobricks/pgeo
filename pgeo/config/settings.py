@@ -7,6 +7,9 @@ settings = {
     # To be used by Flask: DEVELOPMENT ONLY
     "debug": True,
 
+    # Flask host: DEVELOPMENT ONLY
+    "host": "localhost",
+
     # Flask port: DEVELOPMENT ONLY
     "port": 5005,
 
@@ -100,7 +103,6 @@ settings = {
     "metadata": {
 
     }
-
 }
 
 
@@ -126,6 +128,5 @@ def read_template(filename):
 def set_email_settings():
     if os.path.isfile(settings["email"]["settings"]):
         settings["email"] = json.loads(open(settings["email"]["settings"]).read())
-        print settings["email"]
 
 set_email_settings()
