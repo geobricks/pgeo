@@ -8,7 +8,7 @@
         }
     },
     "target": {
-        "target_dir": "/home/kalimaha/Desktop/TRMM2/",
+        "target_dir": "/Users/simona/Desktop/TRMM2/",
         "filesystem": {
             "folder_name": "{product}",
             "sub_folders": [
@@ -55,9 +55,42 @@
     },
     "services_base_url": "http://127.0.0.1:5005/browse/",
     "services": {
+        "layers": {
+            "id": "list_layers",
+            "path": "trmm2/{year}/{month}/{from_day}/{to_day}",
+            "parameters": [
+                {
+                    "parameter_name": "year",
+                    "parameter_value": "list_years"
+                },
+                {
+                    "parameter_name": "month",
+                    "parameter_value": "list_months"
+                },
+                {
+                    "parameter_name": "from_day",
+                    "parameter_value": "list_days_from"
+                },
+                {
+                    "parameter_name": "to_day",
+                    "parameter_value": "list_days_to"
+                }
+            ],
+            "payload": {
+                "fields": ["code", "label", "size"],
+                "id": "code",
+                "label": "label"
+            },
+            "description": {
+                "en": "Available Layers",
+                "it": "Layers Disponibili",
+                "pt": "Layers Disponíveis"
+            },
+            "selection_type": "multiple"
+        },
         "filters": [
             {
-                "id": "list_years_from",
+                "id": "list_years",
                 "path": "trmm2",
                 "parameters": [],
                 "payload": {
@@ -66,19 +99,19 @@
                     "label": "label"
                 },
                 "description": {
-                    "en": "Available Years - From",
-                    "it": "Anni Disponibili - Da",
+                    "en": "Available Years",
+                    "it": "Anni Disponibili",
                     "pt": "Anos Disponíveis"
                 },
                 "selection_type": "single",
                 "services": [
                     {
-                        "id": "list_months_from",
-                        "path": "trmm/{year}",
+                        "id": "list_months",
+                        "path": "trmm2/{year}",
                         "parameters": [
                             {
                                 "parameter_name": "year",
-                                "parameter_value": "list_years_from"
+                                "parameter_value": "list_years"
                             }
                         ],
                         "payload": {
@@ -87,11 +120,63 @@
                             "label": "label"
                         },
                         "description": {
-                            "en": "Available Months - From",
-                            "it": "Mesi Disponibili - Da",
-                            "pt": "Meses Disponíveis - Desde"
+                            "en": "Available Months",
+                            "it": "Mesi Disponibili",
+                            "pt": "Meses Disponíveis"
                         },
-                        "selection_type": "single"
+                        "selection_type": "single",
+                        "services": [
+                            {
+                                "id": "list_days_from",
+                                "path": "trmm2/{year}/{month}",
+                                "parameters": [
+                                    {
+                                        "parameter_name": "year",
+                                        "parameter_value": "list_years"
+                                    },
+                                    {
+                                        "parameter_name": "month",
+                                        "parameter_value": "list_months"
+                                    }
+                                ],
+                                "payload": {
+                                    "fields": ["code", "label"],
+                                    "id": "code",
+                                    "label": "label"
+                                },
+                                "description": {
+                                    "en": "Available Days - From",
+                                    "it": "Giorni Disponibili - Da",
+                                    "pt": "Dias Disponíveis - Desde"
+                                },
+                                "selection_type": "single"
+                            },
+                            {
+                                "id": "list_days_to",
+                                "path": "trmm2/{year}/{month}",
+                                "parameters": [
+                                    {
+                                        "parameter_name": "year",
+                                        "parameter_value": "list_years"
+                                    },
+                                    {
+                                        "parameter_name": "month",
+                                        "parameter_value": "list_months"
+                                    }
+                                ],
+                                "payload": {
+                                    "fields": ["code", "label"],
+                                    "id": "code",
+                                    "label": "label"
+                                },
+                                "description": {
+                                    "en": "Available Days - To",
+                                    "it": "Giorni Disponibili - A",
+                                    "pt": "Dias Disponíveis - Até"
+                                },
+                                "selection_type": "single"
+                            }
+                        ]
                     }
                 ]
             }
