@@ -9,6 +9,7 @@ from threading import Timer
 import urllib2
 from pgeo.utils import log
 from pgeo.utils.filesystem import create_filesystem
+from pgeo.error.custom_exceptions import PGeoException
 
 
 thread_manager_processes = {}
@@ -79,6 +80,11 @@ class LayerDownloadThread(Thread):
                     meta = u.info()
                     self.total_size = int(meta.getheaders('Content-Length')[0])
 
+                if self.total_size is None:
+                    u = urllib2.urlopen(self.file_path)
+                    meta = u.info()
+                    self.total_size = int(meta.getheaders('Content-Length')[0])
+
                 # Download the file only if its size is different from the one on the FTP
                 allow_layer_download = True
                 try:
@@ -86,14 +92,20 @@ class LayerDownloadThread(Thread):
                 except OSError, e:
                     pass
 
+                print 'allow_layer_download? ' + str(allow_layer_download)
+
                 if allow_layer_download:
 
                     u = urllib2.urlopen(self.file_path)
                     f = open(local_file, 'wb')
 
                     multi_progress_map[self.tab_id][self.file_name]['total_size'] = self.total_size
-                    # if 'download_size' not in multi_progress_map[self.tab_id][self.file_name]:
                     multi_progress_map[self.tab_id][self.file_name]['download_size'] = 0
+
+                    print multi_progress_map
+                    print str(os.path.isfile(local_file))
+                    print os.stat(local_file).st_size < self.total_size
+                    print
 
                     if not os.path.isfile(local_file) or os.stat(local_file).st_size < self.total_size:
                         file_size_dl = 0
@@ -101,6 +113,7 @@ class LayerDownloadThread(Thread):
                             chunk = u.read(self.block_sz)
                             if not buffer:
                                 break
+                            print str(local_file) + ' advanced of ' + str(len(chunk))
                             file_size_dl += len(chunk)
                             f.write(chunk)
                             self.download_size += len(chunk)
@@ -143,7 +156,11 @@ class Manager(Thread):
         self.source = source
         self.file_paths_and_sizes = file_paths_and_sizes
         self.filesystem_structure = filesystem_structure
-        self.target_dir = create_filesystem(self.source, self.filesystem_structure)
+        try:
+            self.target_dir = create_filesystem(self.source, self.filesystem_structure)
+        except Exception, e:
+            log.error(e.message)
+            raise PGeoException(e.message, 500)
         self.tab_id = tab_id
 
     def run(self):
@@ -157,7 +174,8 @@ class Manager(Thread):
 
         log.info('START | Layers Download Manager')
 
-        thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
+        # thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
+        thread_list = ['Alpha']
         queue_lock = Lock()
         work_queue = Queue.Queue(len(self.file_paths_and_sizes))
         threads = []
