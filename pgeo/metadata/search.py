@@ -87,3 +87,14 @@ class MongoSearch():
         q.append(a)
         q.append(b)
         return self.client[self.db_name][self.table_name].aggregate(q)['result']
+
+
+    def find_all(self, field):
+        """
+        Find all distinct values of a specific field
+        @field field: field to search
+        @type field: string
+         """
+        q = "meContent.seCoverage.coverageSector.codes.code"
+
+        return self.client[self.db_name][self.table_name].distinct(q)
