@@ -3,7 +3,7 @@ from pgeo.config.settings import read_config_file_json
 from pgeo.error.custom_exceptions import PGeoException
 from pgeo.error.custom_exceptions import errors
 from pgeo.utils.date import day_of_the_year_to_date
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import urllib
 
 

@@ -15,5 +15,6 @@ setup(
         'psycopg2 >= 2.4.5',
         'GDAL >= 1.10.1',
         'httplib2 >= 0.8'
+        'beautifulsoup4 >= 4.3.2'
     ]
 )
