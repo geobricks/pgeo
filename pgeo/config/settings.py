@@ -7,6 +7,9 @@ settings = {
     # To be used by Flask: DEVELOPMENT ONLY
     "debug": True,
 
+    # Flask host: DEVELOPMENT ONLY
+    "host": "localhost",
+
     # Flask port: DEVELOPMENT ONLY
     "port": 5005,
 
@@ -21,6 +24,10 @@ settings = {
         "level": logging.INFO,
         "format": "%(asctime)s | %(levelname)-8s | %(name)-20s | Line: %(lineno)-5d | %(message)s",
         "datefmt": "%d-%m-%Y | %H:%M:%s"
+    },
+
+    "email": {
+        "settings" : "/home/vortex/Desktop/LAYERS/email.json"
     },
 
     # Folders
@@ -96,7 +103,6 @@ settings = {
     "metadata": {
 
     }
-
 }
 
 
@@ -117,3 +123,10 @@ def read_template(filename):
         return json.loads(open(path + filename + extension).read())
     except Exception, e:
         print e
+
+
+def set_email_settings():
+    if os.path.isfile(settings["email"]["settings"]):
+        settings["email"] = json.loads(open(settings["email"]["settings"]).read())
+
+set_email_settings()
