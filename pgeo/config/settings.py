@@ -23,6 +23,10 @@ settings = {
         "datefmt": "%d-%m-%Y | %H:%M:%s"
     },
 
+    "email": {
+        "settings" : "/home/vortex/Desktop/LAYERS/email.json"
+    },
+
     # Folders
     "folders": {
         "config": "config/",
@@ -117,3 +121,11 @@ def read_template(filename):
         return json.loads(open(path + filename + extension).read())
     except Exception, e:
         print e
+
+
+def set_email_settings():
+    if os.path.isfile(settings["email"]["settings"]):
+        settings["email"] = json.loads(open(settings["email"]["settings"]).read())
+        print settings["email"]
+
+set_email_settings()
