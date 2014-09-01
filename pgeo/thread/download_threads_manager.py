@@ -52,7 +52,6 @@ class LayerDownloadThread(Thread):
 
     def run(self):
 
-        # while not exit_flag:
         while not exit_flags[self.tab_id]:
 
             self.queue_lock.acquire()
@@ -178,15 +177,14 @@ class Manager(Thread):
 
         log.info('START | Layers Download Manager')
 
-        # thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
-        thread_list = ['Alpha']
+        thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
         queue_lock = Lock()
         work_queue = Queue.Queue(len(self.file_paths_and_sizes))
         threads = []
 
-        for tName in thread_list:
+        for thread_name in thread_list:
             key = str(uuid.uuid4())
-            thread = LayerDownloadThread(self.source, tName, work_queue, queue_lock, key, self.target_dir, self.tab_id)
+            thread = LayerDownloadThread(self.source, thread_name, work_queue, queue_lock, key, self.target_dir, self.tab_id)
             thread.start()
             if not threads_map_key in thread_manager_processes:
                 thread_manager_processes[threads_map_key] = {}
@@ -201,7 +199,6 @@ class Manager(Thread):
         while not work_queue.empty():
             pass
 
-        # exit_flag = 1
         exit_flags[self.tab_id] = 1
 
         for t in threads:
