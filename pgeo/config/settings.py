@@ -27,7 +27,9 @@ settings = {
     },
 
     "email": {
-        "settings" : "/home/vortex/Desktop/LAYERS/email.json"
+        "settings" : "/home/vortex/Desktop/LAYERS/email.json",
+        "user" :  None,
+        "password" : None
     },
 
     # Folders
@@ -126,6 +128,7 @@ def read_template(filename):
 
 
 def set_email_settings():
+    print os.path.isfile(settings["email"]["settings"])
     if os.path.isfile(settings["email"]["settings"]):
         settings["email"] = json.loads(open(settings["email"]["settings"]).read())
 

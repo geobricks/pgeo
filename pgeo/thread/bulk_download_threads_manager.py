@@ -2,15 +2,11 @@ from ftplib import FTP
 from threading import Thread
 from threading import Lock
 import Queue
-from pgeo.config.settings import read_config_file_json
 import os
-import uuid
 import time
 from threading import Timer
-import urllib2
 from pgeo.utils import log
 from pgeo.utils.filesystem import create_filesystem
-from pgeo.error.custom_exceptions import PGeoException
 
 
 log = log.logger('bulk_download_threads_manager.py')
@@ -45,24 +41,24 @@ class BulkDownloadThread(Thread):
             if not self.queue.empty():
 
                 self.bulk_download_object = self.queue.get()
-                self.total_files = len(self.bulk_download_object.file_list)
+                self.total_files = len(self.bulk_download_object['file_list'])
                 progress_map[self.tab_id]['total_files'] = self.total_files
                 progress_map[self.tab_id]['downloaded_files'] = 0
 
                 self.queue_lock.release()
 
-                ftp = FTP(self.bulk_download_object.ftp_base_url)
+                ftp = FTP(self.bulk_download_object['ftp_base_url'])
                 ftp.login()
-                ftp.cwd(self.bulk_download_object.ftp_data_dir)
+                ftp.cwd(self.bulk_download_object['ftp_data_dir'])
                 remote_files = ftp.nlst()
 
-                for file_name in self.bulk_download_object.file_list:
+                for file_name in self.bulk_download_object['file_list']:
 
                     if file_name in remote_files:
 
                         ftp.sendcmd('TYPE i')
-                        file = file_name
-                        local_file = os.path.join(self.target_folder, file)
+                        file_obj = file_name
+                        local_file = os.path.join(self.target_folder, file_obj)
 
                         if not os.path.isfile(local_file):
 
@@ -70,13 +66,13 @@ class BulkDownloadThread(Thread):
 
                                 def callback(chunk):
                                     f.write(chunk)
-                                ftp.retrbinary('RETR %s' % file, callback)
+                                ftp.retrbinary('RETR %s' % file_obj, callback)
                                 self.downloaded_files += 1
-                                self.update_progress_map
+                                self.update_progress_map()
 
                         else:
                             self.downloaded_files += 1
-                            self.update_progress_map
+                            self.update_progress_map()
 
                 ftp.quit()
 
@@ -107,6 +103,7 @@ class BulkDownloadManager(Thread):
     def run(self):
         t = Timer(1, self.start_manager)
         t.start()
+        return self.target_folder
 
     def start_manager(self):
 
@@ -159,18 +156,28 @@ class BulkDownloadObject():
         return s
 
 
-file_list = ['3B42.19980101.00.7.tfw',
-             '3B42.19980101.00.7.tif',
-             '3B42.19980101.03.7.tfw',
-             '3B42.19980101.03.7.tif',
-             '3B42.19980101.06.7.tfw',
-             '3B42.19980101.06.7.tif']
-one = BulkDownloadObject('trmmopen.gsfc.nasa.gov', '/trmmdata/GIS/1998/01/01', file_list)
-bulk_download_objects = [one]
-filesystem_structure = {
-    'year': '1998',
-    'month': '01',
-    'day': '01'
-}
-mgr = BulkDownloadManager('trmm2', filesystem_structure, bulk_download_objects, 'tab_1')
-mgr.run()
+# file_list = ['3B42.19980101.00.7.tfw',
+#              '3B42.19980101.00.7.tif',
+#              '3B42.19980101.03.7.tfw',
+#              '3B42.19980101.03.7.tif',
+#              '3B42.19980101.06.7.tfw',
+#              '3B42.19980101.06.7.tif']
+# one = BulkDownloadObject('trmmopen.gsfc.nasa.gov', '/trmmdata/GIS/1998/01/01', file_list)
+# bulk_download_objects = [one]
+# filesystem_structure = {
+#     'year': '1998',
+#     'month': '01',
+#     'day': '01'
+# }
+# bdo = []
+# bdo.append({
+#     'ftp_base_url': 'trmmopen.gsfc.nasa.gov',
+#     'ftp_data_dir': '/trmmdata/GIS/1998/01/01',
+#     'file_list': ['3B42.19980101.00.7.tfw',
+#                   '3B42.19980101.00.7.tif',
+#                   '3B42.19980101.03.7.tfw',
+#                   '3B42.19980101.03.7.tif',
+#                   '3B42.19980101.06.7.tfw',
+#                   '3B42.19980101.06.7.tif']})
+# mgr = BulkDownloadManager('trmm2', filesystem_structure, bdo, 'tab_1')
+# mgr.run()

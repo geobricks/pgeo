@@ -185,11 +185,15 @@ def list_layers_subset(product_name, year, day, from_h, to_h, from_v, to_v):
             ftp = FTP(conf['source']['ftp']['base_url'])
             ftp.login()
             ftp.cwd(conf['source']['ftp']['data_dir'])
+            print product_name.upper()
             ftp.cwd(product_name.upper())
+            print year
             ftp.cwd(year)
+            print day
             ftp.cwd(day)
             ls = []
             ftp.retrlines('MLSD', ls.append)
+            print ls
             ftp.quit()
             out = []
             for line in ls:
