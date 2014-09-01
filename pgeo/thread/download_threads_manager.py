@@ -102,6 +102,8 @@ class LayerDownloadThread(Thread):
                     try:
 
                         u = urllib2.urlopen(self.file_path)
+                        meta = u.info()
+                        self.total_size = int(meta.getheaders('Content-Length')[0])
                         f = open(local_file, 'wb')
 
                         multi_progress_map[self.tab_id][self.file_name]['total_size'] = self.total_size
@@ -109,7 +111,7 @@ class LayerDownloadThread(Thread):
 
                         if not os.path.isfile(local_file) or os.stat(local_file).st_size < self.total_size:
                             file_size_dl = 0
-                            while self.percent_done() < 100:
+                            while self.download_size < self.total_size:
                                 chunk = u.read(self.block_sz)
                                 if not buffer:
                                     break
