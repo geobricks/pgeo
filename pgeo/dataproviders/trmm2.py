@@ -106,16 +106,17 @@ def list_layers(year, month, day):
             fao_layers = filter(lambda x: '.tif' in x, l)
             out = []
             for layer in fao_layers:
-                try:
-                    code = layer
-                    hour = layer[0:layer.index('.tif')].split('.')[2]
-                    label = layer[0:layer.index('.tif')].split('.')[0]
-                    label += ' ('
-                    label += '-'.join([year, month, day])
-                    label += ', ' + hour + ')'
-                    out.append({'code': code, 'label': label, 'extensions': ['.tif', '.tfw']})
-                except:
-                    pass
+                if '.7.' in layer or '.7A.' in layer:
+                    try:
+                        code = layer
+                        hour = layer[0:layer.index('.tif')].split('.')[2]
+                        label = layer[0:layer.index('.tif')].split('.')[0]
+                        label += ' ('
+                        label += '-'.join([year, month, day])
+                        label += ', ' + hour + ')'
+                        out.append({'code': code, 'label': label, 'extensions': ['.tif', '.tfw']})
+                    except:
+                        pass
             ftp.quit()
             return out
         else:
@@ -151,27 +152,28 @@ def list_layers_subset(year, month, from_day, to_day):
                 l.sort()
                 fao_layers = filter(lambda x: '.tif' in x, l)
                 for layer in fao_layers:
-                    code = layer
-                    hour = layer[0:layer.index('.tif')].split('.')[2]
-                    label = layer[0:layer.index('.tif')].split('.')[0]
-                    label += ' ('
-                    label += '-'.join([year, month, days[i]])
-                    label += ', ' + hour + ')'
-                    file_path = file_path_root + year + '/' + month + '/' + days[i] + '/' + code
-                    out.append({
-                        'file_name': code,
-                        'file_path': file_path,
-                        'label': label,
-                        'size': None
-                    })
-                    code = code.replace('.tif', '.tfw')
-                    file_path = file_path_root + year + '/' + month + '/' + days[i] + '/' + code
-                    out.append({
-                        'file_name': code,
-                        'file_path': file_path,
-                        'label': label,
-                        'size': None
-                    })
+                    if '.7.' in layer or '.7A.' in layer:
+                        code = layer
+                        hour = layer[0:layer.index('.tif')].split('.')[2]
+                        label = layer[0:layer.index('.tif')].split('.')[0]
+                        label += ' ('
+                        label += '-'.join([year, month, days[i]])
+                        label += ', ' + hour + ')'
+                        file_path = file_path_root + year + '/' + month + '/' + days[i] + '/' + code
+                        out.append({
+                            'file_name': code,
+                            'file_path': file_path,
+                            'label': label,
+                            'size': None
+                        })
+                        code = code.replace('.tif', '.tfw')
+                        file_path = file_path_root + year + '/' + month + '/' + days[i] + '/' + code
+                        out.append({
+                            'file_name': code,
+                            'file_path': file_path,
+                            'label': label,
+                            'size': None
+                        })
             ftp.quit()
             return out
         else:

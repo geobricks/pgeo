@@ -31,6 +31,7 @@ class BulkDownloadThread(Thread):
         self.target_folder = target_folder
 
         progress_map[self.tab_id] = {}
+        progress_map[self.tab_id]['status'] = 'WAITING'
 
     def run(self):
 
@@ -44,11 +45,20 @@ class BulkDownloadThread(Thread):
                 self.total_files = len(self.bulk_download_object['file_list'])
                 progress_map[self.tab_id]['total_files'] = self.total_files
                 progress_map[self.tab_id]['downloaded_files'] = 0
+                progress_map[self.tab_id]['status'] = 'START'
+                progress_map[self.tab_id]['progress'] = 0
 
                 self.queue_lock.release()
 
                 ftp = FTP(self.bulk_download_object['ftp_base_url'])
-                ftp.login()
+
+                try:
+                    ftp.login()
+                except Exception, e:
+                    progress_map[self.tab_id]['status'] = 'ERROR'
+                    exit_flags[self.tab_id] = 1
+                    continue
+
                 ftp.cwd(self.bulk_download_object['ftp_data_dir'])
                 remote_files = ftp.nlst()
 
@@ -59,6 +69,7 @@ class BulkDownloadThread(Thread):
                         ftp.sendcmd('TYPE i')
                         file_obj = file_name
                         local_file = os.path.join(self.target_folder, file_obj)
+                        progress_map[self.tab_id]['status'] = 'ONGOING'
 
                         if not os.path.isfile(local_file):
 
@@ -68,11 +79,17 @@ class BulkDownloadThread(Thread):
                                     f.write(chunk)
                                 ftp.retrbinary('RETR %s' % file_obj, callback)
                                 self.downloaded_files += 1
-                                self.update_progress_map()
+                                progress_map[self.tab_id]['status'] = 'COMPLETE'
+                                progress_map[self.tab_id]['progress'] = self.percent_done()
+                                log.info(progress_map[self.tab_id]['progress'])
+                                # self.update_progress_map()
 
                         else:
                             self.downloaded_files += 1
-                            self.update_progress_map()
+                            progress_map[self.tab_id]['status'] = 'COMPLETE'
+                            progress_map[self.tab_id]['progress'] = self.percent_done()
+                            log.info(progress_map[self.tab_id]['progress'])
+                            # self.update_progress_map()
 
                 ftp.quit()
 
@@ -85,9 +102,9 @@ class BulkDownloadThread(Thread):
     def percent_done(self):
         return float('{0:.2f}'.format(float(self.downloaded_files) / float(self.total_files) * 100))
 
-    def update_progress_map(self):
-        progress_map[self.tab_id]['downloaded_files'] = self.downloaded_files
-        progress_map[self.tab_id]['progress'] = self.percent_done()
+    # def update_progress_map(self):
+    #     progress_map[self.tab_id]['downloaded_files'] = self.downloaded_files
+    #     progress_map[self.tab_id]['progress'] = self.percent_done()
 
 
 class BulkDownloadManager(Thread):
@@ -111,7 +128,8 @@ class BulkDownloadManager(Thread):
 
         log.info('START | Bulk Download Manager')
 
-        thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
+        # thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
+        thread_list = ['Alpha']
         queue_lock = Lock()
         work_queue = Queue.Queue(len(self.bulk_download_objects))
         threads = []
