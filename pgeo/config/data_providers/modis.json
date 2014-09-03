@@ -105,21 +105,36 @@
             "selection_type": "multiple"
         },
         "download": {
-            "type": "standard",
-            "filesystem_structure": [
-                {
-                    "parameter_name": "product",
-                    "parameter_value": "list_products"
+            "__type": "standard",
+            "payload": {
+                "filesystem_structure": {
+                    "type": "object",
+                    "parameters": [
+                        {
+                            "parameter_name": "product",
+                            "parameter_value": "list_products"
+                        },
+                        {
+                            "parameter_name": "year",
+                            "parameter_value": "list_years_from"
+                        },
+                        {
+                            "parameter_name": "day",
+                            "parameter_value": "$create_day_of_the_year"
+                        }
+                    ]
                 },
-                {
-                    "parameter_name": "year",
-                    "parameter_value": "list_years_from"
+                "file_paths_and_sizes": {
+                    "type": "rest_response"
                 },
-                {
-                    "parameter_name": "day",
-                    "parameter_value": "$create_day_of_the_year"
+                "tab_id": {
+                    "type": "string",
+                    "parameters": [
+                        "tab_",
+                        "$CURRENT_INDEX"
+                    ]
                 }
-            ]
+            }
         },
         "countries": {
             "id": "list_gaul2modis",
