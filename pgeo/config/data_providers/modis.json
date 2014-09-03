@@ -89,7 +89,7 @@
                 },
                 {
                     "parameter_name": "day",
-                    "parameter_value": "list_days_from"
+                    "parameter_value": "$create_day_of_the_year"
                 }
             ],
             "payload": {
@@ -103,6 +103,27 @@
                 "pt": "Layers Disponíveis"
             },
             "selection_type": "multiple"
+        },
+        "countries": {
+            "id": "list_gaul2modis",
+            "path": "modis/countries",
+            "parameters": [],
+            "payload": {
+                "fields": ["gaul_code", "gaul_label", "from_h", "to_h", "from_v", "to_v"],
+                "id": "gaul_code",
+                "label": "gaul_label"
+            },
+            "description": {
+                "en": "Countries",
+                "it": "Paesi",
+                "pt": "Países"
+            },
+            "selection_type": "multiple"
+        },
+        "time_range": {
+            "from": "list_days_from",
+            "to": "list_days_to",
+            "step": 16
         },
         "filters": [
             {

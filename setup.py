@@ -1,20 +1,22 @@
-from distutils.core import setup
+from setuptools import setup
+from setuptools import find_packages
 
 setup(
     name='PGeo',
-    version='0.1.1',
+    version='0.1.10',
     author='Simone Murzilli; Guido Barbaglia',
     author_email='geobrickspy@gmail.com',
-    packages=['pgeo'],
+    packages=find_packages(),
+    install_requires=[
+        'gdal',
+        'pymongo',
+        'psycopg2',
+        'httplib2',
+        'beautifulsoup4',
+        'python-dateutil'
+    ],
     url='http://pypi.python.org/pypi/PGeo/',
     license='LICENSE.txt',
     description='PGeo module.',
-    long_description=open('README.md').read(),
-    install_requires=[
-        'pymongo >= 2.7.1',
-        'psycopg2 >= 2.4.5',
-        'GDAL >= 1.10.1',
-        'httplib2 >= 0.8'
-        'beautifulsoup4 >= 4.3.2'
-    ]
+    long_description=open('README.md').read()
 )
