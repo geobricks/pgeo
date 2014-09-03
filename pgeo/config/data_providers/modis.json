@@ -104,6 +104,23 @@
             },
             "selection_type": "multiple"
         },
+        "download": {
+            "type": "standard",
+            "filesystem_structure": [
+                {
+                    "parameter_name": "product",
+                    "parameter_value": "list_products"
+                },
+                {
+                    "parameter_name": "year",
+                    "parameter_value": "list_years_from"
+                },
+                {
+                    "parameter_name": "day",
+                    "parameter_value": "$create_day_of_the_year"
+                }
+            ]
+        },
         "countries": {
             "id": "list_gaul2modis",
             "path": "modis/countries",
