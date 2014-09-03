@@ -4,6 +4,9 @@ from osgeo import ogr
 from pgeo.stats.db_stats import DBStats
 from pgeo.utils import log
 from pgeo.gis import raster
+import io
+import csv
+import math
 
 log = log.logger(__name__)
 
@@ -130,6 +133,34 @@ class Stats():
 
     def _get_statistics(self):
         return None
+
+    def create_csv_merge(self, output_file, stats1, stats2):
+        # with open(output_file, 'wb') as csvfile:
+            csv_file = csv.writer(output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+            json_string1 = json.dumps(stats1)
+            json_string2 = json.dumps(stats2)
+            log.info(json_string1)
+            log.info(json_string2)
+            json_data1 = json.loads(json_string1)
+            json_data2 = json.loads(json_string2)
+            log.info(json_data1)
+            log.info(json_data2)
+            csv_file.writerow(["code", "label", "valueX", "valueY"])
+            for data1 in json_data1:
+                log.info(data1)
+                for data2 in json_data2:
+                    log.info(data2)
+                    try:
+                        if data1["code"] == data2["code"]:
+                            if "stats" in data1["data"]:
+                                log.info(data2)
+                                if not math.isnan(data1["data"]["stats"][0]["mean"]) and not math.isnan(data2["data"]["stats"][0]["mean"]):
+                                    csv_file.writerow([data1["code"], data1["label"], data1["data"]["stats"][0]["mean"], data2["data"]["stats"][0]["mean"]])
+                            pass
+                    except Exception, e:
+                        print e
+            return output_file
 
     # get the default db from the settings
     def _get_default_db(self, dtype, connect=True):
