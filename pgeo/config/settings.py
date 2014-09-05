@@ -81,7 +81,7 @@ settings = {
 
     # Geoserver
     "geoserver": {
-        "geoserver_master": "http://localhost:9090/geoserver/rest",
+        "geoserver_master": "http://localhost:8080/geoserver/rest",
         "geoserver_slaves": [],
         "username": "admin",
         "password": "geoserver",

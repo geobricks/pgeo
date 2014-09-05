@@ -60,7 +60,8 @@ class Manager():
             log.info(shp_folder_and_name)
 
             # sanitize the layer_name
-            name = sanitize_name(shp_name)
+            # name = sanitize_name(shp_name)
+            name = sanitize_name(metadata_def["title"]["EN"])
 
             # getting the default workspace
             default_workspace = self.geoserver.get_default_workspace()
@@ -73,9 +74,9 @@ class Manager():
             # publish shapefile on geoserver
             # TODO: merge the metadata with the default vector metadata
             if "name" not in geoserver_def:
-                geoserver_def["name"] = shp_name
+                geoserver_def["name"] = name
             if "title" not in geoserver_def:
-                geoserver_def["title"] = shp_name
+                geoserver_def["title"] = name
             if "workspace" not in geoserver_def:
                 geoserver_def["workspace"] = self.geoserver.get_default_workspace()
             if "datastore" not in geoserver_def:
@@ -128,7 +129,8 @@ class Manager():
             # layer_def = layer_def["coverageStore"]
 
             # sanitize the layer_name
-            name = sanitize_name(filesystem.get_filename(file_path))
+            #name = sanitize_name(filesystem.get_filename(file_path))
+            name = sanitize_name(metadata_def["title"]["EN"])
 
             # getting the default workspace
             default_workspace = self.geoserver.get_default_workspace()
@@ -190,4 +192,7 @@ def sanitize_name(name):
     :param name: name of the layer
     :return: sanitized layer name
     """
-    return name.replace(".", "")
+    name = name.replace(".", "")
+    name = name.replace(" ", "_")
+    name = name.lower()
+    return name
