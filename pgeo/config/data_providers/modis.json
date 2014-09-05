@@ -25,14 +25,23 @@
             }
         ]
     },
-    "bands": {
-        "0": "NDVI",
-        "1": "EVI"
-    },
+    "bands": [
+        {
+            "index": 1,
+            "label": "NDVI"
+        },
+        {
+            "index": 2,
+            "label": "EVI"
+        },
+        {
+            "index": 4,
+            "label": "TEMPERATURE"
+        }
+    ],
     "subfolders": {
-        "original": "original",
-        "output": "output",
-        "tmp": "tmp"
+        "original": "ORIGINAL",
+        "output": "OUTPUT"
     },
     "processing": [
         {

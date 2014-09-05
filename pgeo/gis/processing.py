@@ -76,7 +76,8 @@ def change_values(obj, pixel_size):
 class Process:
 
     def __init__(self, output_file_name=None):
-        self.output_file_name = output_file_name
+        if output_file_name is not None:
+            self.output_file_name = output_file_name
         return None
 
     def extract_bands(self, input_files, band, output_path):
