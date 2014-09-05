@@ -33,14 +33,9 @@
         {
             "index": 2,
             "label": "EVI"
-        },
-        {
-            "index": 4,
-            "label": "TEMPERATURE"
         }
     ],
     "subfolders": {
-        "original": "ORIGINAL",
         "output": "OUTPUT"
     },
     "processing": [
@@ -198,6 +193,7 @@
             "selection_type": "multiple"
         },
         "time_range": {
+            "year": "list_years",
             "from": "list_days_from",
             "to": "list_days_to",
             "step": 16

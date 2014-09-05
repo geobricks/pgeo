@@ -161,9 +161,20 @@ def create_filesystem(source, parameters):
     if len(conf['folders']) > 0:
         for folder in conf['folders']:
             final_path = create_folder(conf, parameters, folder, conf['target_dir'])
-    out_folder = os.path.join(final_path, 'OUTPUT')
-    if not os.path.exists(out_folder):
-        os.makedirs(out_folder)
+
+    sub_folders = read_config_file_json(source, 'data_providers')['subfolders']
+    bands = read_config_file_json(source, 'data_providers')['bands']
+    for key in sub_folders:
+        if 'output' in key:
+            for band in bands:
+                out_folder = os.path.join(final_path, sub_folders[key] + '_' + band['label'])
+                if not os.path.exists(out_folder):
+                    os.makedirs(out_folder)
+        else:
+            out_folder = os.path.join(final_path, sub_folders[key])
+            if not os.path.exists(out_folder):
+                os.makedirs(out_folder)
+
     return final_path
 
 

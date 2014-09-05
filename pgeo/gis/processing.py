@@ -144,12 +144,20 @@ class Process:
 
     def gdal_merge(self, parameters, input_files, output_path):
         log.info("gdal_merge")
+        log.info(parameters)
         output_files = []
         output_file = os.path.join(output_path, self.output_file_name + ".hdf")
+        log.info(output_file)
         output_files.append(output_file)
         cmd = "gdal_merge.py "
-        for key in parameters.keys():
-            cmd += " " + key + " " + str(parameters[key])
+        log.info(cmd)
+        if "opt" in parameters:
+            log.info("OPT!!")
+            for key in parameters["opt"].keys():
+                log.info(key)
+                cmd += " " + key + " " + str(parameters["opt"][key])
+
+        log.info(input_files)
         for input_file in input_files:
             cmd += " " + input_file
         cmd += " -o " + output_file
@@ -158,7 +166,7 @@ class Process:
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             output, error = process.communicate()
             log.info(output)
-            log.warn(error)
+            log.error(error)
             log.info(output_files)
             return output_files
         except Exception, e:
@@ -172,8 +180,9 @@ class Process:
         output_file = os.path.join(output_path, self.output_file_name + ".tiff")
         output_files.append(output_file)
         cmd = "gdalwarp "
-        for key in parameters["opt"].keys():
-            cmd += " " + key + " " + str(parameters["opt"][key])
+        if "opt" in parameters:
+            for key in parameters["opt"].keys():
+                cmd += " " + key + " " + str(parameters["opt"][key])
         for input_file in input_files:
             cmd += " " + input_file
         cmd += " " + output_file
