@@ -128,7 +128,6 @@ def read_template(filename):
 
 
 def set_email_settings():
-    print os.path.isfile(settings["email"]["settings"])
     if os.path.isfile(settings["email"]["settings"]):
         settings["email"] = json.loads(open(settings["email"]["settings"]).read())
 

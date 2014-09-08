@@ -11,13 +11,18 @@
         "target_dir": "/home/kalimaha/Desktop/TRMM",
         "folders": [
             {
-                "folder_name": "{{year}}",
+                "folder_name": "{{product}}",
                 "folders": [
                     {
-                        "folder_name": "{{month}}",
+                        "folder_name": "{{year}}",
                         "folders": [
                             {
-                                "folder_name": "{{day}}"
+                                "folder_name": "{{month}}",
+                                "folders": [
+                                    {
+                                        "folder_name": "{{day}}"
+                                    }
+                                ]
                             }
                         ]
                     }

@@ -2,9 +2,11 @@ from ftplib import FTP
 from pgeo.config.settings import read_config_file_json
 from pgeo.error.custom_exceptions import PGeoException
 from pgeo.error.custom_exceptions import errors
+from pgeo.utils import log
 
 
 conf = read_config_file_json('trmm2', 'data_providers')
+log = log.logger(__name__)
 
 
 def list_years():
@@ -178,5 +180,6 @@ def list_layers_subset(year, month, from_day, to_day):
             return out
         else:
             raise PGeoException(errors[512], status_code=512)
-    except:
+    except Exception, e:
+        log.error(e)
         raise PGeoException(errors[511], status_code=511)

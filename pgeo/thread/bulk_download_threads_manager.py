@@ -50,6 +50,8 @@ class BulkDownloadThread(Thread):
 
                 self.queue_lock.release()
 
+                self.target_folder = create_filesystem('trmm2', self.bulk_download_object['filesystem_structure'])
+
                 ftp = FTP(self.bulk_download_object['ftp_base_url'])
 
                 try:
@@ -57,17 +59,22 @@ class BulkDownloadThread(Thread):
                 except Exception, e:
                     progress_map[self.tab_id]['status'] = 'ERROR'
                     exit_flags[self.tab_id] = 1
+                    log.error(e)
                     continue
 
+                print self.bulk_download_object['ftp_data_dir']
                 ftp.cwd(self.bulk_download_object['ftp_data_dir'])
                 remote_files = ftp.nlst()
 
                 for file_name in self.bulk_download_object['file_list']:
 
-                    if file_name in remote_files:
+                    log.info('Downloading: ' + file_name['file_name'])
+
+                    if file_name['file_name'] in remote_files:
+
 
                         ftp.sendcmd('TYPE i')
-                        file_obj = file_name
+                        file_obj = file_name['file_name']
                         local_file = os.path.join(self.target_folder, file_obj)
                         progress_map[self.tab_id]['status'] = 'ONGOING'
 
@@ -81,14 +88,14 @@ class BulkDownloadThread(Thread):
                                 self.downloaded_files += 1
                                 progress_map[self.tab_id]['status'] = 'COMPLETE'
                                 progress_map[self.tab_id]['progress'] = self.percent_done()
-                                log.info(progress_map[self.tab_id]['progress'])
+                                # log.info(progress_map[self.tab_id]['progress'])
                                 # self.update_progress_map()
 
                         else:
                             self.downloaded_files += 1
                             progress_map[self.tab_id]['status'] = 'COMPLETE'
                             progress_map[self.tab_id]['progress'] = self.percent_done()
-                            log.info(progress_map[self.tab_id]['progress'])
+                            # log.info(progress_map[self.tab_id]['progress'])
                             # self.update_progress_map()
 
                 ftp.quit()
@@ -115,7 +122,8 @@ class BulkDownloadManager(Thread):
         self.tab_id = tab_id
         self.source = source
         self.filesystem_structure = filesystem_structure
-        self.target_folder = create_filesystem(self.source, self.filesystem_structure)
+        # self.target_folder = create_filesystem(self.source, self.filesystem_structure)
+        self.target_folder = 'WORK IN PROGRESS'
 
     def run(self):
         t = Timer(1, self.start_manager)
