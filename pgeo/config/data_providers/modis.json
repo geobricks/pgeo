@@ -113,7 +113,7 @@
             ]
         }
     },
-    "services_base_url": "http://127.0.0.1:5005/browse/",
+    "services_base_url": "http://168.202.28.57:5005/browse/",
     "services": {
         "layers": {
             "id": "list_layers",

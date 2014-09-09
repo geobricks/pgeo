@@ -7,6 +7,7 @@ import time
 from threading import Timer
 from pgeo.utils import log
 from pgeo.utils.filesystem import create_filesystem
+from pgeo.gis.gdal_calc import calc_layers
 
 
 log = log.logger('bulk_download_threads_manager.py')
@@ -19,8 +20,9 @@ class BulkDownloadThread(Thread):
     bulk_download_object = None
     total_files = 0
     downloaded_files = 0
+    aggregation = None
 
-    def __init__(self, thread_name, queue, queue_lock, tab_id, target_folder):
+    def __init__(self, thread_name, queue, queue_lock, tab_id, target_folder, aggregation):
 
         Thread.__init__(self)
 
@@ -29,6 +31,7 @@ class BulkDownloadThread(Thread):
         self.queue_lock = queue_lock
         self.tab_id = tab_id
         self.target_folder = target_folder
+        self.aggregation = aggregation
 
         progress_map[self.tab_id] = {}
         progress_map[self.tab_id]['status'] = 'WAITING'
@@ -62,7 +65,6 @@ class BulkDownloadThread(Thread):
                     log.error(e)
                     continue
 
-                print self.bulk_download_object['ftp_data_dir']
                 ftp.cwd(self.bulk_download_object['ftp_data_dir'])
                 remote_files = ftp.nlst()
 
@@ -88,17 +90,15 @@ class BulkDownloadThread(Thread):
                                 self.downloaded_files += 1
                                 progress_map[self.tab_id]['status'] = 'COMPLETE'
                                 progress_map[self.tab_id]['progress'] = self.percent_done()
-                                # log.info(progress_map[self.tab_id]['progress'])
-                                # self.update_progress_map()
 
                         else:
                             self.downloaded_files += 1
                             progress_map[self.tab_id]['status'] = 'COMPLETE'
                             progress_map[self.tab_id]['progress'] = self.percent_done()
-                            # log.info(progress_map[self.tab_id]['progress'])
-                            # self.update_progress_map()
 
                 ftp.quit()
+                log.info('Download Complete. Start aggregation.')
+                self.aggregate_layers()
 
             else:
 
@@ -109,14 +109,20 @@ class BulkDownloadThread(Thread):
     def percent_done(self):
         return float('{0:.2f}'.format(float(self.downloaded_files) / float(self.total_files) * 100))
 
-    # def update_progress_map(self):
-    #     progress_map[self.tab_id]['downloaded_files'] = self.downloaded_files
-    #     progress_map[self.tab_id]['progress'] = self.percent_done()
+    def aggregate_layers(self):
+        file_name = self.target_folder + '/'
+        file_name += self.bulk_download_object['filesystem_structure']['year']
+        file_name += self.bulk_download_object['filesystem_structure']['month']
+        file_name += self.bulk_download_object['filesystem_structure']['day']
+        file_name += '_' + self.aggregation.upper()
+        file_name += '.geotif'
+        input_files = [self.target_folder + '/' + x['file_name'] for x in self.bulk_download_object['file_list'] if '.tif' in x['file_name']]
+        calc_layers(input_files, file_name, self.aggregation)
 
 
 class BulkDownloadManager(Thread):
 
-    def __init__(self, source, filesystem_structure, bulk_download_objects, tab_id):
+    def __init__(self, source, filesystem_structure, bulk_download_objects, tab_id, aggregation):
         Thread.__init__(self)
         self.bulk_download_objects = bulk_download_objects
         self.tab_id = tab_id
@@ -124,6 +130,7 @@ class BulkDownloadManager(Thread):
         self.filesystem_structure = filesystem_structure
         # self.target_folder = create_filesystem(self.source, self.filesystem_structure)
         self.target_folder = 'WORK IN PROGRESS'
+        self.aggregation = aggregation
 
     def run(self):
         t = Timer(1, self.start_manager)
@@ -143,7 +150,7 @@ class BulkDownloadManager(Thread):
         threads = []
 
         for thread_name in thread_list:
-            thread = BulkDownloadThread(thread_name, work_queue, queue_lock, self.tab_id, self.target_folder)
+            thread = BulkDownloadThread(thread_name, work_queue, queue_lock, self.tab_id, self.target_folder, self.aggregation)
             thread.start()
             threads.append(thread)
 
@@ -180,30 +187,3 @@ class BulkDownloadObject():
         s += str(self.ftp_data_dir) + '\n'
         s += str(self.file_list)
         return s
-
-
-# file_list = ['3B42.19980101.00.7.tfw',
-#              '3B42.19980101.00.7.tif',
-#              '3B42.19980101.03.7.tfw',
-#              '3B42.19980101.03.7.tif',
-#              '3B42.19980101.06.7.tfw',
-#              '3B42.19980101.06.7.tif']
-# one = BulkDownloadObject('trmmopen.gsfc.nasa.gov', '/trmmdata/GIS/1998/01/01', file_list)
-# bulk_download_objects = [one]
-# filesystem_structure = {
-#     'year': '1998',
-#     'month': '01',
-#     'day': '01'
-# }
-# bdo = []
-# bdo.append({
-#     'ftp_base_url': 'trmmopen.gsfc.nasa.gov',
-#     'ftp_data_dir': '/trmmdata/GIS/1998/01/01',
-#     'file_list': ['3B42.19980101.00.7.tfw',
-#                   '3B42.19980101.00.7.tif',
-#                   '3B42.19980101.03.7.tfw',
-#                   '3B42.19980101.03.7.tif',
-#                   '3B42.19980101.06.7.tfw',
-#                   '3B42.19980101.06.7.tif']})
-# mgr = BulkDownloadManager('trmm2', filesystem_structure, bdo, 'tab_1')
-# mgr.run()
