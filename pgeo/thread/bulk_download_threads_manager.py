@@ -110,14 +110,15 @@ class BulkDownloadThread(Thread):
         return float('{0:.2f}'.format(float(self.downloaded_files) / float(self.total_files) * 100))
 
     def aggregate_layers(self):
-        file_name = self.target_folder + '/'
-        file_name += self.bulk_download_object['filesystem_structure']['year']
-        file_name += self.bulk_download_object['filesystem_structure']['month']
-        file_name += self.bulk_download_object['filesystem_structure']['day']
-        file_name += '_' + self.aggregation.upper()
-        file_name += '.geotif'
-        input_files = [self.target_folder + '/' + x['file_name'] for x in self.bulk_download_object['file_list'] if '.tif' in x['file_name']]
-        calc_layers(input_files, file_name, self.aggregation)
+        if self.aggregation is not None:
+            file_name = self.target_folder + '/'
+            file_name += self.bulk_download_object['filesystem_structure']['year']
+            file_name += self.bulk_download_object['filesystem_structure']['month']
+            file_name += self.bulk_download_object['filesystem_structure']['day']
+            file_name += '_' + self.aggregation.upper()
+            file_name += '.geotif'
+            input_files = [self.target_folder + '/' + x['file_name'] for x in self.bulk_download_object['file_list'] if '.tif' in x['file_name']]
+            calc_layers(input_files, file_name, self.aggregation)
 
 
 class BulkDownloadManager(Thread):
