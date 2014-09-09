@@ -21,16 +21,17 @@ class BulkDownloadThread(Thread):
     total_files = 0
     downloaded_files = 0
     aggregation = None
+    target_folder = None
 
-    def __init__(self, thread_name, queue, queue_lock, tab_id, target_folder, aggregation):
+    def __init__(self, source, thread_name, queue, queue_lock, tab_id, aggregation):
 
         Thread.__init__(self)
 
+        self.source = source
         self.thread_name = thread_name
         self.queue = queue
         self.queue_lock = queue_lock
         self.tab_id = tab_id
-        self.target_folder = target_folder
         self.aggregation = aggregation
 
         progress_map[self.tab_id] = {}
@@ -53,7 +54,7 @@ class BulkDownloadThread(Thread):
 
                 self.queue_lock.release()
 
-                self.target_folder = create_filesystem('trmm2', self.bulk_download_object['filesystem_structure'])
+                self.target_folder = create_filesystem(self.source, self.bulk_download_object['filesystem_structure'])
 
                 ftp = FTP(self.bulk_download_object['ftp_base_url'])
 
@@ -123,19 +124,30 @@ class BulkDownloadThread(Thread):
 
 class BulkDownloadManager(Thread):
 
-    def __init__(self, source, filesystem_structure, bulk_download_objects, tab_id, aggregation):
+    def __init__(self, source, bulk_download_objects, tab_id, aggregation):
+        """
+
+        @param source: Data provider's name, must match a configuration file, e.g. 'trmm2'
+        @param bulk_download_objects: An array of objects with the following fields:
+        'ftp_base_url', 'ftp_data_dir', 'file_list', 'filesystem_structure'. Field 'filesystem_structure' must
+        describe the target filesystem structure, e.g. e.g. {'product': 'MOD13Q1', 'year': '2014', 'day': '033'}
+        @param tab_id: An identifier to be used to monitor the progress, e.g. '23'
+        @param aggregation: 'None', 'sum', 'avg', 'ratio' or 'diff'
+        """
         Thread.__init__(self)
         self.bulk_download_objects = bulk_download_objects
         self.tab_id = tab_id
         self.source = source
-        self.filesystem_structure = filesystem_structure
-        # self.target_folder = create_filesystem(self.source, self.filesystem_structure)
         self.target_folder = 'WORK IN PROGRESS'
         self.aggregation = aggregation
 
     def run(self):
         t = Timer(1, self.start_manager)
         t.start()
+        target_folders = []
+        for obj in self.bulk_download_objects:
+            target_folders.append(create_filesystem(self.source, obj['filesystem_structure']))
+        print target_folders
         return self.target_folder
 
     def start_manager(self):
@@ -144,14 +156,13 @@ class BulkDownloadManager(Thread):
 
         log.info('START | Bulk Download Manager')
 
-        # thread_list = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet']
         thread_list = ['Alpha']
         queue_lock = Lock()
         work_queue = Queue.Queue(len(self.bulk_download_objects))
         threads = []
 
         for thread_name in thread_list:
-            thread = BulkDownloadThread(thread_name, work_queue, queue_lock, self.tab_id, self.target_folder, self.aggregation)
+            thread = BulkDownloadThread(self.source, thread_name, work_queue, queue_lock, self.tab_id, self.aggregation)
             thread.start()
             threads.append(thread)
 
