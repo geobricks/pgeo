@@ -183,3 +183,60 @@ def list_layers_subset(year, month, from_day, to_day):
     except Exception, e:
         log.error(e)
         raise PGeoException(errors[511], status_code=511)
+
+
+def list_layers_month_subset(year, month):
+    """
+    List all the available layers for a given year and month.
+    @param year: e.g. '2010'
+    @param month: e.g. '02'
+    @return: An array of code/label/extensions objects.
+    """
+    file_path_root = 'ftp://' + conf['source']['ftp']['base_url'] + conf['source']['ftp']['data_dir']
+    out = []
+    try:
+        if conf['source']['type'] == 'FTP':
+            ftp = FTP(conf['source']['ftp']['base_url'])
+            ftp.login()
+            ftp.cwd(conf['source']['ftp']['data_dir'])
+            ftp.cwd(year)
+            ftp.cwd(month)
+            days = ftp.nlst()
+            days.sort()
+            for i in range(0, len(days)):
+                if i > 0:
+                    ftp.cwd('../')
+                ftp.cwd(days[i])
+                l = ftp.nlst()
+                l.sort()
+                fao_layers = filter(lambda x: '.tif' in x, l)
+                for layer in fao_layers:
+                    if '.7.' in layer or '.7A.' in layer:
+                        code = layer
+                        hour = layer[0:layer.index('.tif')].split('.')[2]
+                        label = layer[0:layer.index('.tif')].split('.')[0]
+                        label += ' ('
+                        label += '-'.join([year, month, days[i]])
+                        label += ', ' + hour + ')'
+                        file_path = file_path_root + year + '/' + month + '/' + days[i] + '/' + code
+                        out.append({
+                            'file_name': code,
+                            'file_path': file_path,
+                            'label': label,
+                            'size': None
+                        })
+                        code = code.replace('.tif', '.tfw')
+                        file_path = file_path_root + year + '/' + month + '/' + days[i] + '/' + code
+                        out.append({
+                            'file_name': code,
+                            'file_path': file_path,
+                            'label': label,
+                            'size': None
+                        })
+            ftp.quit()
+            return out
+        else:
+            raise PGeoException(errors[512], status_code=512)
+    except Exception, e:
+        log.error(str(e))
+        raise PGeoException(errors[511], status_code=511)

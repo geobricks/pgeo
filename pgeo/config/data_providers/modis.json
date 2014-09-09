@@ -193,7 +193,7 @@
             "selection_type": "multiple"
         },
         "time_range": {
-            "year": "list_years",
+            "year": "list_years_from",
             "from": "list_days_from",
             "to": "list_days_to",
             "step": 16

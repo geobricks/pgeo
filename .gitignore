@@ -2,3 +2,4 @@
 *.iml
 /PGeo.egg-info/
 /.idea/
+/out/

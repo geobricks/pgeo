@@ -71,13 +71,13 @@ class BulkDownloadThread(Thread):
 
                 for file_name in self.bulk_download_object['file_list']:
 
-                    log.info('Downloading: ' + file_name['file_name'])
+                    log.info('Downloading: ' + file_name)
 
-                    if file_name['file_name'] in remote_files:
+                    if file_name in remote_files:
 
 
                         ftp.sendcmd('TYPE i')
-                        file_obj = file_name['file_name']
+                        file_obj = file_name
                         local_file = os.path.join(self.target_folder, file_obj)
                         progress_map[self.tab_id]['status'] = 'ONGOING'
 
@@ -118,7 +118,7 @@ class BulkDownloadThread(Thread):
             file_name += self.bulk_download_object['filesystem_structure']['day']
             file_name += '_' + self.aggregation.upper()
             file_name += '.geotif'
-            input_files = [self.target_folder + '/' + x['file_name'] for x in self.bulk_download_object['file_list'] if '.tif' in x['file_name']]
+            input_files = [self.target_folder + '/' + x for x in self.bulk_download_object['file_list'] if '.tif' in x]
             calc_layers(input_files, file_name, self.aggregation)
 
 
@@ -147,8 +147,7 @@ class BulkDownloadManager(Thread):
         target_folders = []
         for obj in self.bulk_download_objects:
             target_folders.append(create_filesystem(self.source, obj['filesystem_structure']))
-        print target_folders
-        return self.target_folder
+        return target_folders
 
     def start_manager(self):
 

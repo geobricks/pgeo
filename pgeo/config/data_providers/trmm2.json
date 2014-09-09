@@ -53,11 +53,20 @@
             ]
         }
     },
-    "services_base_url": "http://127.0.0.1:5005/browse/",
+    "services_base_url": "http://168.202.28.57:5005/browse/",
     "services": {
+        "time_range": {
+            "year": "list_years",
+            "from": "list_months",
+            "to": "list_months",
+            "step": 1
+        },
+        "download": {
+            "__type": "bulk"
+        },
         "layers": {
             "id": "list_layers",
-            "path": "trmm2/{year}/{month}/{from_day}/{to_day}",
+            "path": "trmm2/layers/{year}/{month}",
             "parameters": [
                 {
                     "parameter_name": "year",
@@ -66,14 +75,6 @@
                 {
                     "parameter_name": "month",
                     "parameter_value": "list_months"
-                },
-                {
-                    "parameter_name": "from_day",
-                    "parameter_value": "list_days_from"
-                },
-                {
-                    "parameter_name": "to_day",
-                    "parameter_value": "list_days_to"
                 }
             ],
             "payload": {
@@ -124,59 +125,7 @@
                             "it": "Mesi Disponibili",
                             "pt": "Meses Disponíveis"
                         },
-                        "selection_type": "single",
-                        "services": [
-                            {
-                                "id": "list_days_from",
-                                "path": "trmm2/{year}/{month}",
-                                "parameters": [
-                                    {
-                                        "parameter_name": "year",
-                                        "parameter_value": "list_years"
-                                    },
-                                    {
-                                        "parameter_name": "month",
-                                        "parameter_value": "list_months"
-                                    }
-                                ],
-                                "payload": {
-                                    "fields": ["code", "label"],
-                                    "id": "code",
-                                    "label": "label"
-                                },
-                                "description": {
-                                    "en": "Available Days - From",
-                                    "it": "Giorni Disponibili - Da",
-                                    "pt": "Dias Disponíveis - Desde"
-                                },
-                                "selection_type": "single"
-                            },
-                            {
-                                "id": "list_days_to",
-                                "path": "trmm2/{year}/{month}",
-                                "parameters": [
-                                    {
-                                        "parameter_name": "year",
-                                        "parameter_value": "list_years"
-                                    },
-                                    {
-                                        "parameter_name": "month",
-                                        "parameter_value": "list_months"
-                                    }
-                                ],
-                                "payload": {
-                                    "fields": ["code", "label"],
-                                    "id": "code",
-                                    "label": "label"
-                                },
-                                "description": {
-                                    "en": "Available Days - To",
-                                    "it": "Giorni Disponibili - A",
-                                    "pt": "Dias Disponíveis - Até"
-                                },
-                                "selection_type": "single"
-                            }
-                        ]
+                        "selection_type": "single"
                     }
                 ]
             }
