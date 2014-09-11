@@ -364,9 +364,9 @@ class Geoserver():
             headers, response = self.http.request(cs_url, "POST")
             log.info(headers)
             if headers.status == 200:
-                return True
+                log.info("Geoserver updated %s" % cs_url)
             else:
-                return False
+                log.warn("Raise error?")
 
 
 def get_headers(c_type):
