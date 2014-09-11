@@ -140,6 +140,7 @@ def list_layers(product_name, year, day):
             ftp.retrlines('MLSD', ls.append)
             ftp.quit()
             out = []
+            buffer = []
             for line in ls:
                 try:
                     start = line.index('Size=')
@@ -147,18 +148,20 @@ def list_layers(product_name, year, day):
                     size = line[start + len('Size='):end]
                     start = line.index(product_name.upper())
                     file_name = line[start:]
-                    file_path = 'ftp://' + conf['source']['ftp']['base_url'] + conf['source']['ftp']['data_dir']
-                    file_path += product_name.upper() + '/' + year + '/' + day + '/'
-                    file_path += line[start:]
-                    h = file_name[2 + file_name.index('.h'):4 + file_name.index('.h')]
-                    v = file_name[1 + file_name.index('v'):3 + file_name.index('v')]
-                    label = 'H ' + h + ', V ' + v + ' (' + str(round((float(size) / 1000000), 2)) + ' MB)'
-                    out.append({
-                        'file_name': file_name,
-                        'file_path': file_path,
-                        'label': label,
-                        'size': size
-                    })
+                    if file_name not in buffer:
+                        buffer.append(file_name)
+                        file_path = 'ftp://' + conf['source']['ftp']['base_url'] + conf['source']['ftp']['data_dir']
+                        file_path += product_name.upper() + '/' + year + '/' + day + '/'
+                        file_path += line[start:]
+                        h = file_name[2 + file_name.index('.h'):4 + file_name.index('.h')]
+                        v = file_name[1 + file_name.index('v'):3 + file_name.index('v')]
+                        label = 'H ' + h + ', V ' + v + ' (' + str(round((float(size) / 1000000), 2)) + ' MB)'
+                        out.append({
+                            'file_name': file_name,
+                            'file_path': file_path,
+                            'label': label,
+                            'size': size
+                        })
                 except:
                     pass
             return out
@@ -185,17 +188,14 @@ def list_layers_subset(product_name, year, day, from_h, to_h, from_v, to_v):
             ftp = FTP(conf['source']['ftp']['base_url'])
             ftp.login()
             ftp.cwd(conf['source']['ftp']['data_dir'])
-            print product_name.upper()
             ftp.cwd(product_name.upper())
-            print year
             ftp.cwd(year)
-            print day
             ftp.cwd(day)
             ls = []
             ftp.retrlines('MLSD', ls.append)
-            print ls
             ftp.quit()
             out = []
+            buffer = []
             for line in ls:
                 try:
                     start = line.index('Size=')
@@ -203,19 +203,21 @@ def list_layers_subset(product_name, year, day, from_h, to_h, from_v, to_v):
                     size = line[start + len('Size='):end]
                     start = line.index(product_name.upper())
                     file_name = line[start:]
-                    if is_layer_in_the_range(file_name, from_h, to_h, from_v, to_v):
-                        file_path = 'ftp://' + conf['source']['ftp']['base_url'] + conf['source']['ftp']['data_dir']
-                        file_path += product_name.upper() + '/' + year + '/' + day + '/'
-                        file_path += line[start:]
-                        h = file_name[2 + file_name.index('.h'):4 + file_name.index('.h')]
-                        v = file_name[1 + file_name.index('v'):3 + file_name.index('v')]
-                        label = 'H ' + h + ', V ' + v + ' (' + str(round((float(size) / 1000000), 2)) + ' MB)'
-                        out.append({
-                            'file_name': file_name,
-                            'file_path': file_path,
-                            'label': label,
-                            'size': size
-                        })
+                    if file_name not in buffer:
+                        buffer.append(file_name)
+                        if is_layer_in_the_range(file_name, from_h, to_h, from_v, to_v):
+                            file_path = 'ftp://' + conf['source']['ftp']['base_url'] + conf['source']['ftp']['data_dir']
+                            file_path += product_name.upper() + '/' + year + '/' + day + '/'
+                            file_path += line[start:]
+                            h = file_name[2 + file_name.index('.h'):4 + file_name.index('.h')]
+                            v = file_name[1 + file_name.index('v'):3 + file_name.index('v')]
+                            label = 'H ' + h + ', V ' + v + ' (' + str(round((float(size) / 1000000), 2)) + ' MB)'
+                            out.append({
+                                'file_name': file_name,
+                                'file_path': file_path,
+                                'label': label,
+                                'size': size
+                            })
                 except:
                     pass
             return out
