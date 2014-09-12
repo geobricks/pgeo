@@ -429,21 +429,25 @@ def _get_histogram(ds, config):
     # TODO boolean of config value
     force = True if "force" not in config else bool(config["force"])
     buckets = 256 if "buckets" not in config else int(config["buckets"])
+    min = None if "min" not in config else int(config["min"])
+    max = None if "max" not in config else int(config["max"])
     include_out_of_range = 0 if "include_out_of_range" not in config else int(config["include_out_of_range"])
 
     # stats
     stats = []
     for band in range(ds.RasterCount):
         band += 1
-        if force:
-            (min, max) = ds.GetRasterBand(band).ComputeRasterMinMax(0)
-        else:
-            min = ds.GetRasterBand(band).GetMinimum()
-            max = ds.GetRasterBand(band).GetMaximum()
+        # TODO: handle better min max
+        if min is None and max is None:
+            if force:
+                    (min, max) = ds.GetRasterBand(band).ComputeRasterMinMax(0)
+            else:
+                min = ds.GetRasterBand(band).GetMinimum()
+                max = ds.GetRasterBand(band).GetMaximum()
 
         #hist = ds.GetRasterBand(band).GetDefaultHistogram( force = 0 )
         #stats.append({"band": band, "buckets": hist[2], "min": hist[0], "max": hist[1], "values": hist[3]})
-        hist = ds.GetRasterBand(band).GetHistogram(buckets=buckets, min=min, max=max, include_out_of_range=include_out_of_range)
+        hist = ds.GetRasterBand(band).GetHistogram(buckets=buckets, min=min, max=max, include_out_of_range=include_out_of_range, approx_ok = False )
         stats.append({"band": band, "buckets": buckets, "min": min, "max": max, "values": hist})
     return stats
 
