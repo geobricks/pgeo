@@ -257,6 +257,8 @@ def list_layers_countries_subset(product_name, year, day, countries):
     """
     countries_list = countries.split(',')
     out = []
+    clean_out = []
+    file_names_buffer = []
     try:
         gaul_2_modis = read_config_file_json('__gaul2modis', 'data_providers')
         for g2m in gaul_2_modis:
@@ -267,6 +269,10 @@ def list_layers_countries_subset(product_name, year, day, countries):
                 to_v = g2m['to_v']
                 tmp = list_layers_subset(product_name, year, day, from_h, to_h, from_v, to_v)
                 out += tmp
-        return out
+        for tmp in out:
+            if tmp['file_name'] not in file_names_buffer:
+                file_names_buffer.append(tmp['file_name'])
+                clean_out.append(tmp)
+        return clean_out
     except Exception, e:
         raise PGeoException(e.get_message(), e.get_status_code())
