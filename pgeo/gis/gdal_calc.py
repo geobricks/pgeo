@@ -4,7 +4,9 @@ import random
 import string
 import glob
 from pgeo.error.custom_exceptions import PGeoException
-from pgeo.utils.filesystem import get_filename
+from pgeo.utils.log import logger
+
+log = logger("pgeo.gis.gdal_calc")
 
 # base script location
 base_script_gdal_calculations = os.path.join(os.path.dirname(__file__), "scripts", "gdal_calculations.py")
@@ -85,6 +87,7 @@ def _create_cmd_calc_avg(alphalist):
     cmd += ')/' + str(len(alphalist)) + '"'
     return cmd
 
+
 def _create_cmd_calc_diff(alphalist):
     """
     Create cmd "--calc"
@@ -100,6 +103,25 @@ def _create_cmd_calc_diff(alphalist):
         index += 1
         if index < len(alphalist):
             cmd += "-"
+    cmd += ')"'
+    return cmd
+
+
+def _create_cmd_calc_mult(alphalist):
+    """
+    Create cmd "--calc"
+    Difference between the first layer and all the other layers
+    :param alphalist: List of files alias
+    :type array
+    :return: cmd command
+    """
+    cmd = ' --calc="('
+    index=0
+    for filevar in alphalist :
+        cmd += filevar
+        index += 1
+        if index < len(alphalist):
+            cmd += "*"
     cmd += ')"'
     return cmd
 
@@ -199,6 +221,10 @@ def calc_layers(files, outputfile, calc_type="avg", overwrite=True):
         cmd += _create_cmd_calc_diff(alphalist)
     elif calc_type.lower() == "ratio":
         cmd += _create_cmd_calc_ratio(alphalist)
+    elif calc_type.lower() == "mult":
+        cmd += _create_cmd_calc_mult(alphalist)
+    else:
+        log.warn("TODO: custom calc")
 
     # alphalist
     cmd += _create_cmd_alphalist(alphalist)

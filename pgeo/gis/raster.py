@@ -106,6 +106,7 @@ def crop_by_vector_database_olod(input_file, minlat, minlon, maxlat, maxlon, wkt
 
 def crop_by_vector_database(raster_path, db_spatial, query_extent, query_layer):
     srcnodatavalue = get_nodata_value(raster_path)
+    log.info(query_extent)
     extent = db_spatial.query(query_extent)
     log.info(extent)
     geom = json.dumps(extent)
@@ -344,9 +345,9 @@ def get_histogram(input_file, config):
 
 
 
-def location_values(input_files, x, y, band=None):
+def get_location_values(input_files, lat, lon, band=None):
     """
-    Get the value of a (x, y) location
+    Get the value of a (lat, lon) location
 
     # TODO:
     1) pass a json, instead of [files] pass file and id
@@ -355,22 +356,22 @@ def location_values(input_files, x, y, band=None):
 
     :param input_files: files to be processed
     :type array
-    :param x: x value (for now it's used LatLon)
+    :param lat: x value (for now it's used LatLon)
     :type float
-    :param y: y value (for now it's used LatLon)
+    :param lon: y value (for now it's used LatLon)
     :type float
     :param band: band default=None (not yet used)
-    :return: and array with the values of the (x, y) location
+    :return: and array with the values of the (lat, lon) location
     """
     values = []
     for input_file in input_files:
-        values.append(_location_value(input_file, x, y, band))
+        values.append(_location_value(input_file, lat, lon, band))
     return values
 
 
-def _location_value(input_file, x, y, band=None):
+def _location_value(input_file, lat, lon, band=None):
     """
-    Get the value of a (x, y) location
+     Get the value of a (lat, lon) location
     :param input_file: file to be processed
     :type string
     :param x: x value
@@ -378,12 +379,12 @@ def _location_value(input_file, x, y, band=None):
     :param y: y value
     :type float
     :param band: band default=None (not yet used)
-    :return: the value of the (x, y) location
+    :return: and array with the values of the (lat, lon) location
     """
     # TODO: check with -wgs84 values instead of -geoloc that is the reference system of the image
     #cmd = "gdallocationinfo -valonly " + input_file + " -l_srs EPSG:3857 -geoloc " + str(x) + " " + str(y)
     #cmd = "gdallocationinfo -valonly " + input_file + " -geoloc " + str(x) + " " + str(y)
-    cmd = "gdallocationinfo -valonly " + input_file + " -wgs84 " + str(x) + " " + str(y)
+    cmd = "gdallocationinfo -valonly " + input_file + " -wgs84 " + str(lat) + " " + str(lon)
 
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     output, error = process.communicate()

@@ -58,7 +58,7 @@ class Stats():
         return raster.get_statistics(json_stats["raster"]["path"])
 
     def get_histogram(self, json_stats):
-        if "uid" in json_stats["raster"]:
+        if "uid" in json_stats["raster"] and json_stats["raster"]["uid"] is not None:
             json_stats["raster"]["path"] = self.get_raster_path(json_stats["raster"]["uid"])
         return raster.get_histogram(json_stats["raster"]["path"], json_stats["stats"])
 
@@ -130,6 +130,12 @@ class Stats():
                         stats.append(obj)
         return stats
 
+    def get_location_values(self, input_layers, lat, lon, band=None):
+        input_files = []
+        for input_layer in input_layers:
+            input_files.append(self.get_raster_path(input_layer))
+        log.info(input_files)
+        return raster.get_location_values(input_files, lat, lon, band)
 
     def _get_statistics(self):
         return None
