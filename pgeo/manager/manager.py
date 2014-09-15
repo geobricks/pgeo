@@ -20,7 +20,8 @@ class Manager():
     spatial_db = None
 
     def __init__(self, config):
-        self.metadata = Metadata(config["db"]["metadata"])
+        # self.metadata = Metadata(config["db"]["metadata"])
+        self.metadata = Metadata(config)
         self.geoserver = Geoserver(config["geoserver"])
         self.spatial_db = config["db"]["spatial"]
         self.stats = Stats(config)

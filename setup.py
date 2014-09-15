@@ -1,5 +1,9 @@
 from setuptools import setup
 from setuptools import find_packages
+from pgeo.utils.log import level
+import logging
+
+level = logging.ERROR
 
 setup(
     name='PGeo',

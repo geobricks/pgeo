@@ -1,7 +1,7 @@
 from threading import Thread
 from threading import Lock
 import Queue
-from pgeo.config.settings import read_config_file_json
+# from pgeorest.config.settings import read_config_file_jso
 import os
 import uuid
 import time
@@ -46,7 +46,7 @@ class LayerDownloadThread(Thread):
         self.key = key
         self.block_sz = block_sz
         self.source = source
-        self.conf = read_config_file_json(self.source, 'data_providers')
+        # self.conf = read_config_file_json(self.source, 'data_providers')
         self.target_dir = target_dir
         self.tab_id = tab_id
 

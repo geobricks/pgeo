@@ -1,8 +1,9 @@
 import os
 import uuid
 import zipfile
-from pgeo.config.settings import settings
-from pgeo.config.settings import read_config_file_json
+import tempfile
+# from pgeo.config.settings import settings
+# from pgeo.config.settings import read_config_file_json
 from pgeo.utils import log
 import shutil
 from pgeo.error.custom_exceptions import PGeoException
@@ -11,10 +12,11 @@ from pgeo.error.custom_exceptions import errors
 log = log.logger("pgeo.utils.filesystem")
 
 # temporary folder
-folder_tmp = settings['folders']['tmp']
+# folder_tmp = settings['folders']['tmp']
+folder_tmp_default = tempfile.gettempdir()
 
 
-def create_tmp_filename(path='', extension=''):
+def create_tmp_filename(path='', extension='', folder_tmp=folder_tmp_default):
     """
     Create the path for a tmp file and filename
 
@@ -26,7 +28,8 @@ def create_tmp_filename(path='', extension=''):
     if extension != '' and "." not in extension: extension = "." + extension
     return (os.path.join(folder_tmp, path) + str(uuid.uuid4()) + extension).encode('utf-8')
 
-def create_tmp_folder(path=''):
+
+def create_tmp_folder(path='', folder_tmp=folder_tmp_default):
     """
     Create the tmp folder from the folder_tmp
 
@@ -36,7 +39,7 @@ def create_tmp_folder(path=''):
     """
     return (os.path.join(folder_tmp, path) + str(uuid.uuid4())).encode('utf-8')
 
-def create_folder_in_tmp(folder_name):
+def create_folder_in_tmp(folder_name, folder_tmp=folder_tmp_default):
     """
     Create the tmp folder from the folder_tmp
 
@@ -48,7 +51,7 @@ def create_folder_in_tmp(folder_name):
     os.mkdir(path)
     return path
 
-def create_tmp_file(string_value, path='', extension=''):
+def create_tmp_file(string_value, path='', extension='', folder_tmp=folder_tmp_default):
     """
     Create a tmp file with the passed string
 
@@ -59,14 +62,14 @@ def create_tmp_file(string_value, path='', extension=''):
     @type extension: extension
     @param extension: i.e. .geotiff
     """
-    filename = create_tmp_filename(path, extension)
+    filename = create_tmp_filename(path, extension, folder_tmp)
     text_file = open(filename, "w")
     text_file.write(str(string_value))
     text_file.close()
     return filename
 
 
-def unzip(filezip, path=create_tmp_folder()):
+def unzip(filezip, path=create_tmp_folder(), folder_tmp=folder_tmp_default):
     """
     Unzip a file in the tmp folder
 
@@ -120,7 +123,7 @@ def get_filename(filepath, extension=False):
         return name
 
 
-def zip_files(name, files, path=folder_tmp):
+def zip_files(name, files, path=folder_tmp_default):
     extension = ".zip"
     if ".zip" in name:
         extension = ""
@@ -141,7 +144,7 @@ def zip_files(name, files, path=folder_tmp):
 # def get_filesystem_path(source, parameters):
 
 
-def create_filesystem(source, parameters):
+def create_filesystem(source, parameters, data_provider_conf):
     """
     Create the filesystem structure according to the configuration file.
 
@@ -150,7 +153,7 @@ def create_filesystem(source, parameters):
     @type parameters: dictionary
     @param parameters: e.g. {'product': 'MOD13Q1', 'year': '2014', 'day': '033'}
     """
-    conf = read_config_file_json(source, 'data_providers')['target']
+    conf = data_provider_conf['target']
     final_path = conf['target_dir']
     if not os.path.exists(conf['target_dir']):
         try:
@@ -162,8 +165,8 @@ def create_filesystem(source, parameters):
         for folder in conf['folders']:
             final_path = create_folder(conf, parameters, folder, conf['target_dir'])
 
-    sub_folders = read_config_file_json(source, 'data_providers')['subfolders']
-    bands = read_config_file_json(source, 'data_providers')['bands']
+    sub_folders = data_provider_conf['subfolders']
+    bands = data_provider_conf['bands']
     for key in sub_folders:
         if 'output' in key:
             for band in bands:
@@ -207,13 +210,7 @@ def create_folder(conf, parameters, folder, root_folder):
 
 def list_sources():
     try:
-        path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/' + settings['folders']['config'] + settings['folders']['data_providers'])
         out = []
-        files = os.listdir(path)
-        files.sort()
-        for filename in files:
-            if '__' not in filename:
-                out.append({'code': filename, 'label': filename[:filename.index('.json')]})
-        return out
+        out.append({'code': 'modis.json', 'label': 'modis'})
     except Exception, err:
         raise PGeoException(errors[510], status_code=510)
