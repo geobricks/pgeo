@@ -1,7 +1,6 @@
 from threading import Thread
 from threading import Lock
 import Queue
-# from pgeorest.config.settings import read_config_file_jso
 import os
 import uuid
 import time
@@ -10,6 +9,7 @@ import urllib2
 from pgeo.utils import log
 from pgeo.utils.filesystem import create_filesystem
 from pgeo.error.custom_exceptions import PGeoException
+from pgeomodis.config.modis_config import config as data_provider_conf
 
 
 thread_manager_processes = {}
@@ -161,7 +161,9 @@ class Manager(Thread):
         self.file_paths_and_sizes = file_paths_and_sizes
         self.filesystem_structure = filesystem_structure
         try:
-            self.target_dir = create_filesystem(self.source, self.filesystem_structure)
+            print self.source
+            print self.filesystem_structure
+            self.target_dir = create_filesystem(self.source, self.filesystem_structure, data_provider_conf)
         except Exception, e:
             log.error(e.message)
             raise PGeoException(e.message, 500)
