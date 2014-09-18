@@ -1,10 +1,11 @@
-# from pgeo.config.settings import read_template
 import os
 import json
 from pgeo.utils.json import dict_merge_and_convert_dates
 from pgeo.metadata.db_metadata import DBMetadata
 from pgeo.metadata.search import MongoSearch
 from pgeo.utils import log
+from pgeo.config.metadata.core import template as core_template
+from pgeo.config.metadata.raster import template as raster_template
 
 log = log.logger(__name__)
 
@@ -16,6 +17,8 @@ log = log.logger(__name__)
 
 
 #db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['MODIS-SADC']}})
+
+#db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['MODIS_TEST']}})
 
 
 class Metadata:
@@ -32,15 +35,6 @@ class Metadata:
         log.info(self.db_metadata)
         log.info(self.search)
 
-    def read_template(self, filename):
-        try:
-            directory = os.path.dirname(os.path.dirname(__file__))
-            filename = filename.lower()
-            path = os.path.join(directory, self.settings['folders']['metadata_templates'])
-            extension = '' if '.json' in filename else '.json'
-            return json.loads(open(path + filename + extension).read())
-        except Exception, e:
-            print e
 
     def merge_layer_metadata(self, template_name, data):
         """
@@ -50,12 +44,11 @@ class Metadata:
             @return: Merged JSON
         """
 
-        core_template = self.read_template('core')
-        template = self.read_template(template_name)
-        out = dict_merge_and_convert_dates(core_template, data)
-        #log.info(out)
-        out = dict_merge_and_convert_dates(out, template)
+        if template_name == "raster":
+            out = dict_merge_and_convert_dates(core_template, raster_template)
+        elif template_name == "vector":
+            log.error("TODO: vector template")
+
+        out = dict_merge_and_convert_dates(out, data)
         #log.info(out)
         return out
-
-
