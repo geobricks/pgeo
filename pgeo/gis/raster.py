@@ -384,7 +384,8 @@ def _location_value(input_file, lat, lon, band=None):
     # TODO: check with -wgs84 values instead of -geoloc that is the reference system of the image
     #cmd = "gdallocationinfo -valonly " + input_file + " -l_srs EPSG:3857 -geoloc " + str(x) + " " + str(y)
     #cmd = "gdallocationinfo -valonly " + input_file + " -geoloc " + str(x) + " " + str(y)
-    cmd = "gdallocationinfo -valonly " + input_file + " -wgs84 " + str(lat) + " " + str(lon)
+    # cmd = "gdallocationinfo -valonly " + input_file + " -wgs84 " + str(lat) + " " + str(lon)
+    cmd = "gdallocationinfo -valonly " + input_file + " -wgs84 " + str(lon) + " " + str(lat)
 
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     output, error = process.communicate()
