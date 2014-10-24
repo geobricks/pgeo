@@ -97,6 +97,11 @@ class Geoserver():
             headers = get_headers("json")
             json_data = deepcopy(data)
             del json_data['name']
+
+            # # TODO: REMOVE IT!!!!!!
+            # json_data['nativeCRS'] = 'PROJCS["World_Mollweide",GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Mollweide"],PARAMETER["False_Easting",0],PARAMETER["False_Northing",0],PARAMETER["Central_Meridian",0],UNIT["Meter",1],AUTHORITY["EPSG","54009"]]'
+            # json_data['srs'] = "EPSG:54009"
+
             # set has default enabled the layer
             if "enabled" not in json_data:
                 json_data["enabled"] = True

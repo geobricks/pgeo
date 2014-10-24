@@ -146,17 +146,17 @@ class Stats():
 
             json_string1 = json.dumps(stats1)
             json_string2 = json.dumps(stats2)
-            log.info(json_string1)
-            log.info(json_string2)
+            # log.info(json_string1)
+            # log.info(json_string2)
             json_data1 = json.loads(json_string1)
             json_data2 = json.loads(json_string2)
-            log.info(json_data1)
-            log.info(json_data2)
+            # log.info(json_data1)
+            # log.info(json_data2)
             csv_file.writerow(["code", "label", "valueX", "valueY"])
             for data1 in json_data1:
-                log.info(data1)
+                #log.info(data1)
                 for data2 in json_data2:
-                    log.info(data2)
+                    #log.info(data2)
                     try:
                         if data1["code"] == data2["code"]:
                             if "stats" in data1["data"]:

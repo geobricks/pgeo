@@ -45,7 +45,7 @@ def crop_by_vector_database_olod(input_file, minlat, minlon, maxlat, maxlon, wkt
         output_file_gdal_translate
     ]
     try:
-        print args
+        log.info(args)
         #TODO: handle subprocess Error (like that is not taken)
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
@@ -72,7 +72,7 @@ def crop_by_vector_database_olod(input_file, minlat, minlon, maxlat, maxlon, wkt
         output_file_gdal_warp
     ]
     try:
-        print args
+        log.info(args)
         #TODO: handle subprocess Error (like that is not taken)
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
@@ -88,7 +88,7 @@ def crop_by_vector_database_olod(input_file, minlat, minlon, maxlat, maxlon, wkt
         output_file
     ]
     try:
-        print args
+        log.info(args)
         #TODO: handle subprocess Error (like that is not taken)
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
@@ -146,7 +146,7 @@ def _crop_by_vector_database(input_file, query, db_connection_string, minlat, mi
     #
     # query = "SELECT geom from spatial.gaul1_3857_test where adm1_code = '1620'"
 
-    #log.info(query)
+    log.info(query)
 
     output_file_gdal_translate = filesystem.create_tmp_filename('output_', '.geotiff')
     output_file_gdal_warp = filesystem.create_tmp_filename('output_', '.geotiff')
@@ -162,7 +162,7 @@ def _crop_by_vector_database(input_file, query, db_connection_string, minlat, mi
         output_file_gdal_translate
     ]
     try:
-        print args
+        log.info(args)
         #TODO: handle subprocess Error (like that is not taken)
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
@@ -192,7 +192,7 @@ def _crop_by_vector_database(input_file, query, db_connection_string, minlat, mi
         output_file_gdal_warp
     ]
     try:
-        print args
+        log.info(args)
         #TODO: handle subprocess Error (like that is not taken)
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
@@ -208,7 +208,7 @@ def _crop_by_vector_database(input_file, query, db_connection_string, minlat, mi
         output_file
     ]
     try:
-        print args
+        log.info(args)
         #TODO: handle subprocess Error (like that is not taken)
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
@@ -256,7 +256,7 @@ def crop_by_vector_database_ok(input_file, query=None, db_connection_string=None
         output_file_gdal_warp
     ]
     try:
-        print args
+        log.info(args)
         #TODO: handle subprocess Error (like that is not taken)
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
@@ -271,7 +271,7 @@ def crop_by_vector_database_ok(input_file, query=None, db_connection_string=None
         output_file
     ]
     try:
-        print args
+        log.info(args)
         #TODO: handle subprocess Error (like that is not taken)
         proc = subprocess.call(args, stdout=subprocess.PIPE, stderr=None)
     except:
