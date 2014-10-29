@@ -14,7 +14,6 @@ class DBConnection:
     autocommit = True
     schema= None
 
-
     def __init__(self, datasource):
         if DBConnection.con is None:
             try:
@@ -103,11 +102,3 @@ class DBConnection:
         if "delete" in q:
             return False
         return True
-
-
-# def get_connection_string(database, add_pg=True):
-#     db_connection_string = ""
-#     if add_pg is True:
-#         db_connection_string += "PG:"
-#         db_connection_string += "host=%s port='%s' dbname=%s user=%s password=%s" %(database['host'], database['port'],database['dbname'], database['username'], database['password'])
-#     return db_connection_string

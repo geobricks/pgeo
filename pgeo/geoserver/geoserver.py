@@ -50,14 +50,15 @@ class Geoserver():
         self._version = None
         return None
 
-
     def publish_coveragestore(self, data, overwrite=False):
 
-        # data = data["coverageStore"]
-        log.info(data)
         name = data["name"]
         workspace = self.get_default_workspace() if "workspace" not in data else data["workspace"]
         path = data["path"]
+
+        if workspace is not self.get_default_workspace():
+            if self.check_if_workspace_exist(workspace) is False:
+                raise PGeoException(errors[523]+": %s" % workspace)
 
         if not overwrite:
             if self.check_if_layer_exist(name, workspace):
@@ -110,7 +111,6 @@ class Geoserver():
                 "coverage" : json_data
             }
             cs_url = url(self.service_url, ["workspaces", workspace, "coveragestores", name, "coverages", name  + ".json"])
-            log.info(cs_url)
             self._publish_layer(cs_url, "PUT", json.dumps(update_layer), headers, 200)
 
             # TODO: check why doesn't update the default style
@@ -191,8 +191,6 @@ class Geoserver():
             self.reload_configuration_geoserver_slaves()
         return True
 
-
-
     def _publish_layer(self, cs_url, c_type, message, headers, expected_code=201):
         try:
             log.info("%s %s" % (cs_url, headers))
@@ -220,6 +218,23 @@ class Geoserver():
             # if archive is not None:
             #     log.warn('call nlink(archive) : ' + archive)
             #     # nlink(archive)
+
+    def create_workspace(self, workspace):
+        xml = ("<workspace>"
+               "<name>{workspace}</name>"
+               "</workspace>").format(workspace=workspace)
+        headers = { "Content-Type": "application/xml" }
+        workspace_url = self.service_url + "/workspaces/"
+
+        try:
+            headers, response = self.http.request(workspace_url, "POST", xml, headers)
+            if headers.status != 201 and headers.status != 500:
+                raise PGeoException(response, headers.status)
+        except PGeoException, e:
+            raise PGeoException(e.get_message(), e.get_status_code())
+        finally:
+            return True
+
 
     def update_layer_metadata(self, name, data, c_type="json"):
         """
@@ -291,12 +306,16 @@ class Geoserver():
         cs_url = url(self.service_url, ["layers", layername + ".json"])
         log.info("checking coverage exists: %s (%s)" % (name, cs_url))
         response, content = self.http.request(cs_url, "GET")
+        log.info(response)
+        log.info(content)
         if response.status == 200:
             return True
         elif response.status == 404:
             return False
         return False
 
+    def check_if_workspace_exist(self, workspace=None):
+        return self.create_workspace(workspace)
 
     def set_default_style(self, name, stylename, enabled=True):
         """

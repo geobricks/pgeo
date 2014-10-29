@@ -20,6 +20,10 @@ log = log.logger(__name__)
 
 #db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['MODIS_TEST']}})
 
+#Regular expression
+#db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {$regex: /^MOROCCO/}})
+
+#db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['Doukkola-NDVI']}})
 
 class Metadata:
 
@@ -34,7 +38,6 @@ class Metadata:
         log.info("---Metadata initialization---")
         log.info(self.db_metadata)
         log.info(self.search)
-
 
     def merge_layer_metadata(self, template_name, data):
         """

@@ -65,12 +65,13 @@ class Manager():
             name = sanitize_name(metadata_def["title"]["EN"])
 
             # getting the default workspace
-            default_workspace = self.geoserver.get_default_workspace()
+            workspace = self.geoserver.get_default_workspace()
             if "workspace" in metadata_def["meSpatialRepresentation"]:
-                default_workspace = metadata_def["meSpatialRepresentation"]["workspace"]
+                workspace = metadata_def["meSpatialRepresentation"]["workspace"]
 
             # setting up the uid
-            metadata_def["uid"] = default_workspace + ":" + name
+            if "uid" not in metadata_def:
+                metadata_def["uid"] = workspace + ":" + name
 
             # publish shapefile on geoserver
             # TODO: merge the metadata with the default vector metadata
@@ -79,7 +80,7 @@ class Manager():
             if "title" not in geoserver_def:
                 geoserver_def["title"] = name
             if "workspace" not in geoserver_def:
-                geoserver_def["workspace"] = self.geoserver.get_default_workspace()
+                geoserver_def["workspace"] = workspace
             if "datastore" not in geoserver_def:
                 geoserver_def["datastore"] = self.geoserver.get_default_datastore()
 
@@ -134,12 +135,13 @@ class Manager():
             name = sanitize_name(metadata_def["title"]["EN"])
 
             # getting the default workspace
-            default_workspace = self.geoserver.get_default_workspace()
+            workspace = self.geoserver.get_default_workspace()
             if "workspace" in metadata_def["meSpatialRepresentation"]:
-                default_workspace = metadata_def["meSpatialRepresentation"]["workspace"]
+                workspace = metadata_def["meSpatialRepresentation"]["workspace"]
 
             # setting up the uid
-            metadata_def["uid"] = default_workspace + ":" + name
+            if "uid" not in metadata_def:
+                metadata_def["uid"] = workspace + ":" + name
 
             # publish coveragestore on geoserver
             # TODO: merge the metadata with the default vector metadata
@@ -148,7 +150,7 @@ class Manager():
             if "title" not in geoserver_def:
                 geoserver_def["title"] = name
             if "workspace" not in geoserver_def:
-                geoserver_def["workspace"] = default_workspace
+                geoserver_def["workspace"] = workspace
 
             # clean layer name
             #geoserver_def["name"] = sanitize_name(geoserver_def["name"])
