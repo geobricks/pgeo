@@ -17,6 +17,7 @@ from itertools import izip
 from multiprocessing import Process, Manager, Lock, Queue, Pool
 import multiprocessing
 import threading
+from scipy.stats import linregress
 from os import kill
 
 log = logger("pgeo.gis.raster_scatter")
@@ -65,9 +66,9 @@ def create_scatter(raster_path1, raster_path2, band1=1, band2=1, buckets=200, in
     # Calculation of the frequencies
     #freqs = couples_with_freq(array1, array2, step1, step2, min1, min2, max1, max2, forced_min1, forced_min2, nodata1, nodata2)
     #freqs = couples_with_freq_split(array1, array2, step1, step2, min1, min2, max1, max2, forced_min1, forced_min2, nodata1, nodata2)
-    freqs = couples_with_freq_multiprocess(array1, array2, step1, step2, min1, min2, max1, max2, forced_min1, forced_min2, nodata1, nodata2, workers)
+    statistics = couples_with_freq_multiprocess(array1, array2, step1, step2, min1, min2, max1, max2, forced_min1, forced_min2, nodata1, nodata2, workers)
     #print len(freqs)
-    series = get_series(freqs.values(), intervals, color, color_type, reverse)
+    series = get_series(statistics["scatter"].values(), intervals, color, color_type, reverse)
 
     #print series
     result = dict()
@@ -77,7 +78,8 @@ def create_scatter(raster_path1, raster_path2, band1=1, band2=1, buckets=200, in
     # result['max2'] = max2,
     # result['step1'] = step1,
     # result['step2'] = step2
-    result['series'] = series
+    result["series"] = series
+    result["stats"] = statistics["stats"]
 
     # is it useful to remove them fro the memory?
     del ds1
@@ -113,28 +115,29 @@ def create_scatter(raster_path1, raster_path2, band1=1, band2=1, buckets=200, in
 
 def worker(arr1, arr2, step1, step2, out_q):
     d = dict()
-
     try:
-        heatmap, xedges, yedges = np.histogram2d(arr1, arr2, bins=200)
-        # print "HEATMAP"
-        # print len(heatmap)
-        # print heatmap
-        # print "xedges"
-        # print len(xedges)
-        # print xedges
-        # print "yedges"
-        # print len(yedges)
-        # print yedges
+         # TODO: move it from here: calculation of the regression coeffient
+         # TODO: add a boolean to check if it's need the computation of the coeffifcients
+        slope, intercept, r_value, p_value, std_err = linregress(arr1, arr2)
+        d["stats"] = {
+            "slope": slope,
+            "intercept": intercept,
+            "r_value": r_value,
+            "p_value": p_value,
+            "std_err": std_err
+        }
 
+        d["scatter"] = {}
+        heatmap, xedges, yedges = np.histogram2d(arr1, arr2, bins=200)
         for x in range(0, len(xedges)-1):
             for y in range(0, len(yedges)-1):
                 if heatmap[x][y] > 0:
-                    d[str(xedges[x]) + "_" + str(yedges[y])] = {
+                    d["scatter"][str(xedges[x]) + "_" + str(yedges[y])] = {
                         "data": [xedges[x], yedges[y]],
                         "freq": heatmap[x][y]
                     }
 
-        print "worker end"
+        log.info("worker end")
         out_q.put(d)
         out_q.close()
     except PGeoException, e:
