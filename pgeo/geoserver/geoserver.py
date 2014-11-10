@@ -391,6 +391,8 @@ class Geoserver():
                 log.info("Geoserver updated %s" % cs_url)
             else:
                 log.warn("Raise error?")
+                return False
+        return True
 
 
 def get_headers(c_type):

@@ -27,7 +27,7 @@ class Manager():
         self.stats = Stats(config)
 
 
-    def publish_shapefile(self, file_path, metadata_def=None, overwrite=False):
+    def publish_shapefile(self, file_path, metadata_def=None, overwrite=False, publish_on_geoserver=True):
         """
         @param file_path:
         @param metadata_def:
@@ -36,13 +36,16 @@ class Manager():
         """
         try:
             # add additional layer info to the metadata i.e. bbox and EPSG code
-            add_metadata_from_vector(file_path, metadata_def)
+            if file_path is not None:
+                add_metadata_from_vector(file_path, metadata_def)
+            else:
+                log.warn("Publishing an empty file: " + str(file_path))
             # add additional layer info to the metadata i.e. bbox and EPSG code
-            self._publish_coverage(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite)
+            self._publish_shapefile(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite, publish_on_geoserver)
         except PGeoException, e:
             raise PGeoException(e.get_message(), e.get_status_code())
 
-    def _publish_shapefile(self, file_path, metadata_def=None, geoserver_def=None, overwrite=False):
+    def _publish_shapefile(self, file_path, metadata_def=None, geoserver_def=None, overwrite=False, publish_on_geoserver=True):
         """
         @param file_path:
         @param layer_def:
@@ -53,12 +56,13 @@ class Manager():
             # layer_def = layer_def["featureType"]
 
             # Unzip the shapefile
-            shp_folder = filesystem.unzip(file_path)
-            shp_name = filesystem.get_filename(file_path)
+            if file_path is not None:
+                shp_folder = filesystem.unzip(file_path)
+                shp_name = filesystem.get_filename(file_path)
 
-            # creating shp path
-            shp_folder_and_name = os.path.join(shp_folder, shp_name) + ".shp"
-            log.info(shp_folder_and_name)
+                # creating shp path
+                shp_folder_and_name = os.path.join(shp_folder, shp_name) + ".shp"
+                log.info(shp_folder_and_name)
 
             # sanitize the layer_name
             # name = sanitize_name(shp_name)
@@ -88,22 +92,26 @@ class Manager():
             geoserver_def["name"] = sanitize_name(geoserver_def["name"])
 
             # import the shapefile on postgis
-            shapefile.import_shapefile(self.spatial_db, shp_folder_and_name, shp_name, True)
+            # TODO: this should be another import check like: if publish_postgis_table is True
+            if publish_on_geoserver is True:
+                shapefile.import_shapefile(self.spatial_db, shp_folder_and_name, shp_name, True)
 
             # publish on metadata
             self.metadata.db_metadata.insert_metadata(metadata_def)
 
             # publish table on geoserver cluster
-            self.geoserver.publish_postgis_table(geoserver_def, True)
+            if publish_on_geoserver is True:
+                self.geoserver.publish_postgis_table(geoserver_def, True)
 
             # remove files in input_shapefile
-            filesystem.remove_folder(shp_folder)
+            if file_path is not None:
+                filesystem.remove_folder(shp_folder)
 
         except PGeoException, e:
             log.error(e)
             self.rollback_shapefile()
 
-    def publish_coverage(self, file_path, metadata_def=None, overwrite=False):
+    def publish_coverage(self, file_path, metadata_def=None, overwrite=False, publish_on_geoserver=True):
         """
         @param file_path:
         @param metadata_def:
@@ -114,12 +122,12 @@ class Manager():
             # add additional layer info to the metadata i.e. bbox and EPSG code
             add_metadata_from_raster(file_path, metadata_def)
             # add additional layer info to the metadata i.e. bbox and EPSG code
-            self._publish_coverage(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite)
+            self._publish_coverage(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite, publish_on_geoserver)
         except PGeoException, e:
             raise PGeoException(e.get_message(), e.get_status_code())
 
 
-    def _publish_coverage(self, file_path, metadata_def=None, geoserver_def=None, overwrite=False):
+    def _publish_coverage(self, file_path, metadata_def=None, geoserver_def=None, overwrite=False, publish_on_geoserver=True):
         """
         @param file_path:
         @param layer_def:
@@ -159,10 +167,12 @@ class Manager():
             self.metadata.db_metadata.insert_metadata(metadata_def)
 
             # publish table on geoserver cluster
-            self.geoserver.publish_coveragestore(geoserver_def, True)
+            if publish_on_geoserver is True:
+                self.geoserver.publish_coveragestore(geoserver_def, True)
 
             # remove files and folder of the shapefile
-            filesystem.remove_folder(file_path)
+            if file_path is not None:
+                filesystem.remove_folder(file_path)
 
         except PGeoException, e:
             log.error(e)

@@ -2,10 +2,10 @@ import numpy as np
 from osgeo import gdal
 from pgeo.gis.raster import get_nodata_value
 import time
-from pylab import hexbin,show
-from scipy.ndimage import measurements
-from scipy.stats import itemfreq
-import rasterio
+# from pylab import hexbin,show
+# from scipy.ndimage import measurements
+# from scipy.stats import itemfreq
+# import rasterio
 from pysal.esda import mapclassify
 import brewer2mpl
 from threading import Thread
