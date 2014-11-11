@@ -50,7 +50,8 @@ class MongoSearch():
         #q['$and'] = conditions
         q["$query"] = {'$and' : conditions}
         #q["$project"] = {'$title' : 1}
-        q["$orderby"] = {'meContent.seCoverage.coverageTime.to': 1, 'title': 1, }
+        #q["$orderby"] = {'meContent.seCoverage.coverageTime.to': 1, 'title': 1, }
+        q["$orderby"] = {'meContent.seCoverage.coverageTime.to': -1, 'title': 1, }
         log.info(q)
         return self.client[self.db_name][self.table_name].find(q)
 
@@ -95,6 +96,11 @@ class MongoSearch():
         @field field: field to search
         @type field: string
          """
-        q = "meContent.seCoverage.coverageSector.codes.code"
 
-        return self.client[self.db_name][self.table_name].distinct(q)
+        q = "meContent.seCoverage.coverageSector.codes.code"
+        res = self.client[self.db_name][self.table_name].distinct(q)
+        # sorting result
+        res.sort()
+        return res
+
+
