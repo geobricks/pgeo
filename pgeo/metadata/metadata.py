@@ -14,16 +14,22 @@ log = log.logger(__name__)
 #db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['TRMM']}})
 # db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['MODIS']}})
 # db.layer.find({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['MODIS']}})
-
-
 #db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['MODIS-SADC']}})
-
 #db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['MODIS_TEST']}})
+#db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['Doukkala-Seasonal-wheat']}})
+#db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['Doukkala - actual evapotransipiration']}})
 
-#Regular expression
+# with Regular expression
 #db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {$regex: /^MOROCCO/}})
 
-#db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {'$in': ['Doukkola-NDVI']}})
+#db.layer.remove({'meContent.seCoverage.coverageSector.codes.code': {$regex: /^JRC/}})
+
+#db.layer.find({'meContent.seCoverage.coverageSector.codes.code': {$regex: /^UMD/}})
+
+#db.layer.find({'uid': {$regex: /^UMD/}})
+
+
+
 
 class Metadata:
 

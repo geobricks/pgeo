@@ -26,8 +26,7 @@ class Manager():
         self.spatial_db = config["db"]["spatial"]
         self.stats = Stats(config)
 
-
-    def publish_shapefile(self, file_path, metadata_def=None, overwrite=False, publish_on_geoserver=True):
+    def publish_shapefile(self, file_path, metadata_def=None, overwrite=False, publish_on_geoserver=True, publish_metadata=True):
         """
         @param file_path:
         @param metadata_def:
@@ -41,11 +40,11 @@ class Manager():
             else:
                 log.warn("Publishing an empty file: " + str(file_path))
             # add additional layer info to the metadata i.e. bbox and EPSG code
-            self._publish_shapefile(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite, publish_on_geoserver)
+            self._publish_shapefile(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite, publish_on_geoserver, publish_metadata)
         except PGeoException, e:
             raise PGeoException(e.get_message(), e.get_status_code())
 
-    def _publish_shapefile(self, file_path, metadata_def=None, geoserver_def=None, overwrite=False, publish_on_geoserver=True):
+    def _publish_shapefile(self, file_path, metadata_def=None, geoserver_def=None, overwrite=False, publish_on_geoserver=True, publish_metadata=True):
         """
         @param file_path:
         @param layer_def:
@@ -97,7 +96,8 @@ class Manager():
                 shapefile.import_shapefile(self.spatial_db, shp_folder_and_name, shp_name, True)
 
             # publish on metadata
-            self.metadata.db_metadata.insert_metadata(metadata_def)
+            if publish_metadata is True:
+                self.metadata.db_metadata.insert_metadata(metadata_def)
 
             # publish table on geoserver cluster
             if publish_on_geoserver is True:
@@ -111,7 +111,7 @@ class Manager():
             log.error(e)
             self.rollback_shapefile()
 
-    def publish_coverage(self, file_path, metadata_def=None, overwrite=False, publish_on_geoserver=True):
+    def publish_coverage(self, file_path, metadata_def=None, overwrite=False, publish_on_geoserver=True, publish_metadata=True):
         """
         @param file_path:
         @param metadata_def:
@@ -122,12 +122,12 @@ class Manager():
             # add additional layer info to the metadata i.e. bbox and EPSG code
             add_metadata_from_raster(file_path, metadata_def)
             # add additional layer info to the metadata i.e. bbox and EPSG code
-            self._publish_coverage(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite, publish_on_geoserver)
+            self._publish_coverage(file_path, metadata_def, translate_from_metadata_to_geoserver(metadata_def, file_path), overwrite, publish_on_geoserver, publish_metadata)
         except PGeoException, e:
             raise PGeoException(e.get_message(), e.get_status_code())
 
 
-    def _publish_coverage(self, file_path, metadata_def=None, geoserver_def=None, overwrite=False, publish_on_geoserver=True):
+    def _publish_coverage(self, file_path, metadata_def=None, geoserver_def=None, overwrite=False, publish_on_geoserver=True, publish_metadata=True):
         """
         @param file_path:
         @param layer_def:
@@ -147,9 +147,12 @@ class Manager():
             if "workspace" in metadata_def["meSpatialRepresentation"]:
                 workspace = metadata_def["meSpatialRepresentation"]["workspace"]
 
-            # setting up the uid
+            # setting up the uid TODO: this will be changed i guess with Ivano's metadata structure
             if "uid" not in metadata_def:
                 metadata_def["uid"] = workspace + ":" + name
+            else:
+                workspace = metadata_def["uid"].split(",")[0]
+
 
             # publish coveragestore on geoserver
             # TODO: merge the metadata with the default vector metadata
@@ -164,7 +167,8 @@ class Manager():
             #geoserver_def["name"] = sanitize_name(geoserver_def["name"])
 
             # publish on metadata
-            self.metadata.db_metadata.insert_metadata(metadata_def)
+            if publish_metadata is True:
+                self.metadata.db_metadata.insert_metadata(metadata_def)
 
             # publish table on geoserver cluster
             if publish_on_geoserver is True:

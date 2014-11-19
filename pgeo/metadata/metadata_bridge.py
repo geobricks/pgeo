@@ -9,13 +9,13 @@ log = logger("pgeo.metadata.metadata_bridge")
 
 def translate_from_metadata_to_geoserver(metadata_json, file_path=None):
     geoserver_json = {
-        #"name" : ""
-        "title" : "",
-        "abstract" : "",
-        "enabled" : True,
-        # "workspace" : "fenix",
-        # "datastore" : "pgeo",
-        "defaultStyle":{
+        #"name": ""
+        "title": "",
+        "abstract": "",
+        "enabled": True,
+        # "workspace": "fenix",
+        # "datastore": "pgeo",
+        "defaultStyle": {
         }
     }
     try:

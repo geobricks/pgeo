@@ -298,6 +298,7 @@ def get_statistics(input_file, config=stats_config):
     stats = {}
     try:
         if os.path.isfile(input_file):
+            print input_file
             ds = gdal.Open(input_file)
             if "descriptive_stats" in config:
                 stats["stats"] = _get_descriptive_statistics(ds, config["descriptive_stats"])
@@ -446,7 +447,7 @@ def _get_histogram(ds, config):
             else:
                 min = ds.GetRasterBand(band).GetMinimum()
                 max = ds.GetRasterBand(band).GetMaximum()
-
+        print min, max
         #hist = ds.GetRasterBand(band).GetDefaultHistogram( force = 0 )
         #stats.append({"band": band, "buckets": hist[2], "min": hist[0], "max": hist[1], "values": hist[3]})
         hist = ds.GetRasterBand(band).GetHistogram(buckets=buckets, min=min, max=max, include_out_of_range=include_out_of_range, approx_ok = False )
@@ -460,9 +461,13 @@ def get_authority(file_path):
     @type file_path: string
     @return: AuthorityName, AuthorityCode
     """
-    ds = gdal.Open( file_path )
+    print file_path
+    ds = gdal.Open(file_path)
+    print ds
     prj = ds.GetProjection()
-    srs=osr.SpatialReference(wkt=prj)
+    print prj
+    srs = osr.SpatialReference(wkt=prj)
+
     return srs.GetAttrValue("AUTHORITY", 0),  srs.GetAttrValue("AUTHORITY", 1)
 
 

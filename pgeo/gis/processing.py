@@ -18,6 +18,7 @@ def process(obj):
         output_file_name = obj["output_file_name"]
     except:
         pass
+
     source_path = obj["source_path"]
     band = obj["band"]
 
@@ -39,6 +40,9 @@ def process(obj):
             # print key_function
             # for key, value in my_dict.iteritems():
             if key in key_function:
+                print output_path
+                print output_path
+
                 # explicit functions
                 if "extract_bands" in key:
                     output_processed_files = p.extract_bands(output_processed_files, band, output_path)
@@ -58,7 +62,6 @@ def process(obj):
 
                 # reflection calls
                 output_processed_files = getattr(p, key)(process_values[key], output_processed_files, output_path)
-
 
     print '=========================================================='
     print '=========================================================='
@@ -204,6 +207,33 @@ class Process:
         except Exception, e:
             log.error(e)
             raise PGeoException(e.message, 500)
+
+
+    def gdal_translate(self, parameters, input_files, output_path):
+        log.info("gdal_translate input_files")
+        log.info(input_files)
+        output_files = []
+        output_file = os.path.join(output_path, self.output_file_name + ".tiff")
+        output_files.append(output_file)
+        cmd = "gdal_translate "
+        if "opt" in parameters:
+            for key in parameters["opt"].keys():
+                cmd += " " + key + " " + str(parameters["opt"][key])
+        for input_file in input_files:
+            cmd += " " + input_file
+        cmd += " " + output_file
+        log.info(cmd)
+        try:
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            output, error = process.communicate()
+            log.info(output)
+            log.warn(error)
+            log.info(output_files)
+            return output_files
+        except Exception, e:
+            log.error(e)
+            raise PGeoException(e.message, 500)
+
 
     def gdaladdo(self, parameters, input_files, output_path=None):
         log.info(parameters)
