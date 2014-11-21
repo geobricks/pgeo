@@ -10,10 +10,11 @@ log = log.logger("processing")
 key_function = ["extract_bands", "get_pixel_size"]
 
 
-def process(obj):
+def process_data(obj):
 
     output_path = obj["output_path"]
     output_file_name = None
+    output_file_extension = None
     try:
         output_file_name = obj["output_file_name"]
     except:
@@ -37,11 +38,7 @@ def process(obj):
     for process_values in process:
         for key in process_values:
             log.info(output_processed_files)
-            # print key_function
-            # for key, value in my_dict.iteritems():
             if key in key_function:
-                print output_path
-                print output_path
 
                 # explicit functions
                 if "extract_bands" in key:
@@ -62,14 +59,6 @@ def process(obj):
 
                 # reflection calls
                 output_processed_files = getattr(p, key)(process_values[key], output_processed_files, output_path)
-
-    print '=========================================================='
-    print '=========================================================='
-    print '=========================================================='
-    print '==================== PROCESS COMPLETE ===================='
-    print '=========================================================='
-    print '=========================================================='
-    print '=========================================================='
     return output_processed_files
 
 
@@ -85,10 +74,9 @@ def change_values(obj, pixel_size):
 # Class to process using reflection
 class Process:
 
-    def __init__(self, output_file_name=None):
+    def __init__(self, output_file_name=None, output_file_extension=None):
         if output_file_name is not None:
             self.output_file_name = output_file_name
-        return None
 
     def extract_bands(self, input_files, band, output_path):
         log.info("extract_files_and_band_names")
@@ -111,16 +99,16 @@ class Process:
 
     def extract_band_files(self, input_files, output_path, ext=None):
         output_files = []
-        i = 0;
+        i = 0
         try:
             for f in input_files:
+                print get_filename(f, True)
                 output_file_path = os.path.join(output_path, str(i) + ext)
                 cmd = "gdal_translate '" + f + "' " + output_file_path
                 log.info(cmd)
                 process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 output, error = process.communicate()
                 log.info(output)
-                log.warn(error)
                 output_files.append(output_file_path)
                 i += 1
             return output_files
@@ -129,9 +117,6 @@ class Process:
             raise PGeoException(e.message, 500)
 
     def get_pixel_size(self, input_file, formula=None):
-        log.info("get_pixel_size")
-        log.info(input_file)
-        log.info(formula)
         cmd = "gdalinfo "
         cmd += input_file
         cmd += " | grep Pixel"
@@ -140,7 +125,6 @@ class Process:
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             output, error = process.communicate()
             log.info(output)
-            log.warn(error)
             if "Pixel Size" in output:
                 pixel_size = output[output.find("(")+1:output.find(",")]
                 log.info(pixel_size)
@@ -153,21 +137,16 @@ class Process:
             raise PGeoException(e.message, 500)
 
     def gdal_merge(self, parameters, input_files, output_path):
-        log.info("gdal_merge")
-        log.info(parameters)
         output_files = []
-        output_file = os.path.join(output_path, self.output_file_name + ".hdf")
+        output_file = os.path.join(output_path, self.output_file_name)
         log.info(output_file)
         output_files.append(output_file)
         cmd = "gdal_merge.py "
         log.info(cmd)
         if "opt" in parameters:
-            log.info("OPT!!")
             for key in parameters["opt"].keys():
                 log.info(key)
                 cmd += " " + key + " " + str(parameters["opt"][key])
-
-        log.info(input_files)
         for input_file in input_files:
             cmd += " " + input_file
         cmd += " -o " + output_file
@@ -176,18 +155,15 @@ class Process:
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             output, error = process.communicate()
             log.info(output)
-            log.error(error)
-            log.info(output_files)
             return output_files
         except Exception, e:
             log.error(e)
             raise PGeoException(e.message, 500)
 
     def gdalwarp(self, parameters, input_files, output_path):
-        log.info("gdalwarp input_files")
         log.info(input_files)
         output_files = []
-        output_file = os.path.join(output_path, self.output_file_name + ".tiff")
+        output_file = os.path.join(output_path, self.output_file_name)
         output_files.append(output_file)
         cmd = "gdalwarp "
         if "opt" in parameters:
@@ -201,19 +177,14 @@ class Process:
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             output, error = process.communicate()
             log.info(output)
-            log.warn(error)
-            log.info(output_files)
             return output_files
         except Exception, e:
             log.error(e)
             raise PGeoException(e.message, 500)
 
-
     def gdal_translate(self, parameters, input_files, output_path):
-        log.info("gdal_translate input_files")
-        log.info(input_files)
         output_files = []
-        output_file = os.path.join(output_path, self.output_file_name + ".tiff")
+        output_file = os.path.join(output_path, self.output_file_name)
         output_files.append(output_file)
         cmd = "gdal_translate "
         if "opt" in parameters:
@@ -227,8 +198,6 @@ class Process:
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             output, error = process.communicate()
             log.info(output)
-            log.warn(error)
-            log.info(output_files)
             return output_files
         except Exception, e:
             log.error(e)
@@ -236,8 +205,6 @@ class Process:
 
 
     def gdaladdo(self, parameters, input_files, output_path=None):
-        log.info(parameters)
-        log.info(input_files)
         output_files = []
         cmd = "gdaladdo "
         for key in parameters["parameters"].keys():
@@ -251,7 +218,6 @@ class Process:
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             output, error = process.communicate()
             log.info(output)
-            log.warn(error)
             return output_files
         except Exception, e:
             log.error(e)
@@ -260,3 +226,12 @@ class Process:
 
 def callMethod(o, name, options, input_files):
     getattr(o, name)(options, input_files)
+
+def get_filename(filepath, extension=False):
+    drive, path = os.path.splitdrive(filepath)
+    path, filename = os.path.split(path)
+    name = os.path.splitext(filename)[0]
+    if extension is True:
+        return path, filename, name
+    else:
+        return name

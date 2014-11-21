@@ -1,10 +1,9 @@
 import numpy as np
 from osgeo import gdal
-import time
+from osr import SpatialReference
 from pgeo.utils.log import logger
 from pgeo.error.custom_exceptions import PGeoException
 from pgeo.utils.filesystem import create_tmp_filename
-import osr
 
 log = logger("pgeo.gis.raster_mapalgebra")
 
@@ -45,25 +44,20 @@ def filter_layers(raster_path1, raster_path2, min1=0, max1=None, min2=0, max2=No
 def merge_layers(rows, cols, geotransform, spatialreference, array1, array2, min1, max1, min2, max2, nodata1=None, nodata2=None):
     path = create_tmp_filename('', ".tif")
 
-    print min1, max1, min2, max2
-
     # find the indexes of the arrays
     index1 = (array1 > min1) & (array1 <= max1) & (array1 != nodata1)
     index2 = (array2 > min2) & (array2 <= max2) & (array2 != nodata2)
 
     # merge array indexes
     compound_index = index1 & index2
-
     del index1, index2
 
     # create a new raster
     output_raster = gdal.GetDriverByName('GTiff').Create(path, rows, cols, 1, gdal.GDT_Int16)  # Open the file
     output_raster.SetGeoTransform(geotransform)
-    srs = osr.SpatialReference()
-    srs=osr.SpatialReference(wkt=spatialreference)
+    srs = SpatialReference(wkt=spatialreference)
     output_raster.SetProjection(srs.ExportToWkt())
     # create raster from the compound_index of the two rasters
     # TODO: the reshape slows the operation, use matrixes
     output_raster.GetRasterBand(1).WriteArray(compound_index.reshape(cols, rows))
-
     return path

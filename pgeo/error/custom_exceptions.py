@@ -31,4 +31,7 @@ errors = {
     521: "No coverage store named",
     522: "Layer file doesn't exists",
     523: "Error creating workspace",
+
+    # Data processing
+    550: "Error processing data",
 }
