@@ -1,7 +1,7 @@
-from osgeo import gdal, osr, ogr
+from osgeo import gdal, osr
 import os
 import subprocess
-import glob
+import copy
 import math
 import json
 from pgeo.utils import log
@@ -293,12 +293,11 @@ def get_statistics(input_file, config=stats_config):
     log.info("get_statistics: %s" % input_file)
 
     if config is None:
-        config = stats_config
+        config = copy.deepcopy(stats_config)
 
     stats = {}
     try:
         if os.path.isfile(input_file):
-            print input_file
             ds = gdal.Open(input_file)
             if "descriptive_stats" in config:
                 stats["stats"] = _get_descriptive_statistics(ds, config["descriptive_stats"])
@@ -447,7 +446,6 @@ def _get_histogram(ds, config):
             else:
                 min = ds.GetRasterBand(band).GetMinimum()
                 max = ds.GetRasterBand(band).GetMaximum()
-        print min, max
         #hist = ds.GetRasterBand(band).GetDefaultHistogram( force = 0 )
         #stats.append({"band": band, "buckets": hist[2], "min": hist[0], "max": hist[1], "values": hist[3]})
         hist = ds.GetRasterBand(band).GetHistogram(buckets=buckets, min=min, max=max, include_out_of_range=include_out_of_range, approx_ok = False )
@@ -461,113 +459,9 @@ def get_authority(file_path):
     @type file_path: string
     @return: AuthorityName, AuthorityCode
     """
-    print file_path
     ds = gdal.Open(file_path)
-    print ds
     prj = ds.GetProjection()
-    print prj
     srs = osr.SpatialReference(wkt=prj)
+    log.info(prj, srs, file_path)
 
     return srs.GetAttrValue("AUTHORITY", 0),  srs.GetAttrValue("AUTHORITY", 1)
-
-
-# Process HDFs
-def process_hdfs(obj):
-    log.info(obj)
-
-    # extract bands
-    hdfs = extract_files_and_band_names(obj["source_path"], obj["band"])
-
-    # extract hdf bands
-    single_hdfs = create_hdf_files(obj["output_path"], hdfs)
-
-    # merge tiles
-    hdf_merged = merge_hdf_files(obj["output_path"], obj["output_path"], obj["gdal_merge"])
-
-    # do stats?
-    #TODO: do stats
-
-    # translate
-    tiff = warp_hdf_file(hdf_merged, obj["output_path"], obj["output_file_name"], obj["gdalwarp"])
-
-    #add overviews
-    if obj.has_key("gdaladdo"):
-        tiff = overviews_tif_file(tiff, obj["gdaladdo"]["parameters"], obj["gdaladdo"]["overviews_levels"])
-
-    return tiff
-
-
-def extract_files_and_band_names(path, band):
-    bands = []
-    hdfs = glob.glob(path + "/*.hdf")
-    for f in hdfs:
-        gtif = gdal.Open(f)
-        sds = gtif.GetSubDatasets()
-        bands.append(sds[int(band) - 1][0])
-    return bands
-
-
-def create_hdf_files(output_path, files):
-    log.info("Create HDF Files")
-    i = 0;
-    for f in files:
-        cmd = "gdal_translate '" + f + "' " + output_path + "/" + str(i) + ".hdf"
-        log.info(cmd)
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        output, error = process.communicate()
-        i += 1;
-        #TODO catch the error
-        log.info(output)
-        log.warn(error)
-
-
-def merge_hdf_files(source_path, output_path, parameters=None):
-    log.info("Merge HDF Merge")
-    output_file = output_path + "/output.hdf"
-
-    # creating the cmd
-    cmd = "gdal_merge.py "
-    for key in parameters.keys():
-        cmd += " " + key + " " + str(parameters[key])
-    cmd += " " + source_path + "/*.hdf -o " + output_file
-
-    log.info(cmd)
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    output, error = process.communicate()
-    log.info(output)
-    log.warn(error)
-    return output_file
-
-
-def warp_hdf_file(source_file, output_path, output_file_name, parameters=None ):
-    log.info("Warp HDF File to Ti")
-    output_file = output_path + "/" + output_file_name
-
-    cmd = "gdalwarp "
-    for key in parameters.keys():
-        cmd += " " + key + " " + str(parameters[key])
-    cmd += " " + source_file + " " + output_file
-
-    log.info(cmd)
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    output, error = process.communicate()
-    log.info(output)
-    log.warn(error)
-    return output_file
-
-
-def overviews_tif_file(output_file, parameters=None, overviews_levels=None):
-    log.info("Create overviews")
-
-    cmd = "gdaladdo "
-    for key in parameters.keys():
-        cmd += " " + key + " " + str(parameters[key])
-    cmd += " " + output_file
-    cmd += " " + overviews_levels
-
-    log.info(cmd)
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    output, error = process.communicate()
-    log.info(output)
-    log.warn(error)
-    return output_file

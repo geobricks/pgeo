@@ -117,6 +117,7 @@ class Process:
             raise PGeoException(e.message, 500)
 
     def get_pixel_size(self, input_file, formula=None):
+        # TODO: get pixel value with rasterio library?
         cmd = "gdalinfo "
         cmd += input_file
         cmd += " | grep Pixel"

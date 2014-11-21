@@ -4,7 +4,7 @@ import time
 from pysal.esda import mapclassify
 from brewer2mpl import get_map as brewer2mpl_get_map
 from pgeo.utils.log import logger
-from pgeo.error.custom_exceptions import PGeoException
+from pgeo.error.custom_exceptions import PGeoException, errors
 from scipy.stats import linregress
 
 log = logger("pgeo.gis.raster_scatter")
@@ -45,7 +45,6 @@ def create_scatter(raster_path1, raster_path2, bins=200, intervals=6, min1=None,
     statistics = compute_frequencies(array1, array2, min1, min2, max1, max2, forced_min1, forced_min2, nodata1, nodata2, bins)
     series = get_series(statistics["scatter"].values(), intervals, color, color_type, reverse)
 
-    #print series
     result = dict()
     # probably not useful for the chart itself
     # result['min1'] = min1,

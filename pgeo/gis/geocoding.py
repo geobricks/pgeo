@@ -1,6 +1,5 @@
 from geopy.geocoders import Nominatim
-from pgeo.error.custom_exceptions import PGeoException, errors
-from pgeo.utils import log
+from pgeo.error.custom_exceptions import PGeoException
 
 geolocator = Nominatim()
 

@@ -16,7 +16,7 @@ log = log.logger("pgeo.utils.filesystem")
 folder_tmp_default = tempfile.gettempdir()
 
 
-def create_tmp_filename(path='', extension='', folder_tmp=folder_tmp_default):
+def create_tmp_filename(path='', extension='', folder_tmp=folder_tmp_default, add_uuid=True):
     """
     Create the path for a tmp file and filename
 
@@ -26,7 +26,10 @@ def create_tmp_filename(path='', extension='', folder_tmp=folder_tmp_default):
     @param extension: i.e. .geotiff
     """
     if extension != '' and "." not in extension: extension = "." + extension
-    return (os.path.join(folder_tmp, path) + str(uuid.uuid4()) + extension).encode('utf-8')
+    if add_uuid:
+        return (os.path.join(folder_tmp, path) + str(uuid.uuid4()) + extension).encode('utf-8')
+    else:
+        return (os.path.join(folder_tmp, path) + extension).encode('utf-8')
 
 
 def create_tmp_folder(path='', folder_tmp=folder_tmp_default):
@@ -39,7 +42,10 @@ def create_tmp_folder(path='', folder_tmp=folder_tmp_default):
     """
     return (os.path.join(folder_tmp, path) + str(uuid.uuid4())).encode('utf-8')
 
-def create_folder_in_tmp(folder_name, folder_tmp=folder_tmp_default):
+
+def create_folder_in_tmp(folder_name=str(uuid.uuid4()), folder_tmp=folder_tmp_default):
+    print folder_name
+    print folder_tmp
     """
     Create the tmp folder from the folder_tmp
 
@@ -127,7 +133,7 @@ def zip_files(name, files, path=folder_tmp_default):
     extension = ".zip"
     if ".zip" in name:
         extension = ""
-    zip_path = os.path.join(path, name +extension)
+    zip_path = os.path.join(path, name + extension)
     log.info("Zip: '%s' from zip_files %s - %s" % (zip_path, name, files))
     zf = zipfile.ZipFile(zip_path, "w")
     zip_subdir = path
@@ -139,6 +145,11 @@ def zip_files(name, files, path=folder_tmp_default):
         zf.write(fpath, fname)
     zf.close()
     return zip_path
+
+
+def make_archive(dir_to_zip, output_filename, archive_type='zip'):
+    shutil.make_archive(output_filename, archive_type, dir_to_zip)
+
 
 
 # def get_filesystem_path(source, parameters):
