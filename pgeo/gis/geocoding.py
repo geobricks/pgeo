@@ -1,8 +1,25 @@
 from geopy.geocoders import Nominatim
 from pgeo.error.custom_exceptions import PGeoException
+import time
 
 geolocator = Nominatim()
 
+cached_places = {}
+
+def get_locations(places):
+    try:
+        results = []
+        for place in places:
+            if place in cached_places:
+                results.append(cached_places[place])
+            else:
+                time.sleep(1.1)
+                result = get_location(place)
+                cached_places[place] = result
+                results.append(result)
+        return results
+    except Exception, e:
+        pass
 
 def get_location(place):
     """
@@ -12,7 +29,9 @@ def get_location(place):
              return None if place not found
     """
     try:
-        return geolocator.geocode(place)
+        location = geolocator.geocode(place)
+        return [location.latitude, location.longitude]
+        #return geolocator.geocode(place)
     except Exception, e:
         raise PGeoException(e, status_code=400)
 
